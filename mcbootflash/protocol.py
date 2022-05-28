@@ -38,7 +38,7 @@ class BootResponseCode(enum.Enum):
 class Packet:
     """Base class for communication packets to and from the bootloader."""
 
-    command: BootCommand
+    command: int
     data_length: int = 0
     unlock_sequence: int = 0
     address: int = 0
@@ -91,7 +91,7 @@ class ResponsePacket(Packet):
     is received instead.
     """
 
-    success: BootResponseCode = 0
+    success: int = 0
     format: ClassVar = Packet.format + "B"
 
 
