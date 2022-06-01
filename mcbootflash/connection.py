@@ -49,7 +49,6 @@ class BootloaderConnection(Serial):
             self.write_size,
         ) = self.read_version()
         legal_range = self._get_memory_address_range()
-
         self._erase_flash(*legal_range, self.erase_size)
 
         for segment in self.hexfile.segments():
@@ -69,7 +68,7 @@ class BootloaderConnection(Serial):
                 logger.info(
                     f"Segment {self.hexfile.segments().index(segment)} "
                     "ignored; not in legal range "
-                    f"([{segment[0]:#08x}:{segment[1]:#08x}] vs. "
+                    f"([{segment[0] // 2:#08x}:{segment[1] // 2:#08x}] vs. "
                     f"[{legal_range[0]:#08x}:{legal_range[1]:#08x}])."
                 )
 
@@ -116,7 +115,7 @@ class BootloaderConnection(Serial):
         read_version_response = VersionResponsePacket.from_serial(self)
         return (
             read_version_response.version,
-            read_version_response.max_packet_pength,
+            read_version_response.max_packet_length,
             read_version_response.device_id,
             read_version_response.erase_size,
             read_version_response.write_size,
@@ -172,7 +171,7 @@ class BootloaderConnection(Serial):
 
         if write_flash_response.success != BootResponseCode.SUCCESS:
             logger.error(
-                f"Failed to write {len(bytes)} bytes to {address:#08x}: "
+                f"Failed to write {len(data)} bytes to {address:#08x}: "
                 f"{BootResponseCode(write_flash_response.success).name}."
             )
             raise FlashWriteError(

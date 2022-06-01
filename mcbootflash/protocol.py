@@ -76,7 +76,7 @@ class VersionResponsePacket(Packet):
     """Packet received in response to a READ_VERSION command."""
 
     version: int = 0
-    max_packet_pength: int = 0
+    max_packet_length: int = 0
     device_id: int = 0
     erase_size: int = 0
     write_size: int = 0

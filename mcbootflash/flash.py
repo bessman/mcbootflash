@@ -57,6 +57,7 @@ def flash():
         port=args.port, baudrate=args.baudrate, timeout=args.timeout
     )
     boot.flash(hexfile=args.file)
+    boot.close()
 
 
 if __name__ == "__main__":
