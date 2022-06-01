@@ -128,22 +128,11 @@ class BootloaderConnection(Serial):
         )
         self.write(bytes(mem_range_command))
         mem_range_response = MemoryRangePacket.from_serial(self)
-
-        if mem_range_response.success != BootResponseCode.SUCCESS.value:
-            logger.error(
-                "Failed to get program memory range: "
-                f"{BootResponseCode(mem_range_response.success).name}"
-            )
-            raise BootloaderError(
-                BootResponseCode(mem_range_response.success).name
-            )
-        else:
-            logger.info(
-                "Got program memory range: "
-                f"{mem_range_response.program_start:#08x}:"
-                f"{mem_range_response.program_end:#08x}."
-            )
-
+        logger.info(
+            "Got program memory range: "
+            f"{mem_range_response.program_start:#08x}:"
+            f"{mem_range_response.program_end:#08x}."
+        )
         return mem_range_response.program_start, mem_range_response.program_end
 
     def _erase_flash(
