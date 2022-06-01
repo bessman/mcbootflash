@@ -102,3 +102,11 @@ class MemoryRangePacket(ResponsePacket):
     program_start: int = 0
     program_end: int = 0
     format: ClassVar = ResponsePacket.format + "2I"
+
+
+@dataclass
+class ChecksumPacket(ResponsePacket):
+    """Response to CALCULATE_CHECKSUM."""
+
+    checksum: int = 0
+    format: ClassVar = ResponsePacket.format + "H"

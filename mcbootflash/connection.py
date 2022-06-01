@@ -13,6 +13,7 @@ from mcbootflash.protocol import (
     FLASH_UNLOCK_KEY,
     BootCommand,
     BootResponseCode,
+    ChecksumPacket,
     CommandPacket,
     ResponsePacket,
     VersionResponsePacket,
@@ -203,7 +204,7 @@ class BootloaderConnection(Serial):
             address=address,
         )
         self.write(bytes(calculcate_checksum_command))
-        calculate_checksum_response = ResponsePacket.from_serial(self)
+        calculate_checksum_response = ChecksumPacket.from_serial(self)
 
         if calculate_checksum_response.success != BootResponseCode.SUCCESS:
             logger.error(
@@ -214,9 +215,7 @@ class BootloaderConnection(Serial):
                 BootResponseCode(calculate_checksum_response.success).name
             )
 
-        checksum = int.from_bytes(self.read(2), byteorder="little")
-
-        return checksum
+        return calculate_checksum_response.checksum
 
     def _calculate_checksum(self, address: int, length: int):
         checksum = 0
