@@ -11,7 +11,7 @@ from serial import Serial
 FLASH_UNLOCK_KEY = 0x00AA0055
 
 
-class BootCommand(enum.Enum):
+class BootCommand(enum.IntEnum):
     """The MCC 16-bit bootloader supports these commands."""
 
     READ_VERSION = 0x00
@@ -24,7 +24,7 @@ class BootCommand(enum.Enum):
     GET_MEMORY_ADDRESS_RANGE = 0x0B
 
 
-class BootResponseCode(enum.Enum):
+class BootResponseCode(enum.IntEnum):
     """Sent by the bootloader in response to a command."""
 
     SUCCESS = 0x01
@@ -38,7 +38,7 @@ class BootResponseCode(enum.Enum):
 class Packet:
     """Base class for communication packets to and from the bootloader."""
 
-    command: int
+    command: BootCommand
     data_length: int = 0
     unlock_sequence: int = 0
     address: int = 0
@@ -91,7 +91,7 @@ class ResponsePacket(Packet):
     is received instead.
     """
 
-    success: int = 0
+    success: BootResponseCode = 0
     format: ClassVar = Packet.format + "B"
 
 

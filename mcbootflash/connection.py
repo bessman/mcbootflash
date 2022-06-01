@@ -111,9 +111,7 @@ class BootloaderConnection(Serial):
             Write block size. When writing to flash, the number of bytes to be
             written must align with a write block.
         """
-        read_version_command = CommandPacket(
-            command=BootCommand.READ_VERSION.value
-        )
+        read_version_command = CommandPacket(command=BootCommand.READ_VERSION)
         self.write(bytes(read_version_command))
         read_version_response = VersionResponsePacket.from_serial(self)
         return (
@@ -126,7 +124,7 @@ class BootloaderConnection(Serial):
 
     def _get_memory_address_range(self) -> tuple:
         mem_range_command = CommandPacket(
-            command=BootCommand.GET_MEMORY_ADDRESS_RANGE.value
+            command=BootCommand.GET_MEMORY_ADDRESS_RANGE
         )
         self.write(bytes(mem_range_command))
         mem_range_response = MemoryRangePacket.from_serial(self)
@@ -152,15 +150,15 @@ class BootloaderConnection(Serial):
         self, start_address: int, end_address: int, erase_size: int
     ):
         erase_flash_command = CommandPacket(
-            command=BootCommand.ERASE_FLASH.value,
-            data_length=int((end_address - start_address) / erase_size),
+            command=BootCommand.ERASE_FLASH,
+            data_length=(end_address - start_address) // erase_size,
             unlock_sequence=FLASH_UNLOCK_KEY,
             address=start_address,
         )
         self.write(bytes(erase_flash_command))
         erase_flash_response = ResponsePacket.from_serial(self)
 
-        if erase_flash_response.success != BootResponseCode.SUCCESS.value:
+        if erase_flash_response.success != BootResponseCode.SUCCESS:
             logger.error(
                 "Flash erase failed: "
                 f"{BootResponseCode(erase_flash_response.success).name}."
@@ -175,7 +173,7 @@ class BootloaderConnection(Serial):
 
     def _write_flash(self, address: int, data: bytes):
         write_flash_command = CommandPacket(
-            command=BootCommand.WRITE_FLASH.value,
+            command=BootCommand.WRITE_FLASH,
             data_length=len(data),
             unlock_sequence=FLASH_UNLOCK_KEY,
             address=address,
@@ -183,7 +181,7 @@ class BootloaderConnection(Serial):
         self.write(bytes(write_flash_command) + data)
         write_flash_response = ResponsePacket.from_serial(self)
 
-        if write_flash_response.success != BootResponseCode.SUCCESS.value:
+        if write_flash_response.success != BootResponseCode.SUCCESS:
             logger.error(
                 f"Failed to write {len(bytes)} bytes to {address:#08x}: "
                 f"{BootResponseCode(write_flash_response.success).name}."
@@ -195,13 +193,11 @@ class BootloaderConnection(Serial):
             logger.debug(f"Wrote {len(data)} bytes to {address:#08x}.")
 
     def _self_verify(self):
-        self_verify_command = CommandPacket(
-            command=BootCommand.SELF_VERIFY.value
-        )
+        self_verify_command = CommandPacket(command=BootCommand.SELF_VERIFY)
         self.write(bytes(self_verify_command))
         self_verify_response = ResponsePacket.from_serial(self)
 
-        if self_verify_response.success != BootResponseCode.SUCCESS.value:
+        if self_verify_response.success != BootResponseCode.SUCCESS:
             logger.error(
                 "Self verify failed: "
                 f"{BootResponseCode(self_verify_response.success).name}."
@@ -214,17 +210,14 @@ class BootloaderConnection(Serial):
 
     def _get_checksum(self, address: int, length: int):
         calculcate_checksum_command = CommandPacket(
-            command=BootCommand.CALC_CHECKSUM.value,
+            command=BootCommand.CALC_CHECKSUM,
             data_length=length,
             address=address,
         )
         self.write(bytes(calculcate_checksum_command))
         calculate_checksum_response = ResponsePacket.from_serial(self)
 
-        if (
-            calculate_checksum_response.success
-            != BootResponseCode.SUCCESS.value
-        ):
+        if calculate_checksum_response.success != BootResponseCode.SUCCESS:
             logger.error(
                 "Failed to get checksum: "
                 f"{BootResponseCode(calculate_checksum_response.success).name}"
