@@ -3,14 +3,14 @@ import pytest
 import intelhex
 import mock_serial
 
-from mcbootflash.connection import BootloaderConnection
-from mcbootflash.error import (
+from mcbootflash import BootloaderConnection
+from mcbootflash import (
     BootloaderError,
     ChecksumError,
     FlashEraseError,
     FlashWriteError,
 )
-from mcbootflash.protocol import (
+from mcbootflash import (
     BootCommand,
     BootResponseCode,
     ChecksumPacket,

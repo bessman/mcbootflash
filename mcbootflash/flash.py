@@ -3,7 +3,7 @@
 import argparse
 import logging
 
-from mcbootflash.connection import BootloaderConnection
+from mcbootflash import BootloaderConnection
 
 
 def flash():

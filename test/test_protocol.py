@@ -3,7 +3,7 @@ import pytest
 import mock_serial
 from serial import Serial
 
-from mcbootflash.protocol import (
+from mcbootflash import (
     BootCommand,
     BootResponseCode,
     CommandPacket,
