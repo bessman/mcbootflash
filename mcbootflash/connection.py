@@ -127,9 +127,7 @@ class BootloaderConnection(Serial):
         )
 
     def _get_memory_address_range(self) -> tuple:
-        mem_range_command = CommandPacket(
-            command=BootCommand.GET_MEMORY_ADDRESS_RANGE
-        )
+        mem_range_command = CommandPacket(command=BootCommand.GET_MEMORY_ADDRESS_RANGE)
         self.write(bytes(mem_range_command))
         mem_range_response = MemoryRangePacket.from_serial(self)
         logger.info(
@@ -139,9 +137,7 @@ class BootloaderConnection(Serial):
         )
         return mem_range_response.program_start, mem_range_response.program_end
 
-    def _erase_flash(
-        self, start_address: int, end_address: int, erase_size: int
-    ):
+    def _erase_flash(self, start_address: int, end_address: int, erase_size: int):
         erase_flash_command = CommandPacket(
             command=BootCommand.ERASE_FLASH,
             data_length=(end_address - start_address) // erase_size,
@@ -156,13 +152,9 @@ class BootloaderConnection(Serial):
                 "Flash erase failed: "
                 f"{BootResponseCode(erase_flash_response.success).name}."
             )
-            raise FlashEraseError(
-                BootResponseCode(erase_flash_response.success).name
-            )
+            raise FlashEraseError(BootResponseCode(erase_flash_response.success).name)
         else:
-            logger.info(
-                f"Erased flash area {start_address:#08x}:{end_address:#08x}."
-            )
+            logger.info(f"Erased flash area {start_address:#08x}:{end_address:#08x}.")
 
     def _write_flash(self, address: int, data: bytes):
         write_flash_command = CommandPacket(
@@ -179,9 +171,7 @@ class BootloaderConnection(Serial):
                 f"Failed to write {len(data)} bytes to {address:#08x}: "
                 f"{BootResponseCode(write_flash_response.success).name}."
             )
-            raise FlashWriteError(
-                BootResponseCode(write_flash_response.success).name
-            )
+            raise FlashWriteError(BootResponseCode(write_flash_response.success).name)
         else:
             logger.debug(f"Wrote {len(data)} bytes to {address:#08x}.")
 
@@ -195,9 +185,7 @@ class BootloaderConnection(Serial):
                 "Self verify failed: "
                 f"{BootResponseCode(self_verify_response.success).name}."
             )
-            raise BootloaderError(
-                BootResponseCode(self_verify_response.success).name
-            )
+            raise BootloaderError(BootResponseCode(self_verify_response.success).name)
         else:
             logger.info("Self verify OK.")
 
