@@ -44,10 +44,9 @@ version_response_bytes = (
 def test_version_packet_from_serial(mock_serial):
     interface = Serial(port=mock_serial.port)
     stub = mock_serial.stub(
-        receive_bytes=b"",
+        receive_bytes=b"\x00",
         send_bytes=version_response_bytes,
     )
     interface.write(b"\x00")
     retval = VersionResponsePacket.from_serial(interface=interface)
-    interface.close()
     assert retval == version_response_packet

@@ -6,7 +6,7 @@ import logging
 from mcbootflash import BootloaderConnection
 
 
-def flash():
+def flash(args=None):
     """Entry point for console_script."""
     parser = argparse.ArgumentParser(
         prog="mcbootflash",
@@ -45,7 +45,7 @@ def flash():
         ),
     )
     parser.add_argument("-v", "--verbose", action="count", default=0)
-    args = parser.parse_args()
+    args = parser.parse_args(args)
     logging.basicConfig()
 
     if not args.verbose:
