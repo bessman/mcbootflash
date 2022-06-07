@@ -1,7 +1,7 @@
 import enum
 import struct
 from dataclasses import asdict, dataclass
-from typing import ClassVar
+from typing import ClassVar, Type, TypeVar
 
 from serial import Serial
 
@@ -27,11 +27,15 @@ class BootCommand(enum.IntEnum):
 class BootResponseCode(enum.IntEnum):
     """Sent by the bootloader in response to a command."""
 
+    UNDEFINED = 0x00
     SUCCESS = 0x01
     UNSUPPORTED_COMMAND = 0xFF
     BAD_ADDRESS = 0xFE
     BAD_LENGTH = 0xFD
     VERIFY_FAIL = 0xFC
+
+
+_P = TypeVar("_P", bound="Packet")
 
 
 @dataclass
@@ -48,18 +52,18 @@ class Packet:
         return struct.pack(self.format, *list(asdict(self).values()))
 
     @classmethod
-    def from_bytes(cls, data: bytes) -> "Packet":
+    def from_bytes(cls: Type[_P], data: bytes) -> _P:
         """Create a Packet instance from a bytes-like object."""
         return cls(*struct.unpack(cls.format, data))
 
     @classmethod
-    def from_serial(cls, interface: Serial) -> "Packet":
+    def from_serial(cls: Type[_P], interface: Serial) -> _P:
         """Create a Packet instance by reading from a serial interface."""
         return cls.from_bytes(interface.read(cls.size))
 
     @classmethod
     @property
-    def size(cls) -> int:
+    def size(cls: Type[_P]) -> int:
         """Get the size of Packet in bytes."""
         return struct.calcsize(cls.format)
 
@@ -91,7 +95,7 @@ class ResponsePacket(Packet):
     is received instead.
     """
 
-    success: BootResponseCode = 0
+    success: BootResponseCode = BootResponseCode.UNDEFINED
     format: ClassVar = Packet.format + "B"
 
 
