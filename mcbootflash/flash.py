@@ -8,7 +8,13 @@ from mcbootflash import BootloaderConnection
 
 def flash():
     """Entry point for console_script."""
-    parser = argparse.ArgumentParser(prog="mccbootflash")
+    parser = argparse.ArgumentParser(
+        prog="mcbootflash",
+        usage=(
+            "Flash firmware over serial connection to a device running "
+            "Microchip's 16-bit bootloader."
+        ),
+    )
     parser.add_argument(
         "file",
         type=str,
@@ -19,7 +25,7 @@ def flash():
         "--port",
         type=str,
         required=True,
-        help="Serial port connected to device to flash.",
+        help="Serial port connected to the device you want to flash.",
     )
     parser.add_argument(
         "-b",
