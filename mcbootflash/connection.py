@@ -50,6 +50,10 @@ class BootloaderConnection(Serial):
             self.write_size,
         ) = self.read_version()
         legal_range = self._get_memory_address_range()
+        legal_range = (
+            legal_range[0],
+            legal_range[1] + 1,
+        )  # Final address is legal.
         self._erase_flash(*legal_range, self.erase_size)
 
         for segment in self.hexfile.segments():
