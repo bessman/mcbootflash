@@ -15,7 +15,7 @@ from mcbootflash import (
 
 
 command_packet = CommandPacket(
-    command=BootCommand.WRITE_FLASH.value,
+    command=BootCommand.WRITE_FLASH,
     data_length=8,
     unlock_sequence=FLASH_UNLOCK_KEY,
     address=0x1234,
@@ -28,7 +28,7 @@ def test_command_packet_to_bytes():
 
 
 version_response_packet = VersionResponsePacket(
-    command=BootCommand.READ_VERSION.value,
+    command=BootCommand.READ_VERSION,
     version=0x0102,
     max_packet_length=0x100,
     device_id=0x3456,
