@@ -1,5 +1,5 @@
 from .connection import BootloaderConnection
-from mcbootflash.error import (
+from .error import (
     BootloaderError,
     ChecksumError,
     FlashEraseError,
