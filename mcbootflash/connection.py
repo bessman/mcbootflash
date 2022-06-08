@@ -162,8 +162,7 @@ class BootloaderConnection(Serial):  # pylint: disable=too-many-ancestors
                 f"{BootResponseCode(erase_flash_response.success).name}."
             )
             raise FlashEraseError(BootResponseCode(erase_flash_response.success).name)
-        else:
-            logger.info(f"Erased flash area {start_address:#08x}:{end_address:#08x}.")
+        logger.info(f"Erased flash area {start_address:#08x}:{end_address:#08x}.")
 
     def _write_flash(self, address: int, data: bytes):
         write_flash_command = CommandPacket(
@@ -181,8 +180,7 @@ class BootloaderConnection(Serial):  # pylint: disable=too-many-ancestors
                 f"{BootResponseCode(write_flash_response.success).name}."
             )
             raise FlashWriteError(BootResponseCode(write_flash_response.success).name)
-        else:
-            logger.debug(f"Wrote {len(data)} bytes to {address:#08x}.")
+        logger.debug(f"Wrote {len(data)} bytes to {address:#08x}.")
 
     def _self_verify(self):
         self_verify_command = CommandPacket(command=BootCommand.SELF_VERIFY)
@@ -195,8 +193,7 @@ class BootloaderConnection(Serial):  # pylint: disable=too-many-ancestors
                 f"{BootResponseCode(self_verify_response.success).name}."
             )
             raise BootloaderError(BootResponseCode(self_verify_response.success).name)
-        else:
-            logger.info("Self verify OK.")
+        logger.info("Self verify OK.")
 
     def _get_checksum(self, address: int, length: int):
         calculcate_checksum_command = CommandPacket(
@@ -241,5 +238,4 @@ class BootloaderConnection(Serial):  # pylint: disable=too-many-ancestors
         if checksum1 != checksum2:
             logger.error(f"Checksum mismatch: {checksum1} != {checksum2}.")
             raise ChecksumError
-        else:
-            logger.debug(f"Checksum OK: {checksum1}.")
+        logger.debug(f"Checksum OK: {checksum1}.")
