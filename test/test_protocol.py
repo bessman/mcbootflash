@@ -50,3 +50,7 @@ def test_version_packet_from_serial(mock_serial):
     interface.write(b"\x00")
     retval = VersionResponsePacket.from_serial(interface=interface)
     assert retval == version_response_packet
+
+
+def test_get_size():
+    assert CommandPacket.get_size() == 11

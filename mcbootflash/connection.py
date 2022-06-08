@@ -89,7 +89,7 @@ class BootloaderConnection(Serial):  # pylint: disable=too-many-ancestors
         self._self_verify()
 
     def _flash_segment(self, segment):
-        chunk_size = self.max_packet_length - CommandPacket.size
+        chunk_size = self.max_packet_length - CommandPacket.get_size()
         chunk_size -= chunk_size % self.write_size
         chunk_size //= 2
         total_bytes = segment[1] - segment[0]

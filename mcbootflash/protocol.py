@@ -59,11 +59,10 @@ class Packet:
     @classmethod
     def from_serial(cls: Type[_P], interface: Serial) -> _P:
         """Create a Packet instance by reading from a serial interface."""
-        return cls.from_bytes(interface.read(cls.size))
+        return cls.from_bytes(interface.read(cls.get_size()))
 
     @classmethod
-    @property
-    def size(cls: Type[_P]) -> int:
+    def get_size(cls: Type[_P]) -> int:
         """Get the size of Packet in bytes."""
         return struct.calcsize(cls.format)
 
