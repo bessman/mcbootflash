@@ -23,8 +23,17 @@ from mcbootflash.protocol import (
 logger = logging.getLogger(__name__)
 
 
-class BootloaderConnection(Serial):
+class BootloaderConnection(Serial):  # pylint: disable=too-many-ancestors
     """Communication interface to device running MCC 16-bit bootloader."""
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.hexfile = None
+        self.version = None
+        self.max_packet_length = None
+        self.device_id = None
+        self.erase_size = None
+        self.write_size = None
 
     def flash(self, hexfile: str):
         """Flash application firmware.
