@@ -15,3 +15,19 @@ from .protocol import (
     ResponsePacket,
     VersionResponsePacket,
 )
+
+__all__ = [
+    "BootloaderConnection",
+    "BootloaderError",
+    "ChecksumError",
+    "FlashEraseError",
+    "FlashWriteError",
+    "BootCommand",
+    "BootResponseCode",
+    "ChecksumPacket",
+    "CommandPacket",
+    "FLASH_UNLOCK_KEY",
+    "MemoryRangePacket",
+    "ResponsePacket",
+    "VersionResponsePacket",
+]
