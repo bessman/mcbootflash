@@ -1,3 +1,49 @@
 [build-system]
 requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
+
+[tool.tox]
+legacy_tox_ini = """
+[tox]
+isolated_build = True
+envlist =
+    black
+    prospector
+    pyroma
+    test
+    report
+
+[testenv:black]
+deps = black
+commands = black --check .
+
+[testenv:prospector]
+deps =
+    prospector
+    mypy
+    pyroma
+    bandit
+commands = prospector .
+
+[testenv:pyroma]
+deps = pyroma
+commands = pyroma .
+
+[testenv:test]
+deps =
+    pytest
+    pytest_mock
+    mock_serial
+    coverage
+commands =
+    coverage run -m pytest
+
+[testenv:report]
+deps = coverage
+commands = coverage report
+depends = test
+
+[testenv:build]
+deps = build
+commands = python -m build
+"""
