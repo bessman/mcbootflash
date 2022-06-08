@@ -2,11 +2,12 @@
 
 import argparse
 import logging
+from typing import List, Union
 
 from mcbootflash import BootloaderConnection
 
 
-def flash(args=None):
+def flash(args: Union[None, List[str]] = None) -> None:
     """Entry point for console_script."""
     parser = argparse.ArgumentParser(
         prog="mcbootflash",
@@ -45,24 +46,26 @@ def flash(args=None):
         ),
     )
     parser.add_argument("-v", "--verbose", action="count", default=0)
-    args = parser.parse_args(args)
+    parsed_args = parser.parse_args(args)
     logging.basicConfig()
 
-    if not args.verbose:
+    if not parsed_args.verbose:
         logging.getLogger().setLevel(logging.CRITICAL)
-    elif args.verbose == 1:
+    elif parsed_args.verbose == 1:
         logging.getLogger().setLevel(logging.ERROR)
-    elif args.verbose == 2:
+    elif parsed_args.verbose == 2:
         logging.getLogger().setLevel(logging.WARNING)
-    elif args.verbose == 3:
+    elif parsed_args.verbose == 3:
         logging.getLogger().setLevel(logging.INFO)
     else:
         logging.getLogger().setLevel(logging.DEBUG)
 
     boot = BootloaderConnection(
-        port=args.port, baudrate=args.baudrate, timeout=args.timeout
+        port=parsed_args.port,
+        baudrate=parsed_args.baudrate,
+        timeout=parsed_args.timeout,
     )
-    boot.flash(hexfile=args.file)
+    boot.flash(hexfile=parsed_args.file)
     boot.close()
 
 

@@ -1,7 +1,9 @@
 import logging
+from dataclasses import dataclass
+from typing import Tuple, Union
 
-import intelhex
-from serial import Serial
+from intelhex import IntelHex  # type: ignore[import]
+from serial import Serial  # type: ignore[import]
 
 from mcbootflash.error import (
     BootloaderError,
@@ -23,19 +25,31 @@ from mcbootflash.protocol import (
 logger = logging.getLogger(__name__)
 
 
-class BootloaderConnection(Serial):  # pylint: disable=too-many-ancestors
+@dataclass
+class BootloaderAttributes:
+    version: int
+    max_packet_length: int
+    device_id: int
+    erase_size: int
+    write_size: int
+    program_start: int
+    program_end: int
+
+    @property
+    def legal_range(self) -> range:
+        """Return range of address which can be written to."""
+        # Final address is legal.
+        return range(self.program_start, self.program_end + 1)
+
+
+class BootloaderConnection(Serial):  # type: ignore # pylint: disable=too-many-ancestors
     """Communication interface to device running MCC 16-bit bootloader."""
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.hexfile = None
-        self.version = None
-        self.max_packet_length = None
-        self.device_id = None
-        self.erase_size = None
-        self.write_size = None
+    def __init__(self, **kwargs: str):
+        super().__init__(**kwargs)
+        self.hexfile: Union[None, IntelHex] = None
 
-    def flash(self, hexfile: str):
+    def flash(self, hexfile: str) -> None:
         """Flash application firmware.
 
         Parameters
@@ -50,47 +64,49 @@ class BootloaderConnection(Serial):  # pylint: disable=too-many-ancestors
         ChecksumError
         BootloaderError
         """
-        self.hexfile = intelhex.IntelHex(hexfile)
-        (
-            self.version,
-            self.max_packet_length,
-            self.device_id,
-            self.erase_size,
-            self.write_size,
-        ) = self.read_version()
-        legal_range = self._get_memory_address_range()
-        legal_range = (
-            legal_range[0],
-            legal_range[1] + 1,
-        )  # Final address is legal.
-        self._erase_flash(*legal_range, self.erase_size)
+        self.hexfile = IntelHex(hexfile)
+        boot_attrs = BootloaderAttributes(
+            *self.read_version(), *self._get_memory_address_range()
+        )
+        self._erase_flash(
+            boot_attrs.program_start,
+            boot_attrs.program_end,
+            boot_attrs.erase_size,
+        )
 
         for segment in self.hexfile.segments():
             # Since the MCU uses 16-bit instructions, each "address" in the
             # (8-bit) hex file is actually only half an address. Therefore, we
             # need to divide by two to get the actual address.
-            if (segment[0] // 2 in range(*legal_range)) and (
-                segment[1] // 2 in range(*legal_range)
+            if (segment[0] // 2 in boot_attrs.legal_range) and (
+                segment[1] // 2 in boot_attrs.legal_range
             ):
                 logger.info(
                     "Flashing segment "
                     f"{self.hexfile.segments().index(segment)}, "
                     f"[{segment[0]:#08x}:{segment[1]:#08x}]."
                 )
-                self._flash_segment(segment)
+                self._flash_segment(
+                    segment,
+                    boot_attrs.max_packet_length,
+                    boot_attrs.write_size,
+                )
             else:
                 logger.info(
                     f"Segment {self.hexfile.segments().index(segment)} "
                     "ignored; not in legal range "
                     f"([{segment[0] // 2:#08x}:{segment[1] // 2:#08x}] vs. "
-                    f"[{legal_range[0]:#08x}:{legal_range[1]:#08x}])."
+                    f"[{boot_attrs.legal_range[0]:#08x}:"
+                    f"{boot_attrs.legal_range[-1]:#08x}])."
                 )
 
         self._self_verify()
 
-    def _flash_segment(self, segment):
-        chunk_size = self.max_packet_length - CommandPacket.get_size()
-        chunk_size -= chunk_size % self.write_size
+    def _flash_segment(
+        self, segment: Tuple[int, int], max_packet_length: int, write_size: int
+    ) -> None:
+        chunk_size = max_packet_length - CommandPacket.get_size()
+        chunk_size -= chunk_size % write_size
         chunk_size //= 2
         total_bytes = segment[1] - segment[0]
         written_bytes = 0
@@ -98,7 +114,9 @@ class BootloaderConnection(Serial):  # pylint: disable=too-many-ancestors
         # chunk will fail. However, I have seen no example where it's not,
         # so not adding code to check for now (YAGNI).
         for addr in range(segment[0] // 2, segment[1] // 2, chunk_size):
-            chunk = self.hexfile[addr * 2 : (addr + chunk_size) * 2]
+            hex_low = addr * 2
+            hex_high = (addr + chunk_size) * 2
+            chunk = self.hexfile[hex_low:hex_high]  # type: ignore[index]
             self._write_flash(addr, chunk.tobinstr())
             self._checksum(addr, len(chunk))
             written_bytes += len(chunk)
@@ -107,7 +125,7 @@ class BootloaderConnection(Serial):  # pylint: disable=too-many-ancestors
                 f"({written_bytes / total_bytes * 100:.2f}%)."
             )
 
-    def read_version(self) -> tuple:
+    def read_version(self) -> Tuple[int, int, int, int, int]:
         """Read bootloader version and some other useful information.
 
         Returns
@@ -135,7 +153,7 @@ class BootloaderConnection(Serial):  # pylint: disable=too-many-ancestors
             read_version_response.write_size,
         )
 
-    def _get_memory_address_range(self) -> tuple:
+    def _get_memory_address_range(self) -> Tuple[int, int]:
         mem_range_command = CommandPacket(command=BootCommand.GET_MEMORY_ADDRESS_RANGE)
         self.write(bytes(mem_range_command))
         mem_range_response = MemoryRangePacket.from_serial(self)
@@ -146,7 +164,9 @@ class BootloaderConnection(Serial):  # pylint: disable=too-many-ancestors
         )
         return mem_range_response.program_start, mem_range_response.program_end
 
-    def _erase_flash(self, start_address: int, end_address: int, erase_size: int):
+    def _erase_flash(
+        self, start_address: int, end_address: int, erase_size: int
+    ) -> None:
         erase_flash_command = CommandPacket(
             command=BootCommand.ERASE_FLASH,
             data_length=(end_address - start_address) // erase_size,
@@ -164,7 +184,7 @@ class BootloaderConnection(Serial):  # pylint: disable=too-many-ancestors
             raise FlashEraseError(BootResponseCode(erase_flash_response.success).name)
         logger.info(f"Erased flash area {start_address:#08x}:{end_address:#08x}.")
 
-    def _write_flash(self, address: int, data: bytes):
+    def _write_flash(self, address: int, data: bytes) -> None:
         write_flash_command = CommandPacket(
             command=BootCommand.WRITE_FLASH,
             data_length=len(data),
@@ -182,7 +202,7 @@ class BootloaderConnection(Serial):  # pylint: disable=too-many-ancestors
             raise FlashWriteError(BootResponseCode(write_flash_response.success).name)
         logger.debug(f"Wrote {len(data)} bytes to {address:#08x}.")
 
-    def _self_verify(self):
+    def _self_verify(self) -> None:
         self_verify_command = CommandPacket(command=BootCommand.SELF_VERIFY)
         self.write(bytes(self_verify_command))
         self_verify_response = ResponsePacket.from_serial(self)
@@ -195,7 +215,7 @@ class BootloaderConnection(Serial):  # pylint: disable=too-many-ancestors
             raise BootloaderError(BootResponseCode(self_verify_response.success).name)
         logger.info("Self verify OK.")
 
-    def _get_checksum(self, address: int, length: int):
+    def _get_checksum(self, address: int, length: int) -> int:
         calculcate_checksum_command = CommandPacket(
             command=BootCommand.CALC_CHECKSUM,
             data_length=length,
@@ -215,15 +235,15 @@ class BootloaderConnection(Serial):  # pylint: disable=too-many-ancestors
 
         return calculate_checksum_response.checksum
 
-    def _calculate_checksum(self, address: int, length: int):
+    def _calculate_checksum(self, address: int, length: int) -> int:
         checksum = 0
         for i in range(address, address + length, 4):
-            data = self.hexfile[i : i + 4].tobinstr()
+            data = self.hexfile[i : i + 4].tobinstr()  # type: ignore[index]
             checksum += int.from_bytes(data, byteorder="little") & 0xFFFF
             checksum += (int.from_bytes(data, byteorder="little") >> 16) & 0xFF
         return checksum & 0xFFFF
 
-    def _checksum(self, address: int, length: int):
+    def _checksum(self, address: int, length: int) -> None:
         """Compare checksums calculated locally and onboard device.
 
         Parameters

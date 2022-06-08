@@ -317,11 +317,13 @@ def test_checksum_fail(mock_boot, mocker):
 
 def test_flash_segment(mock_boot, mocker):
     mock_boot.hexfile = HEXFILE
-    mock_boot.max_packet_length = 0x13
-    mock_boot.write_size = 8
+    max_packet_length = 0x13
+    write_size = 8
     mocker.patch.object(BootloaderConnection, "_write_flash")
     mocker.patch.object(BootloaderConnection, "_checksum")
-    mock_boot._flash_segment(mock_boot.hexfile.segments()[0])
+    mock_boot._flash_segment(
+        mock_boot.hexfile.segments()[0], max_packet_length, write_size
+    )
     mock_boot._checksum.assert_called()
 
 
