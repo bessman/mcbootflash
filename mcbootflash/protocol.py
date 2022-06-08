@@ -72,8 +72,6 @@ class Packet:
 class CommandPacket(Packet):
     """Base class for packets sent to the bootloader."""
 
-    pass
-
 
 @dataclass
 class VersionResponsePacket(Packet):
