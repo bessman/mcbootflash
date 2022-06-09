@@ -264,3 +264,6 @@ class BootloaderConnection(Serial):  # type: ignore # pylint: disable=too-many-a
         """Reset device."""
         reset_command = CommandPacket(command=BootCommand.RESET_DEVICE)
         self.write(bytes(reset_command))
+
+    def _read_flash(self):
+        raise NotImplementedError

@@ -381,3 +381,8 @@ def test_reset(mock_boot, mock_serial):
         ),
     )
     mock_boot.reset()
+
+
+def test_read_flash(mock_boot):
+    with pytest.raises(NotImplementedError):
+        mock_boot._read_flash()
