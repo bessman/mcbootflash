@@ -260,11 +260,11 @@ class BootloaderConnection(Serial):  # type: ignore # pylint: disable=too-many-a
             raise ChecksumError
         logger.debug(f"Checksum OK: {checksum1}.")
 
-    def reset(self):
+    def reset(self) -> None:
         """Reset device."""
         reset_command = CommandPacket(command=BootCommand.RESET_DEVICE)
         self.write(bytes(reset_command))
         ResponsePacket.from_serial(self)  # Don't leave unread bytes on the bus.
 
-    def _read_flash(self):
+    def _read_flash(self) -> None:
         raise NotImplementedError
