@@ -259,3 +259,8 @@ class BootloaderConnection(Serial):  # type: ignore # pylint: disable=too-many-a
             logger.error(f"Checksum mismatch: {checksum1} != {checksum2}.")
             raise ChecksumError
         logger.debug(f"Checksum OK: {checksum1}.")
+
+    def reset(self):
+        """Reset device."""
+        reset_command = CommandPacket(command=BootCommand.RESET_DEVICE)
+        self.write(bytes(reset_command))

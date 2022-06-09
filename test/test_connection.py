@@ -369,3 +369,15 @@ def test_flash_out_of_range(mock_boot, mocker):
 
     mock_boot.flash("test/test.hex")
     mock_boot._flash_segment.assert_not_called()
+
+
+def test_reset(mock_boot, mock_serial):
+    mock_serial.stub(
+        receive_bytes=bytes(CommandPacket(command=BootCommand.RESET_DEVICE)),
+        send_bytes=bytes(
+            ChecksumPacket(
+                command=BootCommand.RESET_DEVICE, success=BootResponseCode.SUCCESS
+            )
+        ),
+    )
+    mock_boot.reset()
