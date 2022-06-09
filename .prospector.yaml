@@ -43,7 +43,7 @@ pyroma:
 mypy:
   run: true
   options:
-    ignore-missing-imports: true
+    strict: true
 
 vulture:
   run: false
