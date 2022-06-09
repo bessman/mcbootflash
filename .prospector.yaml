@@ -38,7 +38,7 @@ pylint:
     - W1203
 
 pyroma:
-  run: true
+  run: false
 
 mypy:
   run: true
