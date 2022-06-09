@@ -64,7 +64,7 @@ GET_MEMORY_ADDRESS_RANGE_RETVALS = {
 
 
 def test_get_memory_address_range(mock_boot, mock_serial):
-    expected = {"program_start": 0x2000, "program_end": 0x4000}
+    retvals = {"program_start": 0x2000, "program_end": 0x4000}
     mock_serial.stub(
         receive_bytes=bytes(
             CommandPacket(command=BootCommand.GET_MEMORY_ADDRESS_RANGE)
@@ -73,11 +73,11 @@ def test_get_memory_address_range(mock_boot, mock_serial):
             MemoryRangePacket(
                 command=BootCommand.GET_MEMORY_ADDRESS_RANGE,
                 success=BootResponseCode.SUCCESS.value,
-                **expected
+                **retvals,
             )
         ),
     )
-    assert mock_boot._get_memory_address_range() == tuple(expected.values())
+    assert mock_boot._get_memory_address_range() == tuple(retvals.values())
 
 
 def mock_get_memory_address_range(*args, **kwargs):
@@ -88,18 +88,17 @@ def test_erase_flash(mock_boot, mock_serial):
     start_address = 0x2000
     end_address = 0x4000
     erase_size = 0x0800
+    params = {
+        "data_length": int((end_address - start_address) // erase_size),
+        "unlock_sequence": FLASH_UNLOCK_KEY,
+        "address": start_address,
+    }
     mock_serial.stub(
-        receive_bytes=bytes(
-            CommandPacket(
-                command=BootCommand.ERASE_FLASH,
-                data_length=int((end_address - start_address) // erase_size),
-                unlock_sequence=FLASH_UNLOCK_KEY,
-                address=start_address,
-            )
-        ),
+        receive_bytes=bytes(CommandPacket(command=BootCommand.ERASE_FLASH, **params)),
         send_bytes=bytes(
             ResponsePacket(
                 command=BootCommand.ERASE_FLASH,
+                **params,
                 success=BootResponseCode.SUCCESS,
             )
         ),
@@ -114,18 +113,17 @@ def test_erase_flash_fail(mock_boot, mock_serial):
     start_address = 0x2000
     end_address = 0x4000
     erase_size = 0x0800
+    params = {
+        "data_length": int((end_address - start_address) // erase_size),
+        "unlock_sequence": FLASH_UNLOCK_KEY,
+        "address": start_address,
+    }
     mock_serial.stub(
-        receive_bytes=bytes(
-            CommandPacket(
-                command=BootCommand.ERASE_FLASH,
-                data_length=int((end_address - start_address) // erase_size),
-                unlock_sequence=FLASH_UNLOCK_KEY,
-                address=start_address,
-            )
-        ),
+        receive_bytes=bytes(CommandPacket(command=BootCommand.ERASE_FLASH, **params)),
         send_bytes=bytes(
             ResponsePacket(
                 command=BootCommand.ERASE_FLASH,
+                **params,
                 success=BootResponseCode.BAD_ADDRESS,
             )
         ),
@@ -137,18 +135,17 @@ def test_erase_flash_fail(mock_boot, mock_serial):
 def test_write_flash(mock_boot, mock_serial):
     address = 0x2000
     data = bytes(range(8))
+    params = {
+        "data_length": len(data),
+        "unlock_sequence": FLASH_UNLOCK_KEY,
+        "address": address,
+    }
     mock_serial.stub(
-        receive_bytes=bytes(
-            CommandPacket(
-                command=BootCommand.WRITE_FLASH,
-                data_length=len(data),
-                unlock_sequence=FLASH_UNLOCK_KEY,
-                address=address,
-            )
-        ),
+        receive_bytes=bytes(CommandPacket(command=BootCommand.WRITE_FLASH, **params)),
         send_bytes=bytes(
             ResponsePacket(
                 command=BootCommand.WRITE_FLASH,
+                **params,
                 success=BootResponseCode.SUCCESS,
             )
         ),
@@ -159,18 +156,17 @@ def test_write_flash(mock_boot, mock_serial):
 def test_write_flash_fail(mock_boot, mock_serial):
     address = 0x2000
     data = bytes(range(8))
+    params = {
+        "data_length": len(data),
+        "unlock_sequence": FLASH_UNLOCK_KEY,
+        "address": address,
+    }
     mock_serial.stub(
-        receive_bytes=bytes(
-            CommandPacket(
-                command=BootCommand.WRITE_FLASH,
-                data_length=len(data),
-                unlock_sequence=FLASH_UNLOCK_KEY,
-                address=address,
-            )
-        ),
+        receive_bytes=bytes(CommandPacket(command=BootCommand.WRITE_FLASH, **params)),
         send_bytes=bytes(
             ResponsePacket(
                 command=BootCommand.WRITE_FLASH,
+                **params,
                 success=BootResponseCode.BAD_ADDRESS,
             )
         ),
@@ -220,18 +216,13 @@ EXPECTED_CHECKSUM = 0x10B5
 def test_get_checksum(mock_boot, mock_serial):
     address = 0x2000
     length = 0x08
-    checksum = 0x060C
+    params = {"data_length": length, "address": address}
     mock_serial.stub(
-        receive_bytes=bytes(
-            CommandPacket(
-                command=BootCommand.CALC_CHECKSUM,
-                data_length=length,
-                address=address,
-            )
-        ),
+        receive_bytes=bytes(CommandPacket(command=BootCommand.CALC_CHECKSUM, **params)),
         send_bytes=bytes(
             ChecksumPacket(
                 command=BootCommand.CALC_CHECKSUM,
+                **params,
                 success=BootResponseCode.SUCCESS,
                 checksum=EXPECTED_CHECKSUM,
             )
@@ -247,17 +238,13 @@ def mock_get_checksum(*args):
 def test_get_checksum_fail(mock_boot, mock_serial):
     address = 0x2000
     length = 0x08
+    params = {"data_length": length, "address": address}
     mock_serial.stub(
-        receive_bytes=bytes(
-            CommandPacket(
-                command=BootCommand.CALC_CHECKSUM,
-                data_length=length,
-                address=address,
-            )
-        ),
+        receive_bytes=bytes(CommandPacket(command=BootCommand.CALC_CHECKSUM, **params)),
         send_bytes=bytes(
             ChecksumPacket(
                 command=BootCommand.CALC_CHECKSUM,
+                **params,
                 success=BootResponseCode.BAD_ADDRESS,
             )
         ),
@@ -386,3 +373,23 @@ def test_reset(mock_boot, mock_serial):
 def test_read_flash(mock_boot):
     with pytest.raises(NotImplementedError):
         mock_boot._read_flash()
+
+
+def test_check_echo():
+    command_packet = CommandPacket(command=BootCommand.READ_VERSION)
+    response_packet = VersionResponsePacket(
+        command=BootCommand.READ_VERSION, **READ_VERSION_RETVALS
+    )
+    BootloaderConnection._check_echo(command_packet, response_packet)
+
+
+def test_check_echo_fail():
+    address = 0x2000
+    length = 0x08
+    params = {"data_length": length, "address": address}
+    command_packet = CommandPacket(command=BootCommand.CALC_CHECKSUM, **params)
+    response_packet = ChecksumPacket(
+        command=BootCommand.CALC_CHECKSUM, checksum=EXPECTED_CHECKSUM
+    )
+    with pytest.raises(BootloaderError):
+        BootloaderConnection._check_echo(command_packet, response_packet)
