@@ -126,12 +126,12 @@ class BootloaderConnection(Serial):  # type: ignore # pylint: disable=too-many-a
             )
 
     @staticmethod
-    def _check_echo(
+    def _check_response(
         command_packet: CommandPacket,
         response_packet: Union[VersionResponsePacket, ResponsePacket],
     ) -> None:
-        """Check that the response begins with an echo of the command."""
-        if not bytes(response_packet)[:11] == bytes(command_packet):
+        """Check that response is not an error."""
+        if response_packet.command != command_packet.command:
             logger.error(
                 "Unexpected response.\n"
                 f"Command:  {bytes(command_packet)!r}\n"
@@ -159,7 +159,7 @@ class BootloaderConnection(Serial):  # type: ignore # pylint: disable=too-many-a
         read_version_command = CommandPacket(command=BootCommand.READ_VERSION)
         self.write(bytes(read_version_command))
         read_version_response = VersionResponsePacket.from_serial(self)
-        self._check_echo(read_version_command, read_version_response)
+        self._check_response(read_version_command, read_version_response)
         logger.info(
             "Got bootloader attributes:\n"
             f"Max packet length: {read_version_response.max_packet_length:#04x}\n"
@@ -178,7 +178,7 @@ class BootloaderConnection(Serial):  # type: ignore # pylint: disable=too-many-a
         mem_range_command = CommandPacket(command=BootCommand.GET_MEMORY_ADDRESS_RANGE)
         self.write(bytes(mem_range_command))
         mem_range_response = MemoryRangePacket.from_serial(self)
-        self._check_echo(mem_range_command, mem_range_response)
+        self._check_response(mem_range_command, mem_range_response)
         logger.info(
             "Got program memory range: "
             f"{mem_range_response.program_start:#08x}:"
@@ -197,7 +197,6 @@ class BootloaderConnection(Serial):  # type: ignore # pylint: disable=too-many-a
         )
         self.write(bytes(erase_flash_command))
         erase_flash_response = ResponsePacket.from_serial(self)
-        self._check_echo(erase_flash_command, erase_flash_response)
 
         if erase_flash_response.success != BootResponseCode.SUCCESS:
             logger.error(
@@ -205,6 +204,7 @@ class BootloaderConnection(Serial):  # type: ignore # pylint: disable=too-many-a
                 f"{BootResponseCode(erase_flash_response.success).name}."
             )
             raise FlashEraseError(BootResponseCode(erase_flash_response.success).name)
+        self._check_response(erase_flash_command, erase_flash_response)
         logger.info(f"Erased flash area {start_address:#08x}:{end_address:#08x}.")
 
     def _write_flash(self, address: int, data: bytes) -> None:
@@ -216,7 +216,6 @@ class BootloaderConnection(Serial):  # type: ignore # pylint: disable=too-many-a
         )
         self.write(bytes(write_flash_command) + data)
         write_flash_response = ResponsePacket.from_serial(self)
-        self._check_echo(write_flash_command, write_flash_response)
 
         if write_flash_response.success != BootResponseCode.SUCCESS:
             logger.error(
@@ -224,13 +223,13 @@ class BootloaderConnection(Serial):  # type: ignore # pylint: disable=too-many-a
                 f"{BootResponseCode(write_flash_response.success).name}."
             )
             raise FlashWriteError(BootResponseCode(write_flash_response.success).name)
+        self._check_response(write_flash_command, write_flash_response)
         logger.debug(f"Wrote {len(data)} bytes to {address:#08x}.")
 
     def _self_verify(self) -> None:
         self_verify_command = CommandPacket(command=BootCommand.SELF_VERIFY)
         self.write(bytes(self_verify_command))
         self_verify_response = ResponsePacket.from_serial(self)
-        self._check_echo(self_verify_command, self_verify_response)
 
         if self_verify_response.success != BootResponseCode.SUCCESS:
             logger.error(
@@ -238,6 +237,7 @@ class BootloaderConnection(Serial):  # type: ignore # pylint: disable=too-many-a
                 f"{BootResponseCode(self_verify_response.success).name}."
             )
             raise BootloaderError(BootResponseCode(self_verify_response.success).name)
+        self._check_response(self_verify_command, self_verify_response)
         logger.info("Self verify OK.")
 
     def _get_checksum(self, address: int, length: int) -> int:
@@ -248,7 +248,6 @@ class BootloaderConnection(Serial):  # type: ignore # pylint: disable=too-many-a
         )
         self.write(bytes(calculcate_checksum_command))
         calculate_checksum_response = ChecksumPacket.from_serial(self)
-        self._check_echo(calculcate_checksum_command, calculate_checksum_response)
 
         if calculate_checksum_response.success != BootResponseCode.SUCCESS:
             logger.error(
@@ -259,6 +258,7 @@ class BootloaderConnection(Serial):  # type: ignore # pylint: disable=too-many-a
                 BootResponseCode(calculate_checksum_response.success).name
             )
 
+        self._check_response(calculcate_checksum_command, calculate_checksum_response)
         return calculate_checksum_response.checksum
 
     def _calculate_checksum(self, address: int, length: int) -> int:
@@ -291,7 +291,7 @@ class BootloaderConnection(Serial):  # type: ignore # pylint: disable=too-many-a
         reset_command = CommandPacket(command=BootCommand.RESET_DEVICE)
         self.write(bytes(reset_command))
         reset_response = ResponsePacket.from_serial(self)
-        self._check_echo(reset_command, reset_response)
+        self._check_response(reset_command, reset_response)
 
     def _read_flash(self) -> None:
         raise NotImplementedError
