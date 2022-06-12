@@ -1,9 +1,12 @@
 from .connection import BootloaderConnection
 from .error import (
     BootloaderError,
+    UnsupportedCommand,
+    BadAddress,
+    BadLength,
+    VerifyFail,
     ChecksumError,
-    FlashEraseError,
-    FlashWriteError,
+    EXCEPTIONS,
 )
 from .protocol import (
     BootCommand,
@@ -20,8 +23,11 @@ __all__ = [
     "BootloaderConnection",
     "BootloaderError",
     "ChecksumError",
-    "FlashEraseError",
-    "FlashWriteError",
+    "UnsupportedCommand",
+    "BadAddress",
+    "BadLength",
+    "VerifyFail",
+    "EXCEPTIONS",
     "BootCommand",
     "BootResponseCode",
     "ChecksumPacket",

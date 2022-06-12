@@ -5,12 +5,7 @@ from typing import Tuple, Union
 from intelhex import IntelHex  # type: ignore[import]
 from serial import Serial  # type: ignore[import]
 
-from mcbootflash.error import (
-    BootloaderError,
-    FlashEraseError,
-    FlashWriteError,
-    ChecksumError,
-)
+from mcbootflash.error import BootloaderError, ChecksumError, EXCEPTIONS
 from mcbootflash.protocol import (
     FLASH_UNLOCK_KEY,
     BootCommand,
@@ -59,10 +54,12 @@ class BootloaderConnection(Serial):  # type: ignore # pylint: disable=too-many-a
 
         Raises
         ------
-        FlashEraseError
-        FlashWriteError
-        ChecksumError
         BootloaderError
+        UnsupportedCommand
+        BadAddress
+        BadLength
+        VerifyFail
+        ChecksumError
         """
         self.hexfile = IntelHex(hexfile)
         boot_attrs = BootloaderAttributes(
@@ -139,6 +136,20 @@ class BootloaderConnection(Serial):  # type: ignore # pylint: disable=too-many-a
             )
             raise BootloaderError("Unexpected response.")
 
+        if (
+            not isinstance(response_packet, VersionResponsePacket)
+            and response_packet.success != BootResponseCode.SUCCESS
+        ):
+            logger.error(
+                "Command failed:\n"
+                f"Command:  {bytes(command_packet)!r}\n"
+                f"Response: {bytes(response_packet)!r}"
+            )
+            exception = EXCEPTIONS[response_packet.success]
+            raise exception(
+                f"Command failed: {BootResponseCode(response_packet.success).name}."
+            )
+
     def read_version(self) -> Tuple[int, int, int, int, int]:
         """Read bootloader version and some other useful information.
 
@@ -197,13 +208,6 @@ class BootloaderConnection(Serial):  # type: ignore # pylint: disable=too-many-a
         )
         self.write(bytes(erase_flash_command))
         erase_flash_response = ResponsePacket.from_serial(self)
-
-        if erase_flash_response.success != BootResponseCode.SUCCESS:
-            logger.error(
-                "Flash erase failed: "
-                f"{BootResponseCode(erase_flash_response.success).name}."
-            )
-            raise FlashEraseError(BootResponseCode(erase_flash_response.success).name)
         self._check_response(erase_flash_command, erase_flash_response)
         logger.info(f"Erased flash area {start_address:#08x}:{end_address:#08x}.")
 
@@ -216,13 +220,6 @@ class BootloaderConnection(Serial):  # type: ignore # pylint: disable=too-many-a
         )
         self.write(bytes(write_flash_command) + data)
         write_flash_response = ResponsePacket.from_serial(self)
-
-        if write_flash_response.success != BootResponseCode.SUCCESS:
-            logger.error(
-                f"Failed to write {len(data)} bytes to {address:#08x}: "
-                f"{BootResponseCode(write_flash_response.success).name}."
-            )
-            raise FlashWriteError(BootResponseCode(write_flash_response.success).name)
         self._check_response(write_flash_command, write_flash_response)
         logger.debug(f"Wrote {len(data)} bytes to {address:#08x}.")
 
@@ -230,13 +227,6 @@ class BootloaderConnection(Serial):  # type: ignore # pylint: disable=too-many-a
         self_verify_command = CommandPacket(command=BootCommand.SELF_VERIFY)
         self.write(bytes(self_verify_command))
         self_verify_response = ResponsePacket.from_serial(self)
-
-        if self_verify_response.success != BootResponseCode.SUCCESS:
-            logger.error(
-                "Self verify failed: "
-                f"{BootResponseCode(self_verify_response.success).name}."
-            )
-            raise BootloaderError(BootResponseCode(self_verify_response.success).name)
         self._check_response(self_verify_command, self_verify_response)
         logger.info("Self verify OK.")
 
@@ -248,16 +238,6 @@ class BootloaderConnection(Serial):  # type: ignore # pylint: disable=too-many-a
         )
         self.write(bytes(calculcate_checksum_command))
         calculate_checksum_response = ChecksumPacket.from_serial(self)
-
-        if calculate_checksum_response.success != BootResponseCode.SUCCESS:
-            logger.error(
-                "Failed to get checksum: "
-                f"{BootResponseCode(calculate_checksum_response.success).name}"
-            )
-            raise BootloaderError(
-                BootResponseCode(calculate_checksum_response.success).name
-            )
-
         self._check_response(calculcate_checksum_command, calculate_checksum_response)
         return calculate_checksum_response.checksum
 
