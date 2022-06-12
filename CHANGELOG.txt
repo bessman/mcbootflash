@@ -1,0 +1,17 @@
+2.0.0
+Features:
+- Public interface available directly via __init__.py.
+- Add ChecksumPacket class.
+- Add reset command.
+- Improve CLI help message.
+- Improve package metadata.
+- Reworked exceptions to more closely match those thrown by the bootloader.
+
+Bug fixes:
+- Off-by-one error when firmware uses all available space.
+
+Under the hood:
+- Add tests.
+- Add linters.
+- Add CI via Github Actions.
+
