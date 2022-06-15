@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from typing import Tuple, Union
 
 from intelhex import IntelHex  # type: ignore[import]
+import progressbar
 from serial import Serial  # type: ignore[import]
 
 from mcbootflash.error import BootloaderError, ChecksumError, EXCEPTIONS
@@ -40,9 +41,21 @@ class BootloaderAttributes:
 class BootloaderConnection(Serial):  # type: ignore # pylint: disable=too-many-ancestors
     """Communication interface to device running MCC 16-bit bootloader."""
 
-    def __init__(self, **kwargs: str):
+    def __init__(self, quiet: bool = False, **kwargs: str):
         super().__init__(**kwargs)
+        self.quiet = quiet
         self.hexfile: Union[None, IntelHex] = None
+        widgets = [
+            progressbar.Percentage(),
+            " ",
+            progressbar.Counter(format="(%(value)d / %(max_value)d bytes)"),
+            " ",
+            progressbar.Bar(),
+            " ",
+            progressbar.Timer(),
+        ]
+        self._progressbar = progressbar.ProgressBar(widgets=widgets)
+        self._bar = None
 
     def flash(self, hexfile: str) -> None:
         """Flash application firmware.
@@ -78,7 +91,7 @@ class BootloaderConnection(Serial):  # type: ignore # pylint: disable=too-many-a
             if (segment[0] // 2 in boot_attrs.legal_range) and (
                 segment[1] // 2 in boot_attrs.legal_range
             ):
-                logger.info(
+                logger.debug(
                     "Flashing segment "
                     f"{self.hexfile.segments().index(segment)}, "
                     f"[{segment[0]:#08x}:{segment[1]:#08x}]."
@@ -89,7 +102,7 @@ class BootloaderConnection(Serial):  # type: ignore # pylint: disable=too-many-a
                     boot_attrs.write_size,
                 )
             else:
-                logger.info(
+                logger.debug(
                     f"Segment {self.hexfile.segments().index(segment)} "
                     "ignored; not in legal range "
                     f"([{segment[0] // 2:#08x}:{segment[1] // 2:#08x}] vs. "
@@ -100,7 +113,10 @@ class BootloaderConnection(Serial):  # type: ignore # pylint: disable=too-many-a
         self._self_verify()
 
     def _flash_segment(
-        self, segment: Tuple[int, int], max_packet_length: int, write_size: int
+        self,
+        segment: Tuple[int, int],
+        max_packet_length: int,
+        write_size: int,
     ) -> None:
         chunk_size = max_packet_length - CommandPacket.get_size()
         chunk_size -= chunk_size % write_size
@@ -117,10 +133,21 @@ class BootloaderConnection(Serial):  # type: ignore # pylint: disable=too-many-a
             self._write_flash(addr, chunk.tobinstr())
             self._checksum(addr, len(chunk))
             written_bytes += len(chunk)
-            logger.info(
+            logger.debug(
                 f"{written_bytes} bytes written of {total_bytes} "
                 f"({written_bytes / total_bytes * 100:.2f}%)."
             )
+            if not self.quiet:
+                self._print_progress(written_bytes, total_bytes)
+
+    def _print_progress(self, written_bytes: int, total_bytes: int) -> None:
+        if self._bar is None:
+            self._bar = self._progressbar.start(max_value=total_bytes)
+        elif written_bytes == total_bytes:
+            self._bar.finish()
+            self._bar = None
+        else:
+            self._bar.update(value=written_bytes)
 
     @staticmethod
     def _check_response(
@@ -145,10 +172,7 @@ class BootloaderConnection(Serial):  # type: ignore # pylint: disable=too-many-a
                 f"Command:  {bytes(command_packet)!r}\n"
                 f"Response: {bytes(response_packet)!r}"
             )
-            exception = EXCEPTIONS[response_packet.success]
-            raise exception(
-                f"Command failed: {BootResponseCode(response_packet.success).name}."
-            )
+            raise EXCEPTIONS[response_packet.success]
 
     def read_version(self) -> Tuple[int, int, int, int, int]:
         """Read bootloader version and some other useful information.
@@ -177,6 +201,7 @@ class BootloaderConnection(Serial):  # type: ignore # pylint: disable=too-many-a
             f"Erase size:        {read_version_response.erase_size:#04x}\n"
             f"Write size:        {read_version_response.write_size:#04x}"
         )
+
         return (
             read_version_response.version,
             read_version_response.max_packet_length,
@@ -195,6 +220,7 @@ class BootloaderConnection(Serial):  # type: ignore # pylint: disable=too-many-a
             f"{mem_range_response.program_start:#08x}:"
             f"{mem_range_response.program_end:#08x}."
         )
+
         return mem_range_response.program_start, mem_range_response.program_end
 
     def _erase_flash(
@@ -272,6 +298,7 @@ class BootloaderConnection(Serial):  # type: ignore # pylint: disable=too-many-a
         self.write(bytes(reset_command))
         reset_response = ResponsePacket.from_serial(self)
         self._check_response(reset_command, reset_response)
+        logger.info("Device reset.")
 
     def _read_flash(self) -> None:
         raise NotImplementedError
