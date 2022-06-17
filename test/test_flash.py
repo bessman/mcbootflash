@@ -1,26 +1,43 @@
-import shlex
+import argparse
 
 import pytest
 import pytest_mock
 
-from mcbootflash.flash import flash
+from mcbootflash.flash import get_parser, flash
 
 
-@pytest.mark.parametrize("options", ("--help",))
-def test_help(capsys, options):
+def test_overwrite_cli_arg():
+    parser = get_parser()
     try:
-        flash([options])
-    except SystemExit:
-        pass
-    output = capsys.readouterr().out
-    assert "Flash firmware over serial connection" in output
+        parser.add_argument("-b", "--baudrate", default=460800)
+    except argparse.ArgumentError:  # pragma: no cover
+        pytest.fail()
 
 
-@pytest.mark.parametrize(
-    "options",
-    ("test/test.hex --port mock_serial.port --baudrate 460800",),
+test_namespace = argparse.Namespace(
+    **{
+        "file": "test/test.hex",
+        "port": "mockport",
+        "baudrate": 460800,
+        "timeout": 5,
+        "verbose": False,
+        "quiet": False,
+    }
 )
-def test_flash(options, mocker):
+
+
+def test_flash(mocker):
     mocker.patch("mcbootflash.flash.BootloaderConnection")
-    for i in range(5):
-        flash(shlex.split(options) + ["-" * (i > 0) + "v" * i] * (i > 0))
+    flash(test_namespace)
+
+
+def test_flash_quiet(mocker):
+    mocker.patch("mcbootflash.flash.BootloaderConnection")
+    test_namespace.quiet = True
+    flash(test_namespace)
+
+
+def test_flash_verbose(mocker):
+    mocker.patch("mcbootflash.flash.BootloaderConnection")
+    test_namespace.verbose = True
+    flash(test_namespace)

@@ -3,7 +3,8 @@ from dataclasses import dataclass
 from typing import Tuple, Union
 
 from intelhex import IntelHex  # type: ignore[import]
-import progressbar
+
+import progressbar  # type: ignore[import]
 from serial import Serial  # type: ignore[import]
 
 from mcbootflash.error import BootloaderError, ChecksumError, EXCEPTIONS
@@ -45,17 +46,7 @@ class BootloaderConnection(Serial):  # type: ignore # pylint: disable=too-many-a
         super().__init__(**kwargs)
         self.quiet = quiet
         self.hexfile: Union[None, IntelHex] = None
-        widgets = [
-            progressbar.Percentage(),
-            " ",
-            progressbar.Counter(format="(%(value)d / %(max_value)d bytes)"),
-            " ",
-            progressbar.Bar(),
-            " ",
-            progressbar.Timer(),
-        ]
-        self._progressbar = progressbar.ProgressBar(widgets=widgets)
-        self._bar = None
+        self._bar: Union[None, progressbar.Bar] = None
 
     def flash(self, hexfile: str) -> None:
         """Flash application firmware.
@@ -138,11 +129,22 @@ class BootloaderConnection(Serial):  # type: ignore # pylint: disable=too-many-a
                 f"({written_bytes / total_bytes * 100:.2f}%)."
             )
             if not self.quiet:
-                self._print_progress(written_bytes, total_bytes)
+                pass
+            self._print_progress(written_bytes, total_bytes)
 
     def _print_progress(self, written_bytes: int, total_bytes: int) -> None:
         if self._bar is None:
-            self._bar = self._progressbar.start(max_value=total_bytes)
+            widgets = [
+                progressbar.Percentage(),
+                " ",
+                progressbar.Counter(format="(%(value)d / %(max_value)d bytes)"),
+                " ",
+                progressbar.Bar(),
+                " ",
+                progressbar.Timer(),
+            ]
+            progress = progressbar.ProgressBar(widgets=widgets)
+            self._bar = progress.start(max_value=total_bytes)
         elif written_bytes == total_bytes:
             self._bar.finish()
             self._bar = None

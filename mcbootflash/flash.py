@@ -4,7 +4,7 @@ import argparse
 import logging
 from typing import Union
 
-import progressbar
+import progressbar  # type: ignore[import]
 
 from mcbootflash import BootloaderConnection
 
@@ -23,13 +23,14 @@ def get_parser() -> argparse.ArgumentParser:
         -v, --verbose  (bool,  default=False)
         -q, --quiet    (bool,  default=False)
 
-    These arguments can be overridden by adding a new argument with the same name. For
-    example, an application which only needs to communicate with a specific device with
-    a known serial baudrate could override the 'baudrate' option to make it optional:
+    These arguments can be overridden by adding a new argument with the same option
+    string. For example, an application which only needs to communicate with a specific
+    device with a known serial baudrate could override the 'baudrate' option to make it
+    optional:
 
         from mcbootflash.flash import flash, get_parser
         parser = get_parser()
-        parser.add_argument("--baudrate", default=460800)
+        parser.add_argument("-b", "--baudrate", default=460800)
         flash(parser.parse_args())
     """
     parser = argparse.ArgumentParser(
@@ -43,7 +44,6 @@ def get_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "file",
         type=str,
-        required=True,
         help="An Intel HEX file containing application firmware.",
     )
     parser.add_argument(
