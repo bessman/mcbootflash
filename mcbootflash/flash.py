@@ -90,7 +90,7 @@ def flash(parsed_args: Union[None, argparse.Namespace] = None) -> None:
     if parsed_args.verbose:
         logging.basicConfig(level=logging.DEBUG)
     elif not parsed_args.quiet:
-        logging.basicConfig(level=logging.INFO, format="%(levelname)5s: %(message)s")
+        logging.basicConfig(level=logging.INFO, format="%(message)s")
     else:
         logging.basicConfig(level=logging.ERROR)
 

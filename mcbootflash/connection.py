@@ -66,6 +66,7 @@ class BootloaderConnection(Serial):  # type: ignore # pylint: disable=too-many-a
         ChecksumError
         """
         self.hexfile = IntelHex(hexfile)
+        logger.info(f"Flashing {hexfile}.")
         boot_attrs = BootloaderAttributes(
             *self.read_version(), *self._get_memory_address_range()
         )
@@ -82,10 +83,9 @@ class BootloaderConnection(Serial):  # type: ignore # pylint: disable=too-many-a
             if (segment[0] // 2 in boot_attrs.legal_range) and (
                 segment[1] // 2 in boot_attrs.legal_range
             ):
-                logger.debug(
-                    "Flashing segment "
-                    f"{self.hexfile.segments().index(segment)}, "
-                    f"[{segment[0]:#08x}:{segment[1]:#08x}]."
+                logger.info(
+                    f"Flashing HEX segment {self.hexfile.segments().index(segment)}: "
+                    f"{segment[0] // 2:#08x}:{segment[1] // 2:#08x}."
                 )
                 self._flash_segment(
                     segment,
@@ -94,8 +94,10 @@ class BootloaderConnection(Serial):  # type: ignore # pylint: disable=too-many-a
                 )
             else:
                 logger.debug(
-                    f"Segment {self.hexfile.segments().index(segment)} "
-                    "ignored; not in legal range "
+                    f"HEX segment {self.hexfile.segments().index(segment)} ignored; "
+                    "not in legal range:"
+                )
+                logger.debug(
                     f"([{segment[0] // 2:#08x}:{segment[1] // 2:#08x}] vs. "
                     f"[{boot_attrs.legal_range[0]:#08x}:"
                     f"{boot_attrs.legal_range[-1]:#08x}])."
@@ -158,22 +160,18 @@ class BootloaderConnection(Serial):  # type: ignore # pylint: disable=too-many-a
     ) -> None:
         """Check that response is not an error."""
         if response_packet.command != command_packet.command:
-            logger.error(
-                "Unexpected response.\n"
-                f"Command:  {bytes(command_packet)!r}\n"
-                f"Response: {bytes(response_packet)!r}"
-            )
+            logger.error("Unexpected response:")
+            logger.error(f"Command:  {bytes(command_packet)!r}")
+            logger.error(f"Response: {bytes(response_packet)!r}")
             raise BootloaderError("Unexpected response.")
 
         if (
             not isinstance(response_packet, VersionResponsePacket)
             and response_packet.success != BootResponse.SUCCESS
         ):
-            logger.error(
-                "Command failed:\n"
-                f"Command:  {bytes(command_packet)!r}\n"
-                f"Response: {bytes(response_packet)!r}"
-            )
+            logger.error("Command failed:")
+            logger.error(f"Command:  {bytes(command_packet)!r}")
+            logger.error(f"Response: {bytes(response_packet)!r}")
             raise EXCEPTIONS[response_packet.success]
 
     def read_version(self) -> Tuple[int, int, int, int, int]:
@@ -197,13 +195,10 @@ class BootloaderConnection(Serial):  # type: ignore # pylint: disable=too-many-a
         self.write(bytes(read_version_command))
         read_version_response = VersionResponsePacket.from_serial(self)
         self._check_response(read_version_command, read_version_response)
-        logger.info(
-            "Got bootloader attributes:\n"
-            f"Max packet length: {read_version_response.max_packet_length:#04x}\n"
-            f"Erase size:        {read_version_response.erase_size:#04x}\n"
-            f"Write size:        {read_version_response.write_size:#04x}"
-        )
-
+        logger.info("Got bootloader attributes:")
+        logger.info(f"Max packet length: {read_version_response.max_packet_length}")
+        logger.info(f"Erase size:        {read_version_response.erase_size}")
+        logger.info(f"Write size:        {read_version_response.write_size}")
         return (
             read_version_response.version,
             read_version_response.max_packet_length,
