@@ -343,3 +343,23 @@ def test_check_response_unsupported_command():
     )
     with pytest.raises(UnsupportedCommand):
         BootloaderConnection._check_response(command_packet, response_packet)
+
+
+def test_print_progress_create_bar():
+    boot = BootloaderConnection()
+    boot._print_progress(0, 100)
+    assert boot._bar is not None
+
+
+def test_print_progress_update_bar():
+    boot = BootloaderConnection()
+    boot._print_progress(0, 100)
+    boot._print_progress(50, 100)
+    assert boot._bar.value == 50
+
+
+def test_print_progress_destroy_bar():
+    boot = BootloaderConnection()
+    boot._print_progress(0, 100)
+    boot._print_progress(100, 100)
+    assert boot._bar is None
