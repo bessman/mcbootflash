@@ -137,7 +137,7 @@ class BootloaderConnection(Serial):  # type: ignore # pylint: disable=too-many-a
             widgets = [
                 progressbar.Percentage(),
                 " ",
-                progressbar.Counter(format="(%(value)d / %(max_value)d bytes)"),
+                progressbar.DataSize(),
                 " ",
                 progressbar.Bar(),
                 " ",
