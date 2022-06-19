@@ -2,21 +2,20 @@ import logging
 from dataclasses import dataclass
 from typing import Tuple, Union
 
-from intelhex import IntelHex  # type: ignore[import]
-
 import progressbar  # type: ignore[import]
+from intelhex import IntelHex  # type: ignore[import]
 from serial import Serial  # type: ignore[import]
 
-from mcbootflash.error import BootloaderError, ChecksumError, EXCEPTIONS
+from mcbootflash.error import EXCEPTIONS, BootloaderError, ChecksumError
 from mcbootflash.protocol import (
     FLASH_UNLOCK_KEY,
     BootCommand,
     BootResponse,
     ChecksumPacket,
     CommandPacket,
+    MemoryRangePacket,
     ResponsePacket,
     VersionResponsePacket,
-    MemoryRangePacket,
 )
 
 logger = logging.getLogger(__name__)

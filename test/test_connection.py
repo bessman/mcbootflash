@@ -3,23 +3,21 @@ import mock_serial
 import pytest
 import pytest_mock
 
-from mcbootflash import BootloaderConnection
 from mcbootflash import (
-    BootloaderError,
-    UnsupportedCommand,
+    FLASH_UNLOCK_KEY,
     BadAddress,
     BadLength,
-    VerifyFail,
-    ChecksumError,
-)
-from mcbootflash import (
     BootCommand,
+    BootloaderConnection,
+    BootloaderError,
     BootResponse,
+    ChecksumError,
     ChecksumPacket,
     CommandPacket,
-    FLASH_UNLOCK_KEY,
     MemoryRangePacket,
     ResponsePacket,
+    UnsupportedCommand,
+    VerifyFail,
     VersionResponsePacket,
 )
 

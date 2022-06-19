@@ -7,10 +7,15 @@ legacy_tox_ini = """
 [tox]
 isolated_build = True
 envlist =
+    isort
     black
     prospector
     test
     report
+
+[testenv:isort]
+deps = isort
+commands = isort --check-only .
 
 [testenv:black]
 deps = black
@@ -52,3 +57,6 @@ python =
     3.9: test
     3.10: black, prospector, test, report
 """
+
+[tool.isort]
+profile = "black"

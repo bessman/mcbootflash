@@ -3,7 +3,7 @@ import argparse
 import pytest
 import pytest_mock
 
-from mcbootflash.flash import get_parser, flash
+from mcbootflash.flash import flash, get_parser
 
 
 def test_overwrite_cli_arg():

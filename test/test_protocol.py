@@ -1,18 +1,16 @@
-import pytest
-
 import mock_serial
+import pytest
 from serial import Serial
 
 from mcbootflash import (
+    FLASH_UNLOCK_KEY,
     BootCommand,
     BootResponse,
     CommandPacket,
-    FLASH_UNLOCK_KEY,
     MemoryRangePacket,
     ResponsePacket,
     VersionResponsePacket,
 )
-
 
 command_packet = CommandPacket(
     command=BootCommand.WRITE_FLASH,

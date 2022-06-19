@@ -1,19 +1,19 @@
 from .connection import BootloaderConnection
 from .error import (
-    BootloaderError,
-    UnsupportedCommand,
+    EXCEPTIONS,
     BadAddress,
     BadLength,
-    VerifyFail,
+    BootloaderError,
     ChecksumError,
-    EXCEPTIONS,
+    UnsupportedCommand,
+    VerifyFail,
 )
 from .protocol import (
+    FLASH_UNLOCK_KEY,
     BootCommand,
     BootResponse,
     ChecksumPacket,
     CommandPacket,
-    FLASH_UNLOCK_KEY,
     MemoryRangePacket,
     ResponsePacket,
     VersionResponsePacket,
