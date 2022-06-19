@@ -5,7 +5,7 @@ from serial import Serial
 
 from mcbootflash import (
     BootCommand,
-    BootResponseCode,
+    BootResponse,
     CommandPacket,
     FLASH_UNLOCK_KEY,
     MemoryRangePacket,

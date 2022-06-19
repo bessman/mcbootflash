@@ -10,7 +10,7 @@ from .error import (
 )
 from .protocol import (
     BootCommand,
-    BootResponseCode,
+    BootResponse,
     ChecksumPacket,
     CommandPacket,
     FLASH_UNLOCK_KEY,
@@ -29,7 +29,7 @@ __all__ = [
     "VerifyFail",
     "EXCEPTIONS",
     "BootCommand",
-    "BootResponseCode",
+    "BootResponse",
     "ChecksumPacket",
     "CommandPacket",
     "FLASH_UNLOCK_KEY",

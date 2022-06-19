@@ -14,7 +14,7 @@ from mcbootflash import (
 )
 from mcbootflash import (
     BootCommand,
-    BootResponseCode,
+    BootResponse,
     ChecksumPacket,
     CommandPacket,
     FLASH_UNLOCK_KEY,
@@ -74,7 +74,7 @@ def test_get_memory_address_range(mock_boot, mock_serial):
         send_bytes=bytes(
             MemoryRangePacket(
                 command=BootCommand.GET_MEMORY_ADDRESS_RANGE,
-                success=BootResponseCode.SUCCESS.value,
+                success=BootResponse.SUCCESS.value,
                 **retvals,
             )
         ),
@@ -101,7 +101,7 @@ def test_erase_flash(mock_boot, mock_serial):
             ResponsePacket(
                 command=BootCommand.ERASE_FLASH,
                 **params,
-                success=BootResponseCode.SUCCESS,
+                success=BootResponse.SUCCESS,
             )
         ),
     )
@@ -125,7 +125,7 @@ def test_write_flash(mock_boot, mock_serial):
             ResponsePacket(
                 command=BootCommand.WRITE_FLASH,
                 **params,
-                success=BootResponseCode.SUCCESS,
+                success=BootResponse.SUCCESS,
             )
         ),
     )
@@ -142,7 +142,7 @@ def test_self_verify(mock_boot, mock_serial):
         send_bytes=bytes(
             ResponsePacket(
                 command=BootCommand.SELF_VERIFY,
-                success=BootResponseCode.SUCCESS,
+                success=BootResponse.SUCCESS,
             )
         ),
     )
@@ -162,7 +162,7 @@ def test_get_checksum(mock_boot, mock_serial):
             ChecksumPacket(
                 command=BootCommand.CALC_CHECKSUM,
                 **params,
-                success=BootResponseCode.SUCCESS,
+                success=BootResponse.SUCCESS,
                 checksum=EXPECTED_CHECKSUM,
             )
         ),
@@ -284,7 +284,7 @@ def test_reset(mock_boot, mock_serial):
         receive_bytes=bytes(CommandPacket(command=BootCommand.RESET_DEVICE)),
         send_bytes=bytes(
             ChecksumPacket(
-                command=BootCommand.RESET_DEVICE, success=BootResponseCode.SUCCESS
+                command=BootCommand.RESET_DEVICE, success=BootResponse.SUCCESS
             )
         ),
     )
@@ -312,7 +312,7 @@ def test_check_response_unexpected():
 def test_check_response_bad_address():
     command_packet = CommandPacket(command=BootCommand.ERASE_FLASH)
     response_packet = ChecksumPacket(
-        command=BootCommand.ERASE_FLASH, success=BootResponseCode.BAD_ADDRESS
+        command=BootCommand.ERASE_FLASH, success=BootResponse.BAD_ADDRESS
     )
     with pytest.raises(BadAddress):
         BootloaderConnection._check_response(command_packet, response_packet)
@@ -321,7 +321,7 @@ def test_check_response_bad_address():
 def test_check_response_bad_length():
     command_packet = CommandPacket(command=BootCommand.ERASE_FLASH)
     response_packet = ChecksumPacket(
-        command=BootCommand.ERASE_FLASH, success=BootResponseCode.BAD_LENGTH
+        command=BootCommand.ERASE_FLASH, success=BootResponse.BAD_LENGTH
     )
     with pytest.raises(BadLength):
         BootloaderConnection._check_response(command_packet, response_packet)
@@ -330,7 +330,7 @@ def test_check_response_bad_length():
 def test_check_response_verify_fail():
     command_packet = CommandPacket(command=BootCommand.SELF_VERIFY)
     response_packet = ChecksumPacket(
-        command=BootCommand.SELF_VERIFY, success=BootResponseCode.VERIFY_FAIL
+        command=BootCommand.SELF_VERIFY, success=BootResponse.VERIFY_FAIL
     )
     with pytest.raises(VerifyFail):
         BootloaderConnection._check_response(command_packet, response_packet)
@@ -339,7 +339,7 @@ def test_check_response_verify_fail():
 def test_check_response_unsupported_command():
     command_packet = CommandPacket(command=BootCommand.ERASE_FLASH)
     response_packet = ChecksumPacket(
-        command=BootCommand.ERASE_FLASH, success=BootResponseCode.UNSUPPORTED_COMMAND
+        command=BootCommand.ERASE_FLASH, success=BootResponse.UNSUPPORTED_COMMAND
     )
     with pytest.raises(UnsupportedCommand):
         BootloaderConnection._check_response(command_packet, response_packet)

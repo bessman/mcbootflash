@@ -11,7 +11,7 @@ from mcbootflash.error import BootloaderError, ChecksumError, EXCEPTIONS
 from mcbootflash.protocol import (
     FLASH_UNLOCK_KEY,
     BootCommand,
-    BootResponseCode,
+    BootResponse,
     ChecksumPacket,
     CommandPacket,
     ResponsePacket,
@@ -167,7 +167,7 @@ class BootloaderConnection(Serial):  # type: ignore # pylint: disable=too-many-a
 
         if (
             not isinstance(response_packet, VersionResponsePacket)
-            and response_packet.success != BootResponseCode.SUCCESS
+            and response_packet.success != BootResponse.SUCCESS
         ):
             logger.error(
                 "Command failed:\n"

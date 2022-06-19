@@ -24,7 +24,7 @@ class BootCommand(enum.IntEnum):
     GET_MEMORY_ADDRESS_RANGE = 0x0B
 
 
-class BootResponseCode(enum.IntEnum):
+class BootResponse(enum.IntEnum):
     """Sent by the bootloader in response to a command."""
 
     UNDEFINED = 0x00
@@ -92,7 +92,7 @@ class ResponsePacket(Packet):
     is received instead.
     """
 
-    success: BootResponseCode = BootResponseCode.UNDEFINED
+    success: BootResponse = BootResponse.UNDEFINED
     format: ClassVar = Packet.format + "B"
 
 

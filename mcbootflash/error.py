@@ -1,4 +1,4 @@
-from mcbootflash.protocol import BootResponseCode
+from mcbootflash.protocol import BootResponse
 
 
 class BootloaderError(Exception):
@@ -30,8 +30,8 @@ class ChecksumError(BootloaderError):
 
 
 EXCEPTIONS = {
-    BootResponseCode.UNSUPPORTED_COMMAND: UnsupportedCommand,
-    BootResponseCode.BAD_ADDRESS: BadAddress,
-    BootResponseCode.BAD_LENGTH: BadLength,
-    BootResponseCode.VERIFY_FAIL: VerifyFail,
+    BootResponse.UNSUPPORTED_COMMAND: UnsupportedCommand,
+    BootResponse.BAD_ADDRESS: BadAddress,
+    BootResponse.BAD_LENGTH: BadLength,
+    BootResponse.VERIFY_FAIL: VerifyFail,
 }
