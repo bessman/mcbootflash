@@ -1,6 +1,45 @@
 [build-system]
-requires = ["setuptools"]
-build-backend = "setuptools.build_meta"
+requires = ["flit_core >=3.4,<4"]
+build-backend = "flit_core.buildapi"
+
+[project]
+name = "mcbootflash"
+authors = [{name = "Alexander Bessman", email = "alexander.bessman@gmail.com"}]
+dynamic = ["version", "description"]
+readme = "README.md"
+requires-python = ">=3.7"
+license = {file = "LICENSE"}
+dependencies = [
+    "pyserial",
+    "intelhex",
+    "progressbar2",
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Development Status :: 4 - Beta",
+    "License :: OSI Approved :: MIT License",
+]
+keywords = [
+    "firmware",
+    "flashing",
+    "bootloader",
+    "serial",
+    "uart",
+    "microchip",
+    "pic24",
+    "dspic33",
+    "16-bit",
+]
+
+[project.urls]
+Home = "https://github.com/bessman/mcbootflash"
+
+[project.scripts]
+mcbootflash = "mcbootflash.flash:flash"
 
 [tool.tox]
 legacy_tox_ini = """

@@ -1,3 +1,4 @@
+"""Flash firmware to devices running Microchip's 16-bit bootloader."""
 from .connection import BootloaderConnection
 from .error import (
     EXCEPTIONS,
@@ -37,3 +38,5 @@ __all__ = [
     "ResponsePacket",
     "VersionResponsePacket",
 ]
+
+__version__ = "2.0.0"
