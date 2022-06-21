@@ -81,10 +81,6 @@ deps = coverage
 commands = coverage report
 depends = test
 
-[testenv:build]
-deps = build
-commands = python -m build
-
 [gh-actions]
 python =
     3.7: test
