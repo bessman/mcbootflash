@@ -67,10 +67,6 @@ deps =
     bandit
 commands = prospector .
 
-[testenv:pyroma]
-deps = pyroma
-commands = pyroma .
-
 [testenv:test]
 deps =
     pytest
