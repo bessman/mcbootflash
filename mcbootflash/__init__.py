@@ -22,6 +22,7 @@ from .protocol import (
 )
 
 __all__ = [
+    "FLASH_UNLOCK_KEY",
     "BadAddress",
     "BadLength",
     "BootCommand",
@@ -31,7 +32,6 @@ __all__ = [
     "ChecksumError",
     "ChecksumPacket",
     "CommandPacket",
-    "FLASH_UNLOCK_KEY",
     "McbootflashException",
     "MemoryRangePacket",
     "ResponsePacket",

@@ -28,6 +28,7 @@ from mcbootflash.protocol import (
 
 logger = logging.getLogger(__name__)
 
+__all__ = ["BootloaderConnection"]
 
 _BOOTLOADER_EXCEPTIONS = {
     BootResponse.UNSUPPORTED_COMMAND: UnsupportedCommand,
@@ -54,7 +55,9 @@ class _BootloaderAttributes:
         return range(self.program_start, self.program_end + 1)
 
 
-class BootloaderConnection(Serial):  # type: ignore # pylint: disable=too-many-ancestors
+class BootloaderConnection(
+    Serial,  # type: ignore[misc]
+):  # pylint: disable=too-many-ancestors
     """Communication interface to device running MCC 16-bit bootloader."""
 
     def __init__(self, quiet: bool = False, **kwargs: str):
