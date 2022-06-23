@@ -9,6 +9,7 @@ from .error import (
     UnsupportedCommand,
     VerifyFail,
 )
+from .flashing import flash, get_parser
 from .protocol import (
     FLASH_UNLOCK_KEY,
     BootCommand,
@@ -37,6 +38,8 @@ __all__ = [
     "MemoryRangePacket",
     "ResponsePacket",
     "VersionResponsePacket",
+    "flash",
+    "get_parser",
 ]
 
 __version__ = "2.0.0"

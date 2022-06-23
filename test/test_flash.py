@@ -3,7 +3,7 @@ import argparse
 import pytest
 import pytest_mock
 
-from mcbootflash.flash import flash, get_parser
+from mcbootflash import flash, get_parser
 
 
 def test_overwrite_cli_arg():
@@ -27,17 +27,17 @@ test_namespace = argparse.Namespace(
 
 
 def test_flash(mocker):
-    mocker.patch("mcbootflash.flash.BootloaderConnection")
+    mocker.patch("mcbootflash.flashing.BootloaderConnection")
     flash(test_namespace)
 
 
 def test_flash_quiet(mocker):
-    mocker.patch("mcbootflash.flash.BootloaderConnection")
+    mocker.patch("mcbootflash.flashing.BootloaderConnection")
     test_namespace.quiet = True
     flash(test_namespace)
 
 
 def test_flash_verbose(mocker):
-    mocker.patch("mcbootflash.flash.BootloaderConnection")
+    mocker.patch("mcbootflash.flashing.BootloaderConnection")
     test_namespace.verbose = True
     flash(test_namespace)

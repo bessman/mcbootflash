@@ -8,6 +8,8 @@ import progressbar  # type: ignore[import]
 
 from mcbootflash import BootloaderConnection
 
+__all__ = ["flash", "get_parser"]
+
 
 def get_parser() -> argparse.ArgumentParser:
     """Return a populated ArgumentParser instance.
@@ -28,10 +30,10 @@ def get_parser() -> argparse.ArgumentParser:
     device with a known serial baudrate could override the 'baudrate' option to make it
     optional:
 
-        import mcbootflash.flash
-        parser = mcbootflash.flash.get_parser()
+        import mcbootflash
+        parser = mcbootflash.get_parser()
         parser.add_argument("-b", "--baudrate", default=460800)
-        mcbootflash.flash.flash(parser.parse_args())
+        mcbootflash.flash(parser.parse_args())
     """
     parser = argparse.ArgumentParser(
         prog="mcbootflash",
