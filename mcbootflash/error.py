@@ -1,38 +1,51 @@
-from mcbootflash.protocol import BootResponse
 """Exceptions raised by mcbootflash."""
+__all__ = [
+    "BadAddress",
+    "BadLength",
+    "BootloaderError",
+    "ChecksumError",
+    "McbootflashException",
+    "UnsupportedCommand",
+    "VerifyFail",
+]
 
 
-class BootloaderError(Exception):
-    """Base class for mccflash exceptions.
+class McbootflashException(Exception):
+    """Base class for mcbootflash exceptions."""
 
-    Raised when a negative response code is received and no derived exception
-    applies.
-    """
+
+class BootloaderError(McbootflashException):
+    """Base class for exceptions that map to a specific BootResponse error code."""
 
 
 class UnsupportedCommand(BootloaderError):
-    """Raised if the bootloader does not recognize the most recently sent command."""
+    """Raised if ResponsePacket.success is BootResponse.UNSUPPORTED_COMMAND.
+
+    This means that the bootloader did not recognize the most recently sent command.
+    """
 
 
 class BadAddress(BootloaderError):
-    """Raised if a write operation is attempted outside legal range."""
+    """Raised if ResponsePacket.success is BootResponse.BAD_ADDRESS.
+
+    This means an operation was attempted outside of the program memory range.
+    """
 
 
 class BadLength(BootloaderError):
-    """Raised if the command packet and associated data is longer than permitted."""
+    """Raised if ResponsePacket.success is BootResponse.BAD_LENGTH.
+
+    This means that the size of the command packet plus associated data was greater
+    than permitted.
+    """
 
 
 class VerifyFail(BootloaderError):
-    """Raised if no program is detected in the program memory range."""
+    """Raised if ResponsePacket.success is BootResponse.VERIFY_FAIL.
+
+    This means that no program was detected in the program memory range.
+    """
 
 
-class ChecksumError(BootloaderError):
-    """Raised if the device checksum does not match the written hex file."""
-
-
-EXCEPTIONS = {
-    BootResponse.UNSUPPORTED_COMMAND: UnsupportedCommand,
-    BootResponse.BAD_ADDRESS: BadAddress,
-    BootResponse.BAD_LENGTH: BadLength,
-    BootResponse.VERIFY_FAIL: VerifyFail,
-}
+class ChecksumError(McbootflashException):
+    """Raised in case of mismatch between local and remote checksums."""

@@ -7,7 +7,14 @@ import progressbar  # type: ignore[import]
 from intelhex import IntelHex  # type: ignore[import]
 from serial import Serial  # type: ignore[import]
 
-from mcbootflash.error import EXCEPTIONS, BootloaderError, ChecksumError
+from mcbootflash.error import (
+    BadAddress,
+    BadLength,
+    ChecksumError,
+    McbootflashException,
+    UnsupportedCommand,
+    VerifyFail,
+)
 from mcbootflash.protocol import (
     FLASH_UNLOCK_KEY,
     BootCommand,
@@ -20,6 +27,14 @@ from mcbootflash.protocol import (
 )
 
 logger = logging.getLogger(__name__)
+
+
+_BOOTLOADER_EXCEPTIONS = {
+    BootResponse.UNSUPPORTED_COMMAND: UnsupportedCommand,
+    BootResponse.BAD_ADDRESS: BadAddress,
+    BootResponse.BAD_LENGTH: BadLength,
+    BootResponse.VERIFY_FAIL: VerifyFail,
+}
 
 
 @dataclass
@@ -163,7 +178,7 @@ class BootloaderConnection(Serial):  # type: ignore # pylint: disable=too-many-a
             logger.error("Unexpected response:")
             logger.error(f"Command:  {bytes(command_packet)!r}")
             logger.error(f"Response: {bytes(response_packet)!r}")
-            raise BootloaderError("Unexpected response.")
+            raise McbootflashException("Unexpected response.")
 
         if (
             not isinstance(response_packet, VersionResponsePacket)
@@ -172,7 +187,7 @@ class BootloaderConnection(Serial):  # type: ignore # pylint: disable=too-many-a
             logger.error("Command failed:")
             logger.error(f"Command:  {bytes(command_packet)!r}")
             logger.error(f"Response: {bytes(response_packet)!r}")
-            raise EXCEPTIONS[response_packet.success]
+            raise _BOOTLOADER_EXCEPTIONS[response_packet.success]
 
     def read_version(self) -> Tuple[int, int, int, int, int]:
         """Read bootloader version and some other useful information.

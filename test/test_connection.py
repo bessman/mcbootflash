@@ -14,6 +14,7 @@ from mcbootflash import (
     ChecksumError,
     ChecksumPacket,
     CommandPacket,
+    McbootflashException,
     MemoryRangePacket,
     ResponsePacket,
     UnsupportedCommand,
@@ -303,7 +304,7 @@ def test_check_response():
 def test_check_response_unexpected():
     command_packet = CommandPacket(command=BootCommand.CALC_CHECKSUM)
     response_packet = ChecksumPacket(command=BootCommand.ERASE_FLASH)
-    with pytest.raises(BootloaderError):
+    with pytest.raises(McbootflashException):
         BootloaderConnection._check_response(command_packet, response_packet)
 
 

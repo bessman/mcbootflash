@@ -1,11 +1,11 @@
 """Flash firmware to devices running Microchip's 16-bit bootloader."""
 from .connection import BootloaderConnection
 from .error import (
-    EXCEPTIONS,
     BadAddress,
     BadLength,
     BootloaderError,
     ChecksumError,
+    McbootflashException,
     UnsupportedCommand,
     VerifyFail,
 )
@@ -22,21 +22,21 @@ from .protocol import (
 )
 
 __all__ = [
+    "BadAddress",
+    "BadLength",
+    "BootCommand",
+    "BootResponse",
     "BootloaderConnection",
     "BootloaderError",
     "ChecksumError",
-    "UnsupportedCommand",
-    "BadAddress",
-    "BadLength",
-    "VerifyFail",
-    "EXCEPTIONS",
-    "BootCommand",
-    "BootResponse",
     "ChecksumPacket",
     "CommandPacket",
     "FLASH_UNLOCK_KEY",
+    "McbootflashException",
     "MemoryRangePacket",
     "ResponsePacket",
+    "UnsupportedCommand",
+    "VerifyFail",
     "VersionResponsePacket",
     "flash",
     "get_parser",
