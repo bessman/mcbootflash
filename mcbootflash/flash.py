@@ -28,10 +28,10 @@ def get_parser() -> argparse.ArgumentParser:
     device with a known serial baudrate could override the 'baudrate' option to make it
     optional:
 
-        from mcbootflash.flash import flash, get_parser
-        parser = get_parser()
+        import mcbootflash.flash
+        parser = mcbootflash.flash.get_parser()
         parser.add_argument("-b", "--baudrate", default=460800)
-        flash(parser.parse_args())
+        mcbootflash.flash.flash(parser.parse_args())
     """
     parser = argparse.ArgumentParser(
         prog="mcbootflash",
