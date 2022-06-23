@@ -1,3 +1,4 @@
+# noqa: D100
 import logging
 from dataclasses import dataclass
 from typing import Tuple, Union
@@ -22,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 
 @dataclass
-class BootloaderAttributes:
+class _BootloaderAttributes:
     version: int
     max_packet_length: int
     device_id: int
@@ -33,7 +34,7 @@ class BootloaderAttributes:
 
     @property
     def legal_range(self) -> range:
-        """Return range of address which can be written to."""
+        """Return range of addresses which can be written to."""
         # Final address is legal.
         return range(self.program_start, self.program_end + 1)
 
@@ -66,7 +67,7 @@ class BootloaderConnection(Serial):  # type: ignore # pylint: disable=too-many-a
         """
         self.hexfile = IntelHex(hexfile)
         logger.info(f"Flashing {hexfile}.")
-        boot_attrs = BootloaderAttributes(
+        boot_attrs = _BootloaderAttributes(
             *self.read_version(), *self._get_memory_address_range()
         )
         self._erase_flash(

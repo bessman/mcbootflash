@@ -1,4 +1,5 @@
 from mcbootflash.protocol import BootResponse
+"""Exceptions raised by mcbootflash."""
 
 
 class BootloaderError(Exception):

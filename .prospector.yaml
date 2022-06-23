@@ -1,6 +1,6 @@
 strictness: veryhigh
 test-warnings: false
-doc-warnings: false
+doc-warnings: true
 member-warnings: true
 inherits:
   - default

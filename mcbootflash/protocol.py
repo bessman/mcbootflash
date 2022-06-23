@@ -1,3 +1,4 @@
+"""Definitions and representations for data sent to and from the bootloader."""
 import enum
 import struct
 from dataclasses import asdict, dataclass
@@ -47,7 +48,7 @@ class Packet:
     address: int = 0
     format: ClassVar = "=BH2I"
 
-    def __bytes__(self) -> bytes:
+    def __bytes__(self) -> bytes:  # noqa: D105
         return struct.pack(self.format, *list(asdict(self).values()))
 
     @classmethod
@@ -73,7 +74,7 @@ class CommandPacket(Packet):
 
 @dataclass
 class VersionResponsePacket(Packet):
-    """Packet received in response to a READ_VERSION command."""
+    """Response to a READ_VERSION command."""
 
     version: int = 0
     max_packet_length: int = 0
@@ -97,7 +98,7 @@ class ResponsePacket(Packet):
 
 @dataclass
 class MemoryRangePacket(ResponsePacket):
-    """Packet received in response to a GET_MEMORY_RANGE command."""
+    """Response to GET_MEMORY_RANGE command."""
 
     program_start: int = 0
     program_end: int = 0
@@ -106,7 +107,7 @@ class MemoryRangePacket(ResponsePacket):
 
 @dataclass
 class ChecksumPacket(ResponsePacket):
-    """Response to CALCULATE_CHECKSUM."""
+    """Response to CALCULATE_CHECKSUM command."""
 
     checksum: int = 0
     format: ClassVar = ResponsePacket.format + "H"
