@@ -299,10 +299,10 @@ class BootloaderConnection(
             unlock_sequence=_FLASH_UNLOCK_KEY,
             address=start_address,
         )
+        logger.info(f"Erasing flash area {start_address:#08x}:{end_address:#08x}.")
         self.write(bytes(erase_flash_command))
         erase_flash_response = ResponsePacket.from_serial(self)
         self._check_response(erase_flash_command, erase_flash_response)
-        logger.info(f"Erased flash area {start_address:#08x}:{end_address:#08x}.")
 
     def _erase_unless_empty(
         self, start_address: int, end_address: int, erase_size: int
@@ -344,10 +344,10 @@ class BootloaderConnection(
             unlock_sequence=_FLASH_UNLOCK_KEY,
             address=address,
         )
+        logger.debug(f"Writing {len(data)} bytes to {address:#08x}.")
         self.write(bytes(write_flash_command) + data)
         write_flash_response = ResponsePacket.from_serial(self)
         self._check_response(write_flash_command, write_flash_response)
-        logger.debug(f"Wrote {len(data)} bytes to {address:#08x}.")
 
     def _self_verify(self) -> None:
         self_verify_command = CommandPacket(command=BootCommand.SELF_VERIFY)
