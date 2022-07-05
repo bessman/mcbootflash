@@ -61,7 +61,18 @@ class _BootloaderAttributes:
 class BootloaderConnection(
     Serial,  # type: ignore[misc]
 ):  # pylint: disable=too-many-ancestors
-    """Communication interface to device running MCC 16-bit bootloader."""
+    """Communication interface to device running MCC 16-bit bootloader.
+
+    BootloaderConnection subclasses serial.Serial from pyserial. When creating a new
+    BootloaderConnection instance, you will typically need to specify at least the
+    'port' and 'baudrate' arguments from the parent class. See pyserial's documentation
+    for detailed information about the serial.Serial class.
+
+    Parameters
+    ----------
+    quiet : bool (optional)
+        If true, don't print a progressbar. False by default.
+    """
 
     def __init__(self, quiet: bool = False, **kwargs: str):
         super().__init__(**kwargs)
@@ -254,9 +265,9 @@ class BootloaderConnection(
         erase_range: range, optional
             Address range to erase. By default the entire program memory is erased.
         force : bool, optional
-            By default, flash erase will be skipped if an application is not already
-            present. Set `force` to True to override this and erase even if no program
-            is detected.
+            By default, flash erase will be skipped if no program is detected in the
+            program memory area. Setting `force` to True skips program detection and
+            erases regardless of whether a program is present or not.
         verify : bool, optional
             The ERASE_FLASH command may fail silently if the `unlock_sequence` field of
             the command packet is incorrect. By default, this method verifies that the
@@ -378,6 +389,7 @@ class BootloaderConnection(
         checksum2 = self._get_checksum(address, length)
         if checksum1 != checksum2:
             logger.error(f"Checksum mismatch: {checksum1} != {checksum2}.")
+            logger.error("unlock_sequence field may be incorrect.")
             raise ChecksumError
         logger.debug(f"Checksum OK: {checksum1}.")
 

@@ -47,13 +47,37 @@ _P = TypeVar("_P", bound="Packet")
 
 @dataclass
 class Packet:
-    """Base class for communication packets to and from the bootloader."""
+    """Base class for communication packets to and from the bootloader.
+
+    Attributes
+    ----------
+    command : BootCommand
+        Command code which specifies which command should be executed by the bootloader.
+    data_length : int
+        Meaning depends on value of 'command'-field:
+            WRITE_FLASH: Number of bytes following the command packet.
+            ERASE_FLASH: Number of flash pages to be erased.
+            CALC_CHECKSUM: Number of bytes to checksum.
+        For other commands this field is ignored.
+    unlock_sequence : int
+        Key to unlock flash memory for writing. Write operations (WRITE_FLASH,
+        ERASE_FLASH) will fail SILENTLY if this key is incorrect.
+        NOTE: No error is raised if the key is incorrect. A failed WRITE_FLASH operation
+        can be detected by comparing checksums of the written bytes and the flash area
+        they were written to. A failed ERASE_FLASH operation can be detected by issuing
+        a SELF_VERIFY command. If the erase succeeded, SELF_VERIFY should return
+        VERIFY_FAIL.
+    address : int
+        Address at which to perform command.
+    format : ClassVar[str]
+        Format string for `struct` which specifies types and layout of the data fields.
+    """
 
     command: BootCommand
     data_length: int = 0
     unlock_sequence: int = 0
     address: int = 0
-    format: ClassVar = "=BH2I"
+    format: ClassVar[str] = "=BH2I"
 
     def __bytes__(self) -> bytes:  # noqa: D105
         return struct.pack(self.format, *list(asdict(self).values()))
@@ -81,7 +105,24 @@ class CommandPacket(Packet):
 
 @dataclass
 class VersionResponsePacket(Packet):
-    """Response to a READ_VERSION command."""
+    """Response to a READ_VERSION command.
+
+    Attributes
+    ----------
+    version : int
+        Bootloader version number.
+    max_packet_length : int
+        Maximum number of bytes which can be sent to the bootloader per packet. Includes
+        the size of the packet itself plus associated data.
+    device_id : int
+        A device-specific identifier.
+    erase_size : int
+        Size of a flash erase page in bytes. When erasing flash, the size of the memory
+        area which should be erased is given in number of erase pages.
+    write_size : int
+        Size of a write block in bytes. When writing to flash, the data must align with
+        a write block.
+    """
 
     version: int = 0
     max_packet_length: int = 0
@@ -97,6 +138,11 @@ class ResponsePacket(Packet):
 
     The exception is READ_VERSION, in response to which a VersionResponsePacket
     is received instead.
+
+    Attributes
+    ----------
+    success : BootResponse
+        Success or failure status of the command this packet is sent in response to.
     """
 
     success: BootResponse = BootResponse.UNDEFINED
@@ -105,7 +151,15 @@ class ResponsePacket(Packet):
 
 @dataclass
 class MemoryRangePacket(ResponsePacket):
-    """Response to GET_MEMORY_RANGE command."""
+    """Response to GET_MEMORY_RANGE command.
+
+    Attributes
+    ----------
+    program_start : int
+        Low end of address space to which application firmware can be flashed.
+    program_end : int
+        High end of address space to which application firmware can be flashed.
+    """
 
     program_start: int = 0
     program_end: int = 0
@@ -114,7 +168,13 @@ class MemoryRangePacket(ResponsePacket):
 
 @dataclass
 class ChecksumPacket(ResponsePacket):
-    """Response to CALCULATE_CHECKSUM command."""
+    """Response to CALCULATE_CHECKSUM command.
+
+    Attributes
+    ----------
+    checksum : int
+        Checksum of `data_length` bytes starting from `address`.
+    """
 
     checksum: int = 0
     format: ClassVar = ResponsePacket.format + "H"
