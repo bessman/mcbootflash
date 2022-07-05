@@ -11,7 +11,6 @@ from .error import (
 )
 from .flashing import flash, get_parser
 from .protocol import (
-    FLASH_UNLOCK_KEY,
     BootCommand,
     BootResponse,
     ChecksumPacket,
@@ -22,7 +21,6 @@ from .protocol import (
 )
 
 __all__ = [
-    "FLASH_UNLOCK_KEY",
     "BadAddress",
     "BadLength",
     "BootCommand",

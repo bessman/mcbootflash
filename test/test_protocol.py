@@ -3,7 +3,6 @@ import pytest
 from serial import Serial
 
 from mcbootflash import (
-    FLASH_UNLOCK_KEY,
     BootCommand,
     BootResponse,
     CommandPacket,
@@ -11,11 +10,12 @@ from mcbootflash import (
     ResponsePacket,
     VersionResponsePacket,
 )
+from mcbootflash.connection import _FLASH_UNLOCK_KEY
 
 command_packet = CommandPacket(
     command=BootCommand.WRITE_FLASH,
     data_length=8,
-    unlock_sequence=FLASH_UNLOCK_KEY,
+    unlock_sequence=_FLASH_UNLOCK_KEY,
     address=0x1234,
 )
 command_bytes = b"\x02\x08\x00U\x00\xaa\x004\x12\x00\x00"

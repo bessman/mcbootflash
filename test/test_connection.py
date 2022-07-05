@@ -4,7 +4,6 @@ import pytest
 import pytest_mock
 
 from mcbootflash import (
-    FLASH_UNLOCK_KEY,
     BadAddress,
     BadLength,
     BootCommand,
@@ -21,6 +20,7 @@ from mcbootflash import (
     VerifyFail,
     VersionResponsePacket,
 )
+from mcbootflash.connection import _FLASH_UNLOCK_KEY
 
 
 @pytest.fixture
@@ -91,7 +91,7 @@ def test_erase_flash(mock_boot, mock_serial):
     erase_size = 0x0800
     params = {
         "data_length": int((end_address - start_address) // erase_size),
-        "unlock_sequence": FLASH_UNLOCK_KEY,
+        "unlock_sequence": _FLASH_UNLOCK_KEY,
         "address": start_address,
     }
     mock_serial.stub(
@@ -115,7 +115,7 @@ def test_write_flash(mock_boot, mock_serial):
     data = bytes(range(8))
     params = {
         "data_length": len(data),
-        "unlock_sequence": FLASH_UNLOCK_KEY,
+        "unlock_sequence": _FLASH_UNLOCK_KEY,
         "address": address,
     }
     mock_serial.stub(
