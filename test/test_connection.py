@@ -85,7 +85,7 @@ def mock_get_memory_address_range(*args, **kwargs):
     return list(GET_MEMORY_ADDRESS_RANGE_RETVALS.values())
 
 
-def test_erase_flash(mock_boot, mock_serial):
+def test_erase_flash_low_level(mock_boot, mock_serial):
     start_address = 0x2000
     end_address = 0x4000
     erase_size = 0x0800
@@ -108,6 +108,39 @@ def test_erase_flash(mock_boot, mock_serial):
     # are bootloader-side. The only thing we can test is that no unexpected
     # exception occurs, hence no assert.
     mock_boot._erase_flash(start_address, end_address, erase_size)
+
+
+def test_erase_flash(mock_boot, mocker):
+    mocker.patch.object(
+        mock_boot,
+        "_get_memory_address_range",
+        mock_get_memory_address_range,
+    )
+    mocker.patch.object(
+        mock_boot,
+        "_erase_flash",
+    )
+    mocker.patch.object(
+        mock_boot,
+        "_self_verify",
+    )
+    mock_boot.erase_flash(erase_size=1, force=True)
+
+
+def test_erase_flash_empty(mock_boot, mocker):
+    def verify_fail():
+        raise VerifyFail
+
+    mocker.patch.object(mock_boot, "_self_verify", verify_fail)
+    mock_boot._erase_unless_empty(0, 0, 0)
+
+
+def test_erase_success(mock_boot, mocker):
+    def verify_fail():
+        raise VerifyFail
+
+    mocker.patch.object(mock_boot, "_self_verify", verify_fail)
+    mock_boot._verify_erase()
 
 
 def test_write_flash(mock_boot, mock_serial):

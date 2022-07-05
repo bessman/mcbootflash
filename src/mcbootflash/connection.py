@@ -91,11 +91,7 @@ class BootloaderConnection(
         boot_attrs = _BootloaderAttributes(
             *self.read_version(), *self._get_memory_address_range()
         )
-        self._erase_flash(
-            boot_attrs.program_start,
-            boot_attrs.program_end,
-            boot_attrs.erase_size,
-        )
+        self.erase_flash(boot_attrs.erase_size, boot_attrs.legal_range)
 
         for segment in self._hexfile.segments():
             # Since the MCU uses 16-bit instructions, each "address" in the
@@ -241,6 +237,48 @@ class BootloaderConnection(
 
         return mem_range_response.program_start, mem_range_response.program_end
 
+    def erase_flash(
+        self,
+        erase_size: Union[None, int] = None,
+        erase_range: Union[None, range] = None,
+        force: bool = False,
+        verify: bool = True,
+    ) -> None:
+        """Erase program memory area.
+
+        Parameters
+        ----------
+        erase_size: int, optional
+            Size of an erase flash page in bytes. Read from connected device if not
+            specified.
+        erase_range: range, optional
+            Address range to erase. By default the entire program memory is erased.
+        force : bool, optional
+            By default, flash erase will be skipped if an application is not already
+            present. Set `force` to True to override this and erase even if no program
+            is detected.
+        verify : bool, optional
+            The ERASE_FLASH command may fail silently if the `unlock_sequence` field of
+            the command packet is incorrect. By default, this method verifies that the
+            erase was successful by checking that no application is detected after the
+            erase. Set `verify` to False to skip this check.
+        """
+        erase_size = erase_size or self.read_version()[3]
+
+        if erase_range is None:
+            start_address, end_address = self._get_memory_address_range()
+        else:
+            start_address, end_address = erase_range[0], erase_range[-1]
+
+        if force:
+            self._erase_flash(start_address, end_address, erase_size)
+            erased = True
+        else:
+            erased = self._erase_unless_empty(start_address, end_address, erase_size)
+
+        if erased and verify:
+            self._verify_erase()
+
     def _erase_flash(
         self, start_address: int, end_address: int, erase_size: int
     ) -> None:
@@ -254,6 +292,39 @@ class BootloaderConnection(
         erase_flash_response = ResponsePacket.from_serial(self)
         self._check_response(erase_flash_command, erase_flash_response)
         logger.info(f"Erased flash area {start_address:#08x}:{end_address:#08x}.")
+
+    def _erase_unless_empty(
+        self, start_address: int, end_address: int, erase_size: int
+    ) -> bool:
+        try:
+            # Program memory may be empty, which should not be logged as an error.
+            logger.disabled = True
+            self._self_verify()
+        except VerifyFail:
+            logger.disabled = False
+            logger.info("No application detected, skipping flash erase.")
+            return False
+        finally:
+            logger.disabled = False
+
+        logger.info("Existing application detected, erasing...")
+        self._erase_flash(start_address, end_address, erase_size)
+        return True
+
+    def _verify_erase(self) -> None:
+        try:
+            logger.disabled = True
+            self._self_verify()
+        except VerifyFail:
+            logger.disabled = False
+            logger.info("No application detected; flash erase successful.")
+            return
+        finally:
+            logger.disabled = False
+
+        logger.error("An application was detected; flash erase failed.")
+        logger.error("unlock_sequence field may be incorrect.")
+        raise McbootflashException("Flash erase failed.")
 
     def _write_flash(self, address: int, data: bytes) -> None:
         write_flash_command = CommandPacket(
