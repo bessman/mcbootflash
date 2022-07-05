@@ -178,8 +178,8 @@ def mock_get_incorrect_checksum(*args):
 
 
 def test_calculate_checksum(mock_boot):
-    mock_boot.hexfile = intelhex.IntelHex("test/test.hex")
-    segments = mock_boot.hexfile.segments()
+    mock_boot._hexfile = intelhex.IntelHex("test/test.hex")
+    segments = mock_boot._hexfile.segments()
     address = segments[0][0]
     length = segments[0][1] - segments[0][0]
     assert mock_boot._calculate_checksum(address, length) == EXPECTED_CHECKSUM
@@ -223,13 +223,13 @@ def test_checksum_fail(mock_boot, mocker):
 
 
 def test_flash_segment(mock_boot, mocker):
-    mock_boot.hexfile = HEXFILE
+    mock_boot._hexfile = HEXFILE
     max_packet_length = 0x13
     write_size = 8
     mocker.patch.object(BootloaderConnection, "_write_flash")
     mocker.patch.object(BootloaderConnection, "_checksum")
     mock_boot._flash_segment(
-        mock_boot.hexfile.segments()[0], max_packet_length, write_size
+        mock_boot._hexfile.segments()[0], max_packet_length, write_size
     )
     mock_boot._checksum.assert_called()
 

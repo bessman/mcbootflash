@@ -65,8 +65,8 @@ class BootloaderConnection(
 
     def __init__(self, quiet: bool = False, **kwargs: str):
         super().__init__(**kwargs)
-        self.quiet = quiet
-        self.hexfile: Union[None, IntelHex] = None
+        self._quiet = quiet
+        self._hexfile: Union[None, IntelHex] = None
         self._bar: Union[None, progressbar.Bar] = None
 
     def flash(self, hexfile: str) -> None:
@@ -86,7 +86,7 @@ class BootloaderConnection(
         VerifyFail
         ChecksumError
         """
-        self.hexfile = IntelHex(hexfile)
+        self._hexfile = IntelHex(hexfile)
         logger.info(f"Flashing {hexfile}.")
         boot_attrs = _BootloaderAttributes(
             *self.read_version(), *self._get_memory_address_range()
@@ -97,7 +97,7 @@ class BootloaderConnection(
             boot_attrs.erase_size,
         )
 
-        for segment in self.hexfile.segments():
+        for segment in self._hexfile.segments():
             # Since the MCU uses 16-bit instructions, each "address" in the
             # (8-bit) hex file is actually only half an address. Therefore, we
             # need to divide by two to get the actual address.
@@ -105,7 +105,7 @@ class BootloaderConnection(
                 segment[1] // 2 in boot_attrs.legal_range
             ):
                 logger.info(
-                    f"Flashing HEX segment {self.hexfile.segments().index(segment)}: "
+                    f"Flashing HEX segment {self._hexfile.segments().index(segment)}: "
                     f"{segment[0] // 2:#08x}:{segment[1] // 2:#08x}."
                 )
                 self._flash_segment(
@@ -115,7 +115,7 @@ class BootloaderConnection(
                 )
             else:
                 logger.debug(
-                    f"HEX segment {self.hexfile.segments().index(segment)} ignored; "
+                    f"HEX segment {self._hexfile.segments().index(segment)} ignored; "
                     "not in legal range:"
                 )
                 logger.debug(
@@ -143,7 +143,7 @@ class BootloaderConnection(
         for addr in range(segment[0] // 2, segment[1] // 2, chunk_size):
             hex_low = addr * 2
             hex_high = (addr + chunk_size) * 2
-            chunk = self.hexfile[hex_low:hex_high]  # type: ignore[index]
+            chunk = self._hexfile[hex_low:hex_high]  # type: ignore[index]
             self._write_flash(addr, chunk.tobinstr())
             self._checksum(addr, len(chunk))
             written_bytes += len(chunk)
@@ -151,7 +151,7 @@ class BootloaderConnection(
                 f"{written_bytes} bytes written of {total_bytes} "
                 f"({written_bytes / total_bytes * 100:.2f}%)."
             )
-            if not self.quiet:
+            if not self._quiet:
                 pass
             self._print_progress(written_bytes, total_bytes)
 
@@ -288,7 +288,7 @@ class BootloaderConnection(
     def _calculate_checksum(self, address: int, length: int) -> int:
         checksum = 0
         for i in range(address, address + length, 4):
-            data = self.hexfile[i : i + 4].tobinstr()  # type: ignore[index]
+            data = self._hexfile[i : i + 4].tobinstr()  # type: ignore[index]
             checksum += int.from_bytes(data, byteorder="little") & 0xFFFF
             checksum += (int.from_bytes(data, byteorder="little") >> 16) & 0xFF
         return checksum & 0xFFFF
