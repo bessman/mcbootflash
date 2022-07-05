@@ -182,10 +182,10 @@ class BootloaderConnection(
             logger.error(f"Response: {bytes(response_packet)!r}")
             raise McbootflashException("Unexpected response.")
 
-        if (
-            not isinstance(response_packet, VersionResponsePacket)
-            and response_packet.success != BootResponse.SUCCESS
-        ):
+        if isinstance(response_packet, VersionResponsePacket):
+            return
+
+        if response_packet.success != BootResponse.SUCCESS:
             logger.error("Command failed:")
             logger.error(f"Command:  {bytes(command_packet)!r}")
             logger.error(f"Response: {bytes(response_packet)!r}")
