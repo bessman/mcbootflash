@@ -4,7 +4,9 @@ __all__ = [
     "BadLength",
     "BootloaderError",
     "ChecksumError",
+    "FlashEraseFail",
     "McbootflashException",
+    "UnexpectedResponse",
     "UnsupportedCommand",
     "VerifyFail",
 ]
@@ -49,3 +51,11 @@ class VerifyFail(BootloaderError):
 
 class ChecksumError(McbootflashException):
     """Raised in case of mismatch between local and remote checksums."""
+
+
+class FlashEraseFail(McbootflashException):
+    """Raised if a program is still detected in flash memory after an erase attempt."""
+
+
+class UnexpectedResponse(McbootflashException):
+    """Raised if the command fields of a Command/Response packet pair do not match."""

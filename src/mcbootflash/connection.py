@@ -11,7 +11,8 @@ from mcbootflash.error import (
     BadAddress,
     BadLength,
     ChecksumError,
-    McbootflashException,
+    FlashEraseFail,
+    UnexpectedResponse,
     UnsupportedCommand,
     VerifyFail,
 )
@@ -90,12 +91,13 @@ class BootloaderConnection(
 
         Raises
         ------
-        BootloaderError
         UnsupportedCommand
         BadAddress
         BadLength
         VerifyFail
         ChecksumError
+        FlashEraseFail,
+        UnexpectedResponse,
         """
         self._hexfile = IntelHex(hexfile)
         logger.info(f"Flashing {hexfile}.")
@@ -188,10 +190,10 @@ class BootloaderConnection(
     ) -> None:
         """Check that response is not an error."""
         if response_packet.command != command_packet.command:
-            logger.error("Unexpected response:")
+            logger.error("Response does not match the most recently sent command:")
             logger.error(f"Command:  {bytes(command_packet)!r}")
             logger.error(f"Response: {bytes(response_packet)!r}")
-            raise McbootflashException("Unexpected response.")
+            raise UnexpectedResponse
 
         if isinstance(response_packet, VersionResponsePacket):
             return
@@ -333,9 +335,9 @@ class BootloaderConnection(
         finally:
             logger.disabled = False
 
-        logger.error("An application was detected; flash erase failed.")
-        logger.error("unlock_sequence field may be incorrect.")
-        raise McbootflashException("Flash erase failed.")
+        logger.error("An application was detected; flash erase failed")
+        logger.error("unlock_sequence field may be incorrect")
+        raise FlashEraseFail
 
     def _write_flash(self, address: int, data: bytes) -> None:
         write_flash_command = CommandPacket(
