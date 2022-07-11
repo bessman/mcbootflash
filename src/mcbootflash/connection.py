@@ -1,7 +1,6 @@
 # noqa: D100
 import logging
-from dataclasses import dataclass
-from typing import Tuple, Union
+from typing import List, Tuple, Union
 
 import progressbar  # type: ignore[import]
 from intelhex import IntelHex  # type: ignore[import]
@@ -37,22 +36,6 @@ _BOOTLOADER_EXCEPTIONS = {
     BootResponse.VERIFY_FAIL: VerifyFail,
 }
 
-@dataclass
-class _BootloaderAttributes:
-    version: int
-    max_packet_length: int
-    device_id: int
-    erase_size: int
-    write_size: int
-    program_start: int
-    program_end: int
-
-    @property
-    def legal_range(self) -> range:
-        """Return range of addresses which can be written to."""
-        # Final address is legal.
-        return range(self.program_start, self.program_end + 1)
-
 
 class BootloaderConnection(
     Serial,  # type: ignore[misc]
@@ -77,7 +60,6 @@ class BootloaderConnection(
     def __init__(self, quiet: bool = False, **kwargs: str):
         super().__init__(**kwargs)
         self._quiet = quiet
-        self._hexfile: Union[None, IntelHex] = None
         self._bar: Union[None, progressbar.Bar] = None
 
     def flash(self, hexfile: str) -> None:
@@ -86,7 +68,7 @@ class BootloaderConnection(
         Parameters
         ----------
         hexfile : str
-            An Intel HEX-file containing application firmware.
+            Path to a HEX-file containing application firmware.
 
         Raises
         ------
@@ -98,70 +80,79 @@ class BootloaderConnection(
         FlashEraseFail,
         UnexpectedResponse,
         """
-        self._hexfile = IntelHex(hexfile)
-        logger.info(f"Flashing {hexfile}.")
-        boot_attrs = _BootloaderAttributes(
-            *self.read_version(), *self._get_memory_address_range()
-        )
-        self.erase_flash(boot_attrs.erase_size, boot_attrs.legal_range)
+        path = hexfile
+        hexfile = IntelHex(path)
+        logger.info("Connecting to bootloader...")
+        _, max_packet_length, _, erase_size, write_size = self.read_version()
+        program_memory = range(*self._get_memory_address_range())
+        logger.info("Connected")
+        segments = self._get_segments_in_range(hexfile, program_memory)
 
-        for segment in self._hexfile.segments():
-            # Since the MCU uses 16-bit instructions, each "address" in the
-            # (8-bit) hex file is actually only half an address. Therefore, we
-            # need to divide by two to get the actual address.
-            if (segment[0] // 2 in boot_attrs.legal_range) and (
-                segment[1] // 2 in boot_attrs.legal_range
-            ):
-                logger.info(
-                    f"Flashing HEX segment {self._hexfile.segments().index(segment)}: "
-                    f"{segment[0] // 2:#08x}:{segment[1] // 2:#08x}."
-                )
-                self._flash_segment(
-                    segment,
-                    boot_attrs.max_packet_length,
-                    boot_attrs.write_size,
-                )
-            else:
+        if not segments:
+            logger.warning("HEX-file contains no suitable data; aborting")
+            return
+
+        logger.info(f"Flashing {path}")
+        self.erase_flash(erase_size, program_memory)
+        chunk_size = max_packet_length - CommandPacket.get_size()
+        chunk_size -= chunk_size % write_size
+        total_bytes = sum(len(segment) for segment in segments)
+        written_bytes = 0
+
+        for segment in segments:
+            # If (segment[1] - segment[0]) % write_size != 0, writing the final chunk
+            # will fail. However, I have seen no example where it's not, so not adding
+            # code to check for now (YAGNI)
+            chunks = self._chunk(segment, chunk_size)
+            logger.debug(f"Flashing segment {segments.index(segment)}")
+
+            for chunk in chunks:
+                self._write_flash(chunk)
+                written_bytes += len(chunk)
                 logger.debug(
-                    f"HEX segment {self._hexfile.segments().index(segment)} ignored; "
-                    "not in legal range:"
+                    f"{written_bytes} bytes written of {total_bytes} "
+                    f"({written_bytes / total_bytes * 100:.2f}%)"
                 )
-                logger.debug(
-                    f"([{segment[0] // 2:#08x}:{segment[1] // 2:#08x}] vs. "
-                    f"[{boot_attrs.legal_range[0]:#08x}:"
-                    f"{boot_attrs.legal_range[-1]:#08x}])."
-                )
+                self._checksum(chunk)
+
+                if not self._quiet:
+                    self._print_progress(written_bytes, total_bytes)
 
         self._self_verify()
 
-    def _flash_segment(
-        self,
-        segment: Tuple[int, int],
-        max_packet_length: int,
-        write_size: int,
-    ) -> None:
-        chunk_size = max_packet_length - CommandPacket.get_size()
-        chunk_size -= chunk_size % write_size
-        chunk_size //= 2
-        total_bytes = segment[1] - segment[0]
-        written_bytes = 0
-        # If (segment[1] - segment[0]) % write_size != 0, writing the final
-        # chunk will fail. However, I have seen no example where it's not,
-        # so not adding code to check for now (YAGNI).
-        for addr in range(segment[0] // 2, segment[1] // 2, chunk_size):
-            hex_low = addr * 2
-            hex_high = (addr + chunk_size) * 2
-            chunk = self._hexfile[hex_low:hex_high]  # type: ignore[index]
-            self._write_flash(addr, chunk.tobinstr())
-            self._checksum(addr, len(chunk))
-            written_bytes += len(chunk)
-            logger.debug(
-                f"{written_bytes} bytes written of {total_bytes} "
-                f"({written_bytes / total_bytes * 100:.2f}%)."
-            )
-            if not self._quiet:
-                pass
-            self._print_progress(written_bytes, total_bytes)
+    @staticmethod
+    def _get_segments_in_range(
+        hexfile: IntelHex, program_memory: range
+    ) -> List[IntelHex]:
+        segments = []
+
+        for addr_range in hexfile.segments():
+            # Since the MCU uses 16-bit instructions, each "address" in the (8-bit) hex
+            # file is actually only half an address. Therefore, we need to divide by two
+            # to get the actual address.
+            if all(addr >> 1 in program_memory for addr in addr_range):
+                logger.debug(
+                    "Adding HEX segment {i}: "
+                    f"{addr_range[0] >> 1:#08x}:{addr_range[1] >> 1:#08x}"
+                )
+                segments.append(hexfile[addr_range[0] : addr_range[1]])
+            else:
+                logger.debug(
+                    f"HEX segment {hexfile.segments().index(addr_range)} ignored; "
+                    "not in program memory range:"
+                )
+                logger.debug(
+                    f"([{addr_range[0] >> 1:#08x}:{addr_range[1] >> 1:#08x}] vs. "
+                    f"[{program_memory[0]:#08x}:"
+                    f"{program_memory[-1]:#08x}])"
+                )
+
+        return segments
+
+    def _chunk(self, hexfile: IntelHex, size: int) -> List[IntelHex]:
+        start = hexfile.minaddr()
+        stop = hexfile.maxaddr()
+        return [hexfile[i : i + size] for i in range(start, stop, size)]
 
     def _print_progress(self, written_bytes: int, total_bytes: int) -> None:
         if self._bar is None:
@@ -246,7 +237,6 @@ class BootloaderConnection(
             f"{mem_range_response.program_start:#08x}:"
             f"{mem_range_response.program_end:#08x}."
         )
-
         return mem_range_response.program_start, mem_range_response.program_end
 
     def erase_flash(
@@ -338,15 +328,15 @@ class BootloaderConnection(
         logger.error("unlock_sequence field may be incorrect")
         raise FlashEraseFail
 
-    def _write_flash(self, address: int, data: bytes) -> None:
+    def _write_flash(self, data: IntelHex) -> None:
         write_flash_command = CommandPacket(
             command=BootCommand.WRITE_FLASH,
             data_length=len(data),
-            address=address,
             unlock_sequence=self._FLASH_UNLOCK_KEY,
+            address=data.minaddr() >> 1,
         )
-        logger.debug(f"Writing {len(data)} bytes to {address:#08x}.")
-        self.write(bytes(write_flash_command) + data)
+        logger.debug(f"Writing {len(data)} bytes to {data.minaddr():#08x}")
+        self.write(bytes(write_flash_command) + data.tobinstr())
         write_flash_response = ResponsePacket.from_serial(self)
         self._check_response(write_flash_command, write_flash_response)
 
@@ -368,15 +358,21 @@ class BootloaderConnection(
         self._check_response(calculcate_checksum_command, calculate_checksum_response)
         return calculate_checksum_response.checksum
 
-    def _calculate_checksum(self, address: int, length: int) -> int:
+    @staticmethod
+    def _calculate_checksum(data: IntelHex) -> int:
         checksum = 0
-        for i in range(address, address + length, 4):
-            data = self._hexfile[i : i + 4].tobinstr()  # type: ignore[index]
-            checksum += int.from_bytes(data, byteorder="little") & 0xFFFF
-            checksum += (int.from_bytes(data, byteorder="little") >> 16) & 0xFF
+        start = data.minaddr()
+        stop = start + len(data)
+        step = 4
+
+        for i in range(start, stop, step):
+            databytes = data[i : i + step].tobinstr()
+            checksum += int.from_bytes(databytes, byteorder="little") & 0xFFFF
+            checksum += (int.from_bytes(databytes, byteorder="little") >> 16) & 0xFF
+
         return checksum & 0xFFFF
 
-    def _checksum(self, address: int, length: int) -> None:
+    def _checksum(self, hexfile: IntelHex) -> None:
         """Compare checksums calculated locally and onboard device.
 
         Parameters
@@ -386,13 +382,15 @@ class BootloaderConnection(
         length : int
             Number of bytes to checksum.
         """
-        checksum1 = self._calculate_checksum(address * 2, length)
-        checksum2 = self._get_checksum(address, length)
+        checksum1 = self._calculate_checksum(hexfile)
+        checksum2 = self._get_checksum(hexfile.minaddr() >> 1, len(hexfile))
+
         if checksum1 != checksum2:
-            logger.error(f"Checksum mismatch: {checksum1} != {checksum2}.")
-            logger.error("unlock_sequence field may be incorrect.")
+            logger.error(f"Checksum mismatch: {checksum1} != {checksum2}")
+            logger.error("unlock_sequence field may be incorrect")
             raise ChecksumError
-        logger.debug(f"Checksum OK: {checksum1}.")
+
+        logger.debug(f"Checksum OK: {checksum1}")
 
     def reset(self) -> None:
         """Reset device."""
