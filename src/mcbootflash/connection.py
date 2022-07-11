@@ -1,4 +1,5 @@
 # noqa: D100
+import json
 import logging
 from typing import List, Tuple, Union
 
@@ -59,8 +60,54 @@ class BootloaderConnection(
 
     def __init__(self, quiet: bool = False, **kwargs: str):
         super().__init__(**kwargs)
+        self._wlog: List[List[int]] = []
+        self._rlog: List[List[int]] = []
         self._quiet = quiet
         self._bar: Union[None, progressbar.Bar] = None
+
+    def write(self, data: bytes) -> int:
+        """Record serial traffic before passing data through to super.
+
+        Parameters
+        ----------
+        data : bytes
+            Data to write to the serial port.
+
+        Returns
+        -------
+        int
+            Number of bytes written.
+        """
+        self._wlog.append(list(data))
+        return super().write(data)  # type: ignore[no-any-return]
+
+    def read(self, size: int = 1) -> bytes:
+        """Record incoming serial traffic.
+
+        Parameters
+        ----------
+        size : int, optional
+            Number of bytes to read from the serial port. Default is 1.
+
+        Returns
+        -------
+        bytes
+            Read bytes.
+        """
+        data = super().read(size)
+        self._rlog.append(list(data))
+        return data  # type: ignore[no-any-return]
+
+    def dump_log(self, fname: str) -> None:
+        """Write serial traffic log to a JSON file.
+
+        Parameters
+        ----------
+        fname : str
+            Name of file to write traffic log to.
+        """
+        with open(fname, "w", encoding="utf-8") as filepointer:
+            json.dump({"tx": self._wlog, "rx": self._rlog}, filepointer)
 
     def flash(self, hexfile: str) -> None:
         """Flash application firmware.
