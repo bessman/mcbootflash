@@ -94,7 +94,7 @@ def flash(parsed_args: Union[None, argparse.Namespace] = None) -> None:
     elif not parsed_args.quiet:
         logging.basicConfig(level=logging.INFO, format="%(message)s")
     else:
-        logging.basicConfig(level=logging.ERROR)
+        logging.basicConfig(level=logging.WARNING)
 
     boot = BootloaderConnection(
         port=parsed_args.port,

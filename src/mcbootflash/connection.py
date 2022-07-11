@@ -215,10 +215,11 @@ class BootloaderConnection(
         self.write(bytes(read_version_command))
         read_version_response = VersionResponsePacket.from_serial(self)
         self._check_response(read_version_command, read_version_response)
-        logger.info("Got bootloader attributes:")
-        logger.info(f"Max packet length: {read_version_response.max_packet_length}")
-        logger.info(f"Erase size:        {read_version_response.erase_size}")
-        logger.info(f"Write size:        {read_version_response.write_size}")
+        logger.debug("Got bootloader attributes:")
+        logger.debug(f"Max packet length: {read_version_response.max_packet_length}")
+        logger.debug(f"Erase size:        {read_version_response.erase_size}")
+        logger.debug(f"Write size:        {read_version_response.write_size}")
+
         return (
             read_version_response.version,
             read_version_response.max_packet_length,
@@ -232,10 +233,10 @@ class BootloaderConnection(
         self.write(bytes(mem_range_command))
         mem_range_response = MemoryRangePacket.from_serial(self)
         self._check_response(mem_range_command, mem_range_response)
-        logger.info(
+        logger.debug(
             "Got program memory range: "
             f"{mem_range_response.program_start:#08x}:"
-            f"{mem_range_response.program_end:#08x}."
+            f"{mem_range_response.program_end:#08x}"
         )
         return mem_range_response.program_start, mem_range_response.program_end
 
@@ -290,7 +291,7 @@ class BootloaderConnection(
             unlock_sequence=self._FLASH_UNLOCK_KEY,
             address=start_address,
         )
-        logger.info(f"Erasing flash area {start_address:#08x}:{end_address:#08x}.")
+        logger.debug(f"Erasing addresses {start_address:#08x}:{end_address:#08x}")
         self.write(bytes(erase_flash_command))
         erase_flash_response = ResponsePacket.from_serial(self)
         self._check_response(erase_flash_command, erase_flash_response)
@@ -304,7 +305,7 @@ class BootloaderConnection(
             self._self_verify()
         except VerifyFail:
             logger.disabled = False
-            logger.info("No application detected, skipping flash erase.")
+            logger.info("No application detected, skipping flash erase")
             return False
         finally:
             logger.disabled = False
@@ -319,7 +320,7 @@ class BootloaderConnection(
             self._self_verify()
         except VerifyFail:
             logger.disabled = False
-            logger.info("No application detected; flash erase successful.")
+            logger.info("No application detected; flash erase successful")
             return
         finally:
             logger.disabled = False
@@ -345,7 +346,7 @@ class BootloaderConnection(
         self.write(bytes(self_verify_command))
         self_verify_response = ResponsePacket.from_serial(self)
         self._check_response(self_verify_command, self_verify_response)
-        logger.info("Self verify OK.")
+        logger.info("Self verify OK")
 
     def _get_checksum(self, address: int, length: int) -> int:
         calculcate_checksum_command = CommandPacket(
@@ -398,7 +399,7 @@ class BootloaderConnection(
         self.write(bytes(reset_command))
         reset_response = ResponsePacket.from_serial(self)
         self._check_response(reset_command, reset_response)
-        logger.info("Device reset.")
+        logger.info("Device reset")
 
     def _read_flash(self) -> None:
         raise NotImplementedError
