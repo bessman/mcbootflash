@@ -71,10 +71,9 @@ commands = prospector .
 usedevelop = True
 deps =
     pytest
-    pytest_mock
     mock_serial
     coverage
-commands = coverage run -m pytest
+commands = coverage run -m pytest test/test.py
 
 [testenv:report]
 deps = coverage
