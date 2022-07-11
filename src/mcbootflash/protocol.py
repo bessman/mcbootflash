@@ -129,7 +129,7 @@ class VersionResponsePacket(Packet):
     device_id: int = 0
     erase_size: int = 0
     write_size: int = 0
-    format: ClassVar = Packet.format + "2H2xH2x2H12x"
+    format: ClassVar[str] = Packet.format + "2H2xH2x2H12x"
 
 
 @dataclass
@@ -146,7 +146,7 @@ class ResponsePacket(Packet):
     """
 
     success: BootResponse = BootResponse.UNDEFINED
-    format: ClassVar = Packet.format + "B"
+    format: ClassVar[str] = Packet.format + "B"
 
 
 @dataclass
@@ -163,7 +163,7 @@ class MemoryRangePacket(ResponsePacket):
 
     program_start: int = 0
     program_end: int = 0
-    format: ClassVar = ResponsePacket.format + "2I"
+    format: ClassVar[str] = ResponsePacket.format + "2I"
 
 
 @dataclass
@@ -177,4 +177,4 @@ class ChecksumPacket(ResponsePacket):
     """
 
     checksum: int = 0
-    format: ClassVar = ResponsePacket.format + "H"
+    format: ClassVar[str] = ResponsePacket.format + "H"
