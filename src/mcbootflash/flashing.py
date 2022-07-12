@@ -116,6 +116,8 @@ def flash(parsed_args: Union[None, argparse.Namespace] = None) -> None:
     try:
         boot.flash(hexfile=parsed_args.file)
     except McbootflashException as exc:
-        logging.error(f"{type(exc).__name__}: {exc}")
+        logging.error(
+            f"{type(exc).__name__}: {exc}" if str(exc) else f"{type(exc).__name__}"
+        )
     finally:
         boot.close()
