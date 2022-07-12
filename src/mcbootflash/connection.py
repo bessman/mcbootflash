@@ -11,6 +11,7 @@ from mcbootflash.error import (
     BadLength,
     ChecksumError,
     FlashEraseFail,
+    NoData,
     UnexpectedResponse,
     UnsupportedCommand,
     VerifyFail,
@@ -89,8 +90,9 @@ class BootloaderConnection(
         segments = self._get_segments_in_range(hexfile, program_memory)
 
         if not segments:
-            logger.warning("HEX-file contains no suitable data; aborting")
-            return
+            raise NoData(
+                "HEX file contains no data that fits entirely within program memory"
+            )
 
         logger.info(f"Flashing {path}")
         self.erase_flash(erase_size, program_memory)

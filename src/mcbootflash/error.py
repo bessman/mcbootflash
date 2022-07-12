@@ -6,6 +6,7 @@ __all__ = [
     "ChecksumError",
     "FlashEraseFail",
     "McbootflashException",
+    "NoData",
     "UnexpectedResponse",
     "UnsupportedCommand",
     "VerifyFail",
@@ -59,3 +60,11 @@ class FlashEraseFail(McbootflashException):
 
 class UnexpectedResponse(McbootflashException):
     """Raised if the command fields of a Command/Response packet pair do not match."""
+
+
+class NoData(McbootflashException):
+    """Raised if asked to flash a HEX file which contains no suitable data.
+
+    Specifically, the HEX file must contain at least one memory segment that fits
+    entirely within the program memory range specified by the bootloader.
+    """

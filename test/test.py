@@ -6,6 +6,7 @@ from mcbootflash import (
     BootloaderConnection,
     ChecksumError,
     FlashEraseFail,
+    NoData,
     UnexpectedResponse,
     flash,
     get_parser,
@@ -100,8 +101,8 @@ def test_checksum_error(device):
 )
 def test_no_data(device):
     blc = BootloaderConnection(port=device.port, timeout=1)
-    blc.flash("test/testcases/no_data/test.hex")
-    assert all(device.stubs[i].called for i in device.stubs)
+    with pytest.raises(NoData):
+        blc.flash("test/testcases/no_data/test.hex")
 
 
 @pytest.mark.parametrize("device", ["test/testcases/reset/traffic.json"], indirect=True)
