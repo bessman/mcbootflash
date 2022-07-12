@@ -75,13 +75,22 @@ class BootloaderConnection(
 
         Raises
         ------
-        UnsupportedCommand
+        ConnectionFailure
+            If bootloader does not respond.
+        NoData
+            If HEX file contains no flashable data.
+        UnexpectedResponse
+            If `command`-field of reply does not match most recent command.
+        FlashEraseFail
+            If an existing program could not be erased.
+        ChecksumError
+            If local and remote checksums do not match.
         BadAddress
         BadLength
+        UnsupportedCommand
         VerifyFail
-        ChecksumError
-        FlashEraseFail,
-        UnexpectedResponse,
+            If `success`-field of reply is BAD_ADDRESS, BAD_LENGTH, UNSUPPORTED_COMMAND,
+            or VERIFY_FAIL.
         """
         path = hexfile
         hexfile = IntelHex(path)
