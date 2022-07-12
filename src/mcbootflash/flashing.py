@@ -110,11 +110,10 @@ def flash(parsed_args: Union[None, argparse.Namespace] = None) -> None:
         port=parsed_args.port,
         baudrate=parsed_args.baudrate,
         timeout=parsed_args.timeout,
-        quiet=parsed_args.quiet,
     )
 
     try:
-        boot.flash(hexfile=parsed_args.file)
+        boot.flash(hexfile=parsed_args.file, quiet=parsed_args.quiet)
     except McbootflashException as exc:
         logging.error(
             f"{type(exc).__name__}: {exc}" if str(exc) else f"{type(exc).__name__}"
