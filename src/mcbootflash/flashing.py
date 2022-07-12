@@ -17,13 +17,16 @@ def get_parser() -> argparse.ArgumentParser:
     This function is meant to be used by applications which want to create their own CLI
     while using mcbootflash in the background.
 
-    The returned ArgumentParser has the following arguments already added:
-        file           (str,   required)
-        -p, --port     (str,   required)
-        -b, --baudrate (int,   required)
-        -t, --timeout  (float, default=5)
-        -v, --verbose  (bool,  default=False)
-        -q, --quiet    (bool,  default=False)
+    Returns
+    -------
+    argparse.ArgumentParser
+        The returned ArgumentParser has the following arguments already added:
+            file           (str,   required)
+            -p, --port     (str,   required)
+            -b, --baudrate (int,   required)
+            -t, --timeout  (float, default=5)
+            -v, --verbose  (bool,  default=False)
+            -q, --quiet    (bool,  default=False)
 
     These arguments can be overridden by adding a new argument with the same option
     string. For example, an application which only needs to communicate with a specific
@@ -85,7 +88,14 @@ def get_parser() -> argparse.ArgumentParser:
 
 
 def flash(parsed_args: Union[None, argparse.Namespace] = None) -> None:
-    """Entry point for console_script."""
+    """Entry point for console_script.
+
+    Parameters
+    ----------
+    parsed_args : argparse.Namespace, optional
+        Pre-parsed arguments. If not specified, arguments will be parsed from the
+        command line.
+    """
     parsed_args = parsed_args or get_parser().parse_args()
     progressbar.streams.wrap_stderr()
 
