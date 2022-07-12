@@ -194,18 +194,18 @@ class BootloaderConnection(
     ) -> None:
         """Check that response is not an error."""
         if response_packet.command != command_packet.command:
-            logger.error("Response does not match the most recently sent command:")
-            logger.error(f"Command:  {bytes(command_packet)!r}")
-            logger.error(f"Response: {bytes(response_packet)!r}")
-            raise UnexpectedResponse
+            raise UnexpectedResponse(
+                f"Sent {command_packet.command.name} command but reply was "
+                f"{BootCommand(response_packet.command).name}"
+            )
 
         if isinstance(response_packet, VersionResponsePacket):
             return
 
         if response_packet.success != BootResponse.SUCCESS:
-            logger.error("Command failed:")
-            logger.error(f"Command:  {bytes(command_packet)!r}")
-            logger.error(f"Response: {bytes(response_packet)!r}")
+            logger.debug("Command failed:")
+            logger.debug(f"Command:  {bytes(command_packet)!r}")
+            logger.debug(f"Response: {bytes(response_packet)!r}")
             raise _BOOTLOADER_EXCEPTIONS[response_packet.success]
 
     def read_version(self) -> Tuple[int, int, int, int, int]:
@@ -339,9 +339,9 @@ class BootloaderConnection(
         finally:
             logger.disabled = False
 
-        logger.error("An application was detected; flash erase failed")
-        logger.error("unlock_sequence field may be incorrect")
-        raise FlashEraseFail
+        logger.debug("An application was detected; flash erase failed")
+        logger.debug("unlock_sequence field may be incorrect")
+        raise FlashEraseFail("Existing application could not be erased")
 
     def _write_flash(self, data: IntelHex) -> None:
         write_flash_command = CommandPacket(
@@ -401,8 +401,8 @@ class BootloaderConnection(
         checksum2 = self._get_checksum(hexfile.minaddr() >> 1, len(hexfile))
 
         if checksum1 != checksum2:
-            logger.error(f"Checksum mismatch: {checksum1} != {checksum2}")
-            logger.error("unlock_sequence field may be incorrect")
+            logger.debug(f"Checksum mismatch: {checksum1} != {checksum2}")
+            logger.debug("unlock_sequence field may be incorrect")
             raise ChecksumError
 
         logger.debug(f"Checksum OK: {checksum1}")
