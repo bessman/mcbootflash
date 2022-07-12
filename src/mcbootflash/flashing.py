@@ -1,12 +1,12 @@
 """Command line tool for flashing firmware."""
-
 import argparse
 import logging
 from typing import Union
 
 import progressbar  # type: ignore[import]
 
-from mcbootflash import BootloaderConnection
+from mcbootflash.connection import BootloaderConnection
+from mcbootflash.error import McbootflashException
 
 __all__ = ["flash", "get_parser"]
 
@@ -112,5 +112,10 @@ def flash(parsed_args: Union[None, argparse.Namespace] = None) -> None:
         timeout=parsed_args.timeout,
         quiet=parsed_args.quiet,
     )
-    boot.flash(hexfile=parsed_args.file)
-    boot.close()
+
+    try:
+        boot.flash(hexfile=parsed_args.file)
+    except McbootflashException as exc:
+        logging.error(f"{type(exc).__name__}: {exc}")
+    finally:
+        boot.close()

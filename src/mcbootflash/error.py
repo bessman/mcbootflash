@@ -4,6 +4,7 @@ __all__ = [
     "BadLength",
     "BootloaderError",
     "ChecksumError",
+    "ConnectionFailure",
     "FlashEraseFail",
     "McbootflashException",
     "NoData",
@@ -60,6 +61,10 @@ class FlashEraseFail(McbootflashException):
 
 class UnexpectedResponse(McbootflashException):
     """Raised if the command fields of a Command/Response packet pair do not match."""
+
+
+class ConnectionFailure(McbootflashException):
+    """Raised if the connection to the bootloader cannot be established or is lost."""
 
 
 class NoData(McbootflashException):

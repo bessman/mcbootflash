@@ -5,6 +5,7 @@ import pytest
 from mcbootflash import (
     BootloaderConnection,
     ChecksumError,
+    ConnectionFailure,
     FlashEraseFail,
     NoData,
     UnexpectedResponse,
@@ -127,3 +128,24 @@ def test_read_flash():
     blc = BootloaderConnection()
     with pytest.raises(NotImplementedError):
         blc._read_flash()
+
+
+@pytest.mark.parametrize(
+    "device",
+    ["test/testcases/no_response/traffic.json"],
+    indirect=True,
+)
+def test_no_response_from_bootloader(device, caplog):
+    flash(
+        argparse.Namespace(
+            **{
+                "file": "test/testcases/no_response/test.hex",
+                "port": device.port,
+                "baudrate": 460800,
+                "timeout": 0.1,
+                "verbose": False,
+                "quiet": False,
+            }
+        )
+    )
+    assert "ConnectionFailure" in caplog.messages[0]

@@ -1,5 +1,6 @@
 # noqa: D100
 import logging
+from struct import error as structerror
 from typing import List, Tuple, Union
 
 import progressbar  # type: ignore[import]
@@ -10,6 +11,7 @@ from mcbootflash.error import (
     BadAddress,
     BadLength,
     ChecksumError,
+    ConnectionFailure,
     FlashEraseFail,
     NoData,
     UnexpectedResponse,
@@ -83,10 +85,7 @@ class BootloaderConnection(
         """
         path = hexfile
         hexfile = IntelHex(path)
-        logger.info("Connecting to bootloader...")
-        _, max_packet_length, _, erase_size, write_size = self.read_version()
-        program_memory = range(*self._get_memory_address_range())
-        logger.info("Connected")
+        max_packet_length, erase_size, write_size, program_memory = self._connect()
         segments = self._get_segments_in_range(hexfile, program_memory)
 
         if not segments:
@@ -121,6 +120,19 @@ class BootloaderConnection(
                     self._print_progress(written_bytes, total_bytes)
 
         self._self_verify()
+
+    def _connect(self) -> Tuple[int, int, int, range]:
+        logger.info("Connecting to bootloader...")
+
+        try:
+            _, max_packet_length, _, erase_size, write_size = self.read_version()
+        except structerror as exc:
+            logger.debug(exc)
+            raise ConnectionFailure("No response from bootloader") from exc
+
+        program_memory = range(*self._get_memory_address_range())
+        logger.info("Connected")
+        return max_packet_length, erase_size, write_size, program_memory
 
     @staticmethod
     def _get_segments_in_range(
