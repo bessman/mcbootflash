@@ -34,7 +34,7 @@ class BootCommand(enum.IntEnum):
 class BootResponse(enum.IntEnum):
     """Sent by the bootloader in response to a command."""
 
-    _UNDEFINED = 0x00
+    UNDEFINED = 0x00
     SUCCESS = 0x01
     UNSUPPORTED_COMMAND = 0xFF
     BAD_ADDRESS = 0xFE
@@ -145,7 +145,7 @@ class ResponsePacket(Packet):
         Success or failure status of the command this packet is sent in response to.
     """
 
-    success: BootResponse = BootResponse._UNDEFINED
+    success: BootResponse = BootResponse.UNDEFINED
     format: ClassVar[str] = Packet.format + "B"
 
 
