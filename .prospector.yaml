@@ -6,6 +6,8 @@ inherits:
   - default
 autodetect: false
 max-line-length: 88
+ignore-paths:
+  - doc
 
 bandit:
   run: true
