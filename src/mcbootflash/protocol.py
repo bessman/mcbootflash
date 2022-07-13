@@ -49,15 +49,15 @@ _P = TypeVar("_P", bound="Packet")
 class Packet:
     """Base class for communication packets to and from the bootloader.
 
-    Attributes
+    Parameters
     ----------
     command : BootCommand
         Command code which specifies which command should be executed by the bootloader.
     data_length : int
         Meaning depends on value of 'command'-field:
-            WRITE_FLASH: Number of bytes following the command packet.
-            ERASE_FLASH: Number of flash pages to be erased.
-            CALC_CHECKSUM: Number of bytes to checksum.
+        WRITE_FLASH: Number of bytes following the command packet.
+        ERASE_FLASH: Number of flash pages to be erased.
+        CALC_CHECKSUM: Number of bytes to checksum.
         For other commands this field is ignored.
     unlock_sequence : int
         Key to unlock flash memory for writing. Write operations (WRITE_FLASH,
@@ -107,7 +107,7 @@ class CommandPacket(Packet):
 class VersionResponsePacket(Packet):
     """Response to a READ_VERSION command.
 
-    Attributes
+    Parameters
     ----------
     version : int
         Bootloader version number.
@@ -139,7 +139,7 @@ class ResponsePacket(Packet):
     The exception is READ_VERSION, in response to which a VersionResponsePacket
     is received instead.
 
-    Attributes
+    Parameters
     ----------
     success : BootResponse
         Success or failure status of the command this packet is sent in response to.
@@ -153,7 +153,7 @@ class ResponsePacket(Packet):
 class MemoryRangePacket(ResponsePacket):
     """Response to GET_MEMORY_RANGE command.
 
-    Attributes
+    Parameters
     ----------
     program_start : int
         Low end of address space to which application firmware can be flashed.
@@ -170,7 +170,7 @@ class MemoryRangePacket(ResponsePacket):
 class ChecksumPacket(ResponsePacket):
     """Response to CALCULATE_CHECKSUM command.
 
-    Attributes
+    Parameters
     ----------
     checksum : int
         Checksum of `data_length` bytes starting from `address`.
