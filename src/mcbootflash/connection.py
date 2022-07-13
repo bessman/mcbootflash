@@ -126,7 +126,6 @@ class BootloaderConnection(
         try:
             _, max_packet_length, _, erase_size, write_size = self.read_version()
         except structerror as exc:
-            logger.debug(exc)
             raise ConnectionFailure("No response from bootloader") from exc
 
         program_memory = range(*self._get_memory_address_range())
