@@ -1,3 +1,31 @@
+4.0.0
+API changes:
+- BootloaderConnection.flash will always raise an exception if flashing did not succeed.
+- 'quiet' is now a parameter of BootloaderConnection.flash instead of BootloaderConnection itself.
+
+
+3.0.0
+Features:
+- By default, a progress bar is now shown while flashing. Suppress with --quiet flag.
+- Command line arguments can now be overriden by applications using mcbootflash as a library. See the get_parser function for more information.
+
+API changes:
+- flash.py -> flashing.py
+- BootResponseCode --> BootResponse
+- FLASH_UNLOCK_KEY removed from API.
+- BootloaderConnection.{quiet, hexfile} removed from API.
+- BootloaderConnection.erase_flash added to API.
+- Exceptions have changed significantly. See error.py for more information.
+
+Under the hood:
+- Major testing overhaul: Tests now use recorded serial traffic to verify behavior.
+- Switch to flit build system.
+- Enforce alphabetically sorted imports with isort.
+- Enable docstring linting.
+- Application code now lives in src/
+- Lots of changes to logging messages.
+
+
 2.0.0
 Features:
 - Public interface available directly via __init__.py.
