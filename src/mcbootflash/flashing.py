@@ -20,7 +20,8 @@ def get_parser() -> argparse.ArgumentParser:
     Returns
     -------
     argparse.ArgumentParser
-        The returned ArgumentParser has the following arguments already added:
+        The returned ArgumentParser has the following arguments already added::
+
             file           (str,   required)
             -p, --port     (str,   required)
             -b, --baudrate (int,   required)
@@ -28,19 +29,18 @@ def get_parser() -> argparse.ArgumentParser:
             -v, --verbose  (bool,  default=False)
             -q, --quiet    (bool,  default=False)
 
-    These arguments can be overridden by adding a new argument with the same option
-    string. For example, an application which only needs to communicate with a specific
-    device with a known serial baudrate could override the 'baudrate' option to make it
-    optional:
+        These arguments can be overridden by adding a new argument with the same option
+        string. For example, an application which only needs to communicate with a
+        specific device with a known serial baudrate could override the 'baudrate'
+        option to make it optional::
 
-        import mcbootflash
-        parser = mcbootflash.get_parser()
-        parser.add_argument("-b", "--baudrate", default=460800)
-        mcbootflash.flash(parser.parse_args())
+            import mcbootflash
+            parser = mcbootflash.get_parser()
+            parser.add_argument("-b", "--baudrate", default=460800)
+            mcbootflash.flash(parser.parse_args())
     """
     parser = argparse.ArgumentParser(
-        prog="mcbootflash",
-        usage=(
+        description=(
             "Flash firmware over serial connection to a device running Microchip's "
             "16-bit bootloader."
         ),

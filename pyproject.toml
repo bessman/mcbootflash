@@ -50,6 +50,7 @@ envlist =
     black
     prospector
     test
+    doc
     report
 
 [testenv:isort]
@@ -79,6 +80,13 @@ commands = coverage run -m pytest test/test.py
 deps = coverage
 commands = coverage report
 depends = test
+
+[testenv:doc]
+deps =
+    sphinx
+    sphinx_rtd_theme
+    sphinx_mdinclude
+commands = sphinx-build -W -a doc/source doc/build
 
 [gh-actions]
 python =
