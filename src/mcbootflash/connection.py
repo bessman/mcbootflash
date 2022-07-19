@@ -161,7 +161,8 @@ class BootloaderConnection(
 
         return segments
 
-    def _chunk(self, hexfile: IntelHex, size: int) -> List[IntelHex]:
+    @staticmethod
+    def _chunk(hexfile: IntelHex, size: int) -> List[IntelHex]:
         start = hexfile.minaddr()
         stop = hexfile.maxaddr()
         return [hexfile[i : i + size] for i in range(start, stop, size)]
