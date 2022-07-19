@@ -1,3 +1,11 @@
+4.1.0
+Documentation
+- Added documentation.
+- Added readthedocs.
+
+Misc:
+- Added codacy badges.
+
 4.0.0
 API changes:
 - BootloaderConnection.flash will always raise an exception if flashing did not succeed.
