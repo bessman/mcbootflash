@@ -1,5 +1,7 @@
 # mcbootflash
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/8e3dc869fa7f49feaf93033da0db5449)](https://app.codacy.com/gh/bessman/mcbootflash?utm_source=github.com&utm_medium=referral&utm_content=bessman/mcbootflash&utm_campaign=Badge_Grade_Settings)
+
 Mcbootflash is a tool for flashing firmware to 16-bit Microchip MCUs and DSPs
 from the PIC24 and dsPIC33 families of devices, which are running a
 [bootloader](https://www.microchip.com/en-us/software-library/16-bit-bootloader)
