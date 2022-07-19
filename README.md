@@ -1,8 +1,8 @@
 # mcbootflash
 
 [![Documentation Status](https://readthedocs.org/projects/mcbootflash/badge/?version=latest)](https://mcbootflash.readthedocs.io/en/latest/?badge=latest)
-[![Maintainability](https://api.codeclimate.com/v1/badges/158e06a0932879cb2cd7/maintainability)](https://codeclimate.com/github/bessman/mcbootflash/maintainability)
-[![Test Coverage](https://api.codeclimate.com/v1/badges/158e06a0932879cb2cd7/test_coverage)](https://codeclimate.com/github/bessman/mcbootflash/test_coverage)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/b0cdb1c0b3b94171866fbfc4489316be)](https://www.codacy.com/gh/bessman/mcbootflash/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=bessman/mcbootflash&amp;utm_campaign=Badge_Grade)
+[![Codacy Badge](https://app.codacy.com/project/badge/Coverage/b0cdb1c0b3b94171866fbfc4489316be)](https://www.codacy.com/gh/bessman/mcbootflash/dashboard?utm_source=github.com&utm_medium=referral&utm_content=bessman/mcbootflash&utm_campaign=Badge_Coverage)
 
 Mcbootflash is a tool for flashing firmware to 16-bit Microchip MCUs and DSPs
 from the PIC24 and dsPIC33 families of devices, which are running a
