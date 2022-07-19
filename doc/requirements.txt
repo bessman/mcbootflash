@@ -1,3 +1,6 @@
 sphinx
 sphinx_mdinclude
 sphinx_rtd_theme
+pyserial
+intelhex
+progressbar2
