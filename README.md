@@ -9,9 +9,9 @@ Microchip provides an official GUI tool for this purpose, called the
 Unified Bootloader Host Application. Mcbootflash is intended to be a
 drop-in replacement, with some differences:
 
-- No GUI
-- Free and open source
-- Written in Python instead of Java
+-   No GUI
+-   Free and open source
+-   Written in Python instead of Java
 
 Additionally, mcbootflash is can be used as a library by applications which
 want to implement firmware flashing as part of a larger suite of features.
@@ -38,4 +38,4 @@ $ mcbootflash --port=/dev/ttyUSB0 --baudrate=460800 firmware.hex
 
 ## Copyright
 
-MIT License, (C) 2022 Alexander Bessman <alexander.bessman@gmail.com>
+MIT License, (C) 2022 Alexander Bessman
