@@ -1,6 +1,6 @@
 # mcbootflash
 
-[![Documentation Status](https://readthedocs.org/projects/mcbootflash/badge/?version=latest)](https://mcbootflash.readthedocs.io/en/latest/?badge=latest
+[![Documentation Status](https://readthedocs.org/projects/mcbootflash/badge/?version=latest)](https://mcbootflash.readthedocs.io/en/latest/?badge=latest)
 [![Maintainability](https://api.codeclimate.com/v1/badges/158e06a0932879cb2cd7/maintainability)](https://codeclimate.com/github/bessman/mcbootflash/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/158e06a0932879cb2cd7/test_coverage)](https://codeclimate.com/github/bessman/mcbootflash/test_coverage)
 
