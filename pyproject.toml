@@ -49,6 +49,7 @@ envlist =
     isort
     black
     prospector
+    pydocstyle
     test
     doc
     report
@@ -67,6 +68,10 @@ deps =
     mypy
     bandit
 commands = prospector .
+
+[testenv:pydocstyle]
+deps = pydocstyle
+commands = pydocstyle --convention=numpy src/
 
 [testenv:test]
 usedevelop = True
