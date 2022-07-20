@@ -41,6 +41,13 @@ Home = "https://github.com/bessman/mcbootflash"
 [project.scripts]
 mcbootflash = "mcbootflash:flash"
 
+[project.optional-dependencies]
+doc = [
+  "sphinx",
+  "sphinx_mdinclude",
+  "sphinx_rtd_theme",
+]
+
 [tool.tox]
 legacy_tox_ini = """
 [tox]
