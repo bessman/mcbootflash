@@ -17,7 +17,7 @@ drop-in replacement, with some differences:
 -   Free and open source
 -   Written in Python instead of Java
 
-Additionally, mcbootflash is can be used as a library by applications which
+Additionally, mcbootflash can be used as a library by applications which
 want to implement firmware flashing as part of a larger suite of features.
 See the documentation for details.
 
