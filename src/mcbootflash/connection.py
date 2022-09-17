@@ -92,22 +92,19 @@ class BootloaderConnection(
                 "HEX file contains no data that fits entirely within program memory"
             )
 
-        logger.info(f"Flashing {path}")
         self.erase_flash(erase_size, program_memory)
+        logger.info(f"Flashing {path}")
         chunk_size = max_packet_length - CommandPacket.get_size()
         chunk_size -= chunk_size % write_size
         total_bytes = sum(len(segment) for segment in segments)
         written_bytes = 0
 
         for segment in segments:
-            # If (segment[1] - segment[0]) % write_size != 0, writing the final chunk
-            # will fail. However, I have seen no example where it's not, so not adding
-            # code to check for now (YAGNI)
             chunks = self._chunk(segment, chunk_size)
             logger.debug(f"Flashing segment {segments.index(segment)}")
 
             for chunk in chunks:
-                self._write_flash(chunk)
+                self._write_flash(chunk, write_size)
                 written_bytes += len(chunk)
                 logger.debug(
                     f"{written_bytes} bytes written of {total_bytes} "
@@ -342,15 +339,18 @@ class BootloaderConnection(
         logger.debug("unlock_sequence field may be incorrect")
         raise FlashEraseFail("Existing application could not be erased")
 
-    def _write_flash(self, data: IntelHex) -> None:
+    def _write_flash(self, data: IntelHex, align: int) -> None:
+        padding = bytes([data.padding] * ((align - (len(data) % align)) % align))
         write_flash_command = CommandPacket(
             command=BootCommand.WRITE_FLASH,
-            data_length=len(data),
+            data_length=len(data) + len(padding),
             unlock_sequence=self._FLASH_UNLOCK_KEY,
             address=data.minaddr() >> 1,
         )
-        logger.debug(f"Writing {len(data)} bytes to {data.minaddr():#08x}")
-        self.write(bytes(write_flash_command) + data.tobinstr())
+        logger.debug(
+            f"Writing ({len(data)} + {len(padding)}) bytes to {data.minaddr():#08x}"
+        )
+        self.write(bytes(write_flash_command) + data.tobinstr() + padding)
         write_flash_response = ResponsePacket.from_serial(self)
         self._check_response(write_flash_command, write_flash_response)
 

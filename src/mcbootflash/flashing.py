@@ -98,14 +98,10 @@ def flash(parsed_args: Union[None, argparse.Namespace] = None) -> None:
     """
     parsed_args = parsed_args or get_parser().parse_args()
     progressbar.streams.wrap_stderr()
-
-    if parsed_args.verbose:
-        logging.basicConfig(level=logging.DEBUG)
-    elif not parsed_args.quiet:
-        logging.basicConfig(level=logging.INFO, format="%(message)s")
-    else:
-        logging.basicConfig(level=logging.WARNING)
-
+    loglevel = logging.WARNING if parsed_args.quiet else logging.INFO
+    loglevel = logging.DEBUG if parsed_args.verbose else loglevel
+    logformat = logging.BASIC_FORMAT if parsed_args.verbose else "%(message)s"
+    logging.basicConfig(level=loglevel, format=logformat)
     boot = BootloaderConnection(
         port=parsed_args.port,
         baudrate=parsed_args.baudrate,
@@ -115,9 +111,10 @@ def flash(parsed_args: Union[None, argparse.Namespace] = None) -> None:
     try:
         boot.flash(hexfile=parsed_args.file, quiet=parsed_args.quiet)
     except McbootflashException as exc:
-        logging.debug(exc, exc_info=True)
-        logging.error(
-            f"{type(exc).__name__}: {exc}" if str(exc) else f"{type(exc).__name__}"
+        print(
+            "\nFlashing failed:",
+            f"{type(exc).__name__}: {exc}" if str(exc) else f"{type(exc).__name__}",
         )
+        logging.debug(exc, exc_info=True)
     finally:
         boot.close()

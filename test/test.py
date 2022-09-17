@@ -135,7 +135,7 @@ def test_read_flash():
     ["test/testcases/no_response/traffic.json"],
     indirect=True,
 )
-def test_no_response_from_bootloader(device, caplog):
+def test_no_response_from_bootloader(device, capsys):
     flash(
         argparse.Namespace(
             **{
@@ -148,4 +148,5 @@ def test_no_response_from_bootloader(device, caplog):
             }
         )
     )
-    assert "ConnectionFailure" in caplog.messages[0]
+    captured = capsys.readouterr()
+    assert "ConnectionFailure" in captured.out
