@@ -101,22 +101,19 @@ class Bootloader:
                 "HEX file contains no data that fits entirely within program memory"
             )
 
-        _logger.info(f"Flashing {path}")
         self.erase_flash(self._memory_range)
+        _logger.info(f"Flashing {path}")
         chunk_size = self._max_packet_length - Command.get_size()
         chunk_size -= chunk_size % self._write_size
         total_bytes = sum(len(segment) for segment in segments)
         written_bytes = 0
 
         for segment in segments:
-            # If (segment[1] - segment[0]) % write_size != 0, writing the final chunk
-            # will fail. However, I have seen no example where it's not, so not adding
-            # code to check for now (YAGNI)
             chunks = self._chunk(segment, chunk_size)
             _logger.debug(f"Flashing segment {segments.index(segment)}")
 
             for chunk in chunks:
-                self._write_flash(chunk)
+                self._write_flash(chunk, self._write_size)
                 written_bytes += len(chunk)
                 _logger.debug(
                     f"{written_bytes} bytes written of {total_bytes} "
@@ -319,7 +316,7 @@ class Bootloader:
             _logger.disabled = False
         return True
 
-    def _write_flash(self, data: IntelHex) -> None:
+    def _write_flash(self, data: IntelHex, align: int) -> None:
         """Write data to bootloader.
 
         Parameters
@@ -328,15 +325,16 @@ class Bootloader:
             An IntelHex instance of length no greater than the bootloader's
             max_packet_length attribute.
         """
+        padding = bytes([data.padding] * ((align - (len(data) % align)) % align))
         _logger.debug(f"Writing {len(data)} bytes to {data.minaddr():#08x}")
         self._send_and_receive(
             Command(
                 command=CommandCode.WRITE_FLASH,
-                data_length=len(data),
+                data_length=len(data) + len(padding),
                 unlock_sequence=self._FLASH_UNLOCK_KEY,
                 address=data.minaddr() >> 1,
             ),
-            data.tobinstr(),
+            data.tobinstr() + padding,
         )
 
     def _self_verify(self) -> None:

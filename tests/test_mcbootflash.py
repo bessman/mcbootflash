@@ -100,8 +100,7 @@ def test_read_flash(reserial):
         boot._read_flash()
 
 
-def test_no_response_from_bootloader(reserial, caplog):
-    caplog.set_level(logging.INFO)
+def test_no_response_from_bootloader(reserial, capsys):
     flash(
         argparse.Namespace(
             **{
@@ -114,4 +113,4 @@ def test_no_response_from_bootloader(reserial, caplog):
             }
         )
     )
-    assert "No response from bootloader" in caplog.messages[-1]
+    assert "No response from bootloader" in capsys.readouterr().out

@@ -114,7 +114,8 @@ def flash(parsed_args: Union[None, argparse.Namespace] = None) -> None:
         )
         boot.flash(hexfile=parsed_args.file, quiet=parsed_args.quiet)
     except BootloaderError as exc:
-        logging.debug(exc, exc_info=True)
-        logging.error(
-            f"{type(exc).__name__}: {exc}" if str(exc) else f"{type(exc).__name__}"
+        print(
+            "\nFlashing failed:",
+            f"{type(exc).__name__}: {exc}" if str(exc) else f"{type(exc).__name__}",
         )
+        logging.debug(exc, exc_info=True)
