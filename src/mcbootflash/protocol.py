@@ -6,19 +6,8 @@ from typing import ClassVar, Type, TypeVar
 
 from serial import Serial  # type: ignore[import]
 
-__all__ = [
-    "BootCommand",
-    "BootResponse",
-    "ChecksumPacket",
-    "CommandPacket",
-    "Packet",
-    "MemoryRangePacket",
-    "ResponsePacket",
-    "VersionResponsePacket",
-]
 
-
-class BootCommand(enum.IntEnum):
+class CommandCode(enum.IntEnum):
     """The MCC 16-bit bootloader supports these commands."""
 
     READ_VERSION = 0x00
@@ -31,10 +20,9 @@ class BootCommand(enum.IntEnum):
     GET_MEMORY_ADDRESS_RANGE = 0x0B
 
 
-class BootResponse(enum.IntEnum):
+class ResponseCode(enum.IntEnum):
     """Sent by the bootloader in response to a command."""
 
-    UNDEFINED = 0x00
     SUCCESS = 0x01
     UNSUPPORTED_COMMAND = 0xFF
     BAD_ADDRESS = 0xFE
@@ -56,9 +44,9 @@ class Packet:
 
     Parameters
     ----------
-    command : BootCommand
+    command : CommandCode
         Command code which specifies which command should be executed by the bootloader.
-    data_length : int
+    data_length : uint16
         Meaning depends on value of 'command'-field::
 
             WRITE_FLASH: Number of bytes following the command packet.
@@ -83,7 +71,7 @@ class Packet:
     VERIFY_FAIL.
     """
 
-    command: BootCommand
+    command: CommandCode
     data_length: int = 0
     unlock_sequence: int = 0
     address: int = 0
@@ -109,7 +97,7 @@ class Packet:
 
 
 @dataclass
-class CommandPacket(Packet):
+class Command(Packet):
     """Base class for packets sent to the bootloader.
 
     Layout is identical to Packet.
@@ -117,7 +105,15 @@ class CommandPacket(Packet):
 
 
 @dataclass
-class VersionResponsePacket(Packet):
+class ResponseBase(Packet):
+    """Base class for packets received from the bootloader.
+
+    Layout is identical to Packet.
+    """
+
+
+@dataclass
+class Version(ResponseBase):
     """Response to a READ_VERSION command.
 
     Layout::
@@ -154,29 +150,26 @@ class VersionResponsePacket(Packet):
 
 
 @dataclass
-class ResponsePacket(Packet):
-    """Base class for most packets received from the bootloader.
+class Response(ResponseBase):
+    """Response to any command except READ_VERSION.
 
     Layout::
 
         | [Packet] | uint8   |
         | [Packet] | success |
 
-    The exception is READ_VERSION, in response to which a VersionResponsePacket
-    is received instead.
-
     Parameters
     ----------
-    success : BootResponse
+    success : ResponseCode
         Success or failure status of the command this packet is sent in response to.
     """
 
-    success: BootResponse = BootResponse.UNDEFINED
+    success: ResponseCode = ResponseCode.UNSUPPORTED_COMMAND
     FORMAT: ClassVar[str] = Packet.FORMAT + "B"
 
 
 @dataclass
-class MemoryRangePacket(ResponsePacket):
+class MemoryRange(Response):
     """Response to GET_MEMORY_RANGE command.
 
     Layout::
@@ -186,19 +179,19 @@ class MemoryRangePacket(ResponsePacket):
 
     Parameters
     ----------
-    program_start : int
+    program_start : uint32
         Low end of address space to which application firmware can be flashed.
-    program_end : int
+    program_end : uint32
         High end of address space to which application firmware can be flashed.
     """
 
     program_start: int = 0
     program_end: int = 0
-    FORMAT: ClassVar[str] = ResponsePacket.FORMAT + "2I"
+    FORMAT: ClassVar[str] = Response.FORMAT + "2I"
 
 
 @dataclass
-class ChecksumPacket(ResponsePacket):
+class Checksum(Response):
     """Response to CALCULATE_CHECKSUM command.
 
     Layout::
@@ -208,9 +201,9 @@ class ChecksumPacket(ResponsePacket):
 
     Parameters
     ----------
-    checksum : int
+    checksum : uint16
         Checksum of `data_length` bytes starting from `address`.
     """
 
     checksum: int = 0
-    FORMAT: ClassVar[str] = ResponsePacket.FORMAT + "H"
+    FORMAT: ClassVar[str] = Response.FORMAT + "H"

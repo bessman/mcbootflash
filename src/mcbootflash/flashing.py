@@ -5,10 +5,10 @@ from typing import Union
 
 import progressbar  # type: ignore[import]
 
-from mcbootflash.connection import BootloaderConnection
-from mcbootflash.error import McbootflashException
+from mcbootflash.connection import Bootloader
+from mcbootflash.error import BootloaderError
 
-__all__ = ["flash", "get_parser"]
+_logger = logging.getLogger(__name__)
 
 
 def get_parser() -> argparse.ArgumentParser:
@@ -106,18 +106,15 @@ def flash(parsed_args: Union[None, argparse.Namespace] = None) -> None:
     else:
         logging.basicConfig(level=logging.WARNING)
 
-    boot = BootloaderConnection(
-        port=parsed_args.port,
-        baudrate=parsed_args.baudrate,
-        timeout=parsed_args.timeout,
-    )
-
     try:
+        boot = Bootloader(
+            port=parsed_args.port,
+            baudrate=parsed_args.baudrate,
+            timeout=parsed_args.timeout,
+        )
         boot.flash(hexfile=parsed_args.file, quiet=parsed_args.quiet)
-    except McbootflashException as exc:
+    except BootloaderError as exc:
         logging.debug(exc, exc_info=True)
         logging.error(
             f"{type(exc).__name__}: {exc}" if str(exc) else f"{type(exc).__name__}"
         )
-    finally:
-        boot.close()
