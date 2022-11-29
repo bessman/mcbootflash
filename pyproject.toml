@@ -93,6 +93,11 @@ deps = coverage
 commands = coverage report
 depends = test
 
+[testenv:xml]
+deps = coverage
+commands = coverage xml
+depends = test
+
 [testenv:docs]
 deps =
     sphinx
