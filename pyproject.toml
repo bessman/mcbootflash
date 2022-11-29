@@ -84,9 +84,9 @@ commands = pydocstyle --convention=numpy src/
 usedevelop = True
 deps =
     pytest
-    mock_serial
     coverage
-commands = coverage run -m pytest test/test.py
+    pytest-reserial >= 0.2.2
+commands = coverage run -m pytest --replay
 
 [testenv:report]
 deps = coverage
