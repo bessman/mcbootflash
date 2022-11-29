@@ -28,7 +28,7 @@ packets. They have the same data layout as the basic packet specified above,
 plus an optional `data` field following the `address` field. The following
 commands are supported:
 
-.. autoclass:: BootCommand
+.. autoclass:: CommandCode
     :members:
     :undoc-members:
     :noindex:
@@ -40,17 +40,17 @@ Replies from the bootloader come in two variations; responses to `READ_VERSION`
 and responses to other commands. Responses to `READ_VERSION` have the following
 format:
 
-.. autoclass:: VersionResponsePacket
+.. autoclass:: Version
     :noindex:
 
 Responses to all other commands have the following basic layout:
 
-.. autoclass:: ResponsePacket
+.. autoclass:: Response
     :noindex:
 
 The `success` field has one of the following values:
 
-.. autoclass:: BootResponse
+.. autoclass:: ResponseCode
     :members:
     :undoc-members:
     :noindex:
@@ -58,10 +58,10 @@ The `success` field has one of the following values:
 Some commands (`GET_MEMORY_ADDRESS_RANGE` and `CALCULATE_CHECKSUM`) send
 additional data following the `success` field:
 
-.. autoclass:: MemoryRangePacket
+.. autoclass:: MemoryRange
     :noindex:
 
-.. autoclass:: ChecksumPacket
+.. autoclass:: Checksum
     :noindex:
 
 Program flowchart

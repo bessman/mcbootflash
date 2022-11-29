@@ -58,7 +58,7 @@ envlist =
     prospector
     pydocstyle
     test
-    doc
+    docs
     report
 
 [testenv:isort]
@@ -93,12 +93,12 @@ deps = coverage
 commands = coverage report
 depends = test
 
-[testenv:doc]
+[testenv:docs]
 deps =
     sphinx
     sphinx_rtd_theme
     sphinx_mdinclude
-commands = sphinx-build -W -a doc/source doc/build
+commands = sphinx-build -W -a docs/source docs/build
 
 [gh-actions]
 python =
