@@ -11,6 +11,8 @@ ignore-paths:
 
 bandit:
   run: true
+  options:
+    config: pyproject.toml
 
 dodgy:
   run: true
