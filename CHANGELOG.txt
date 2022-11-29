@@ -1,3 +1,16 @@
+5.0.0
+
+API changes:
+- Simplify exceptions; Rename McbootflashException to
+  BootloaderError and remove all derived exceptions except
+  those that directly correspond to an error code.
+- Simplify protocol names (modules are not namespaces).
+- Rename BootloaderConnection to Bootloader and reduce code
+  duplication.
+
+Misc:
+- Use pytest-reserial for testing.
+
 4.1.1
 
 Bug fixes:
