@@ -310,7 +310,6 @@ class Bootloader:
             _logger.disabled = True
             self._self_verify()
         except VerifyFail:
-            _logger.disabled = False
             return False
         finally:
             _logger.disabled = False
