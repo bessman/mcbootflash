@@ -35,9 +35,9 @@ Once installed, mcbootflash can be run from the command line:
 $ mcbootflash --port=/dev/ttyUSB0 --baudrate=460800 firmware.hex
   Connecting to bootloader...
   Connected
-  Flashing firmware.hex
   Existing application detected, erasing...
   No application detected; flash erase successful
+  Flashing firmware.hex
   100%  88.7 KiB |########################################| Elapsed Time: 0:00:05
   Self verify OK
 ```
