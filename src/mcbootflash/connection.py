@@ -1,7 +1,7 @@
 # noqa: D100
 import logging
 from struct import error as structerror
-from typing import Any, Dict, List, Tuple, Type, Union
+from typing import Any, Dict, Generator, List, Tuple, Type, Union
 
 import progressbar  # type: ignore[import]
 from intelhex import IntelHex  # type: ignore[import]
@@ -156,10 +156,10 @@ class Bootloader:
         return segments
 
     @staticmethod
-    def _chunk(hexfile: IntelHex, size: int) -> List[IntelHex]:
+    def _chunk(hexfile: IntelHex, size: int) -> Generator[IntelHex, None, None]:
         start = hexfile.minaddr()
         stop = hexfile.maxaddr()
-        return [hexfile[i : i + size] for i in range(start, stop, size)]
+        return (hexfile[i : i + size] for i in range(start, stop, size))
 
     def _print_progress(self, written_bytes: int, total_bytes: int) -> None:
         if self._bar is None:
