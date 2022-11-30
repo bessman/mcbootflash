@@ -1,5 +1,6 @@
 # mcbootflash
 
+![build](https://github.com/bessman/mcbootflash/actions/workflows/main.yml/badge.svg)
 [![Documentation Status](https://readthedocs.org/projects/mcbootflash/badge/?version=latest)](https://mcbootflash.readthedocs.io/en/latest/?badge=latest)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/b0cdb1c0b3b94171866fbfc4489316be)](https://www.codacy.com/gh/bessman/mcbootflash/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=bessman/mcbootflash&amp;utm_campaign=Badge_Grade)
 [![Codecov](https://codecov.io/gh/bessman/mcbootflash/branch/main/graph/badge.svg)](https://codecov.io/gh/bessman/mcbootflash)
