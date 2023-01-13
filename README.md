@@ -44,4 +44,4 @@ $ mcbootflash --port=/dev/ttyUSB0 --baudrate=460800 firmware.hex
 
 ## Copyright
 
-MIT License, (C) 2022 Alexander Bessman
+MIT License, (C) 2023 Alexander Bessman
