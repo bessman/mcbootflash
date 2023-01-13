@@ -64,6 +64,7 @@ class Bootloader:
 
     def __init__(self, port: str, **kwargs: Any):
         self.interface = Serial(port=port, **kwargs)
+        _logger.info("Connecting to bootloader...")
         try:
             (
                 _,  # version
@@ -75,6 +76,7 @@ class Bootloader:
             self._memory_range = range(*self._get_memory_address_range())
         except structerror as exc:
             raise BootloaderError("No response from bootloader") from exc
+        _logger.info("Connected")
         self._bar = None
 
     def flash(self, hexfile: str, quiet: bool = False) -> None:
