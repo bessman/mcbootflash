@@ -83,7 +83,12 @@ class Packet:
     @classmethod
     def from_bytes(cls: Type[_P], data: bytes) -> _P:
         """Create a Packet instance from a bytes-like object."""
-        return cls(*struct.unpack(cls.FORMAT, data))
+        try:
+            return cls(*struct.unpack(cls.FORMAT, data))
+        except struct.error as exc:
+            raise struct.error(
+                f"{cls} expected {struct.calcsize(cls.FORMAT)} bytes, got {len(data)}."
+            ) from exc
 
     @classmethod
     def from_serial(cls: Type[_P], interface: Serial) -> _P:
