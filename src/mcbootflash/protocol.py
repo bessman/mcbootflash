@@ -179,8 +179,8 @@ class MemoryRange(Response):
 
     Layout::
 
-        | [ResponsePacket] | uint32        | uint32      |
-        | [ResponsePacket] | program_start | program_end |
+        | [Response] | uint32        | uint32      |
+        | [Response] | program_start | program_end |
 
     Parameters
     ----------
@@ -201,8 +201,8 @@ class Checksum(Response):
 
     Layout::
 
-        | [ResponsePacket] | uint16   |
-        | [ResponsePacket] | checksum |
+        | [Response] | uint16   |
+        | [Response] | checksum |
 
     Parameters
     ----------
