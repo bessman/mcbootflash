@@ -1,3 +1,11 @@
+5.1.0
+
+Misc
+- Re-add some logging messages that were removed by mistake
+- Fix some minor docstring mistakes
+- Improve error message when receiving unexpected data
+- Add build status badge
+
 5.0.0
 
 API changes:
