@@ -297,6 +297,11 @@ class Bootloader:
 
     def _erase_flash(self, start_address: int, end_address: int) -> None:
         _logger.debug(f"Erasing addresses {start_address:#08x}:{end_address:#08x}")
+        normal_timeout = self.interface.timeout
+
+        if self.interface.timeout is not None:
+            self.interface.timeout *= 10  # Erase may take a while.
+
         self._send_and_receive(
             command=Command(
                 command=CommandCode.ERASE_FLASH,
@@ -305,6 +310,7 @@ class Bootloader:
                 address=start_address,
             )
         )
+        self.interface.timeout = normal_timeout
 
     def _detect_program(self) -> bool:
         try:
