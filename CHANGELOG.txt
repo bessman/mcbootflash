@@ -1,3 +1,8 @@
+5.1.1
+
+Bug fixes:
+- Increase timeout during flash erase (#6)
+
 5.1.0
 
 Misc
