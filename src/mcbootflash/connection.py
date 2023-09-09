@@ -1,7 +1,7 @@
 # noqa: D100
 import logging
 from struct import error as structerror
-from typing import Any, Dict, Generator, List, Tuple, Type, Union
+from typing import Any, Dict, Generator, Tuple, Type, Union
 
 import progressbar  # type: ignore[import]
 from intelhex import IntelHex  # type: ignore[import]
@@ -95,8 +95,11 @@ class Bootloader:
             If HEX-file cannot be flashed.
         """
         path = hexfile
-        hexfile = IntelHex(path)
-        segments = self._get_segments_in_range(hexfile, self._memory_range)
+        # Since the MCU uses 16-bit instructions, each "address" in the (8-bit) hex file
+        # is actually only half an address. Therefore, we need to multiply addresses
+        # received from MCC by two to get the corresponding address in the hex file.
+        hexdata = IntelHex(path)[2 * self._memory_range[0] : 2 * self._memory_range[-1]]
+        segments = [hexdata[u:l] for u, l in hexdata.segments()]
 
         if not segments:
             raise BootloaderError(
@@ -129,39 +132,10 @@ class Bootloader:
         self._self_verify()
 
     @staticmethod
-    def _get_segments_in_range(
-        hexfile: IntelHex, program_memory: range
-    ) -> List[IntelHex]:
-        segments = []
-
-        for addr_range in hexfile.segments():
-            # Since the MCU uses 16-bit instructions, each "address" in the (8-bit) hex
-            # file is actually only half an address. Therefore, we need to divide by two
-            # to get the actual address.
-            if all(addr >> 1 in program_memory for addr in addr_range):
-                _logger.debug(
-                    "Adding HEX segment {i}: "
-                    f"{addr_range[0] >> 1:#08x}:{addr_range[1] >> 1:#08x}"
-                )
-                segments.append(hexfile[addr_range[0] : addr_range[1]])
-            else:
-                _logger.debug(
-                    f"HEX segment {hexfile.segments().index(addr_range)} ignored; "
-                    "not in program memory range:"
-                )
-                _logger.debug(
-                    f"([{addr_range[0] >> 1:#08x}:{addr_range[1] >> 1:#08x}] vs. "
-                    f"[{program_memory[0]:#08x}:"
-                    f"{program_memory[-1]:#08x}])"
-                )
-
-        return segments
-
-    @staticmethod
-    def _chunk(hexfile: IntelHex, size: int) -> Generator[IntelHex, None, None]:
-        start = hexfile.minaddr()
-        stop = hexfile.maxaddr()
-        return (hexfile[i : i + size] for i in range(start, stop, size))
+    def _chunk(hexdata: IntelHex, size: int) -> Generator[IntelHex, None, None]:
+        start = hexdata.minaddr()
+        stop = hexdata.maxaddr()
+        return (hexdata[i : i + size] for i in range(start, stop, size))
 
     def _print_progress(self, written_bytes: int, total_bytes: int) -> None:
         if self._bar is None:
@@ -373,7 +347,7 @@ class Bootloader:
 
         return checksum & 0xFFFF
 
-    def _checksum(self, hexfile: IntelHex) -> None:
+    def _checksum(self, hexdata: IntelHex) -> None:
         """Compare checksums calculated locally and onboard device.
 
         Parameters
@@ -383,8 +357,8 @@ class Bootloader:
         length : int
             Number of bytes to checksum.
         """
-        checksum1 = self._get_local_checksum(hexfile)
-        checksum2 = self._get_remote_checksum(hexfile.minaddr() >> 1, len(hexfile))
+        checksum1 = self._get_local_checksum(hexdata)
+        checksum2 = self._get_remote_checksum(hexdata.minaddr() >> 1, len(hexdata))
 
         if checksum1 != checksum2:
             _logger.debug(f"Checksum mismatch: {checksum1} != {checksum2}")
