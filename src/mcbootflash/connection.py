@@ -1,6 +1,6 @@
 # noqa: D100
 import logging
-from collections.abc import Callable
+import sys
 from struct import error as structerror
 from typing import Any, Dict, Generator, Tuple, Type, Union
 
@@ -24,6 +24,11 @@ from mcbootflash.protocol import (
     ResponseCode,
     Version,
 )
+
+if sys.version_info.minor < 9:
+    from typing import Callable
+else:
+    from collections.abc import Callable
 
 _logger = logging.getLogger(__name__)
 
