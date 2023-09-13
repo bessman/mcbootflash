@@ -26,6 +26,7 @@ Mcbootflash provides a minimal CLI script, which can be accessed via the `mcboot
                               before giving up.
 	-v, --verbose         Print debug messages.
 	-q, --quiet           Suppress output.
+            --version         Print version string.
 
 
 Example usage
