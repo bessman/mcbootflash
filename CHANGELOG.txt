@@ -1,3 +1,22 @@
+6.0.0
+
+Dependency changes:
+- `progressbar2` is now optional (fix #11).
+
+API changes:
+- The signature of mcbootflash.Bootloader.flash has changed. The `quiet` option is
+  removed, and a new `progress_callback` option is added.
+
+CLI changes:
+- Added `--version` option to display mcbootflash version string.
+- If `progressbar2` is not installed, the script falls back on displaying the progress
+  as just a percentage.
+
+Bug fixes:
+- All data within program memory range is now flashed. Previously, data which was part
+  of a contiguous block of data was ignored if any part of the block did not fit within
+  the program memory range (fix #9).
+
 5.1.1
 
 Bug fixes:
