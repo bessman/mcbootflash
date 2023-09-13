@@ -19,6 +19,7 @@ jobs:
       run: |
         pip install tox
         tox -e test
+        tox -e progressbar
         tox -e xml
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v3
