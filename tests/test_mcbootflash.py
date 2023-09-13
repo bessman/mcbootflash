@@ -3,7 +3,8 @@ import logging
 
 import pytest
 
-from mcbootflash import Bootloader, BootloaderError, flash, get_parser
+from mcbootflash import Bootloader, BootloaderError, __version__, flash, get_parser
+from mcbootflash.__main__ import main
 
 PORTNAME = "/dev/ttyUSB0"
 
@@ -27,6 +28,13 @@ def test_flash(reserial, verbose, quiet, caplog):
         )
     )
     assert "Self verify OK" in caplog.messages[-1]
+
+
+def test_version(capsys):
+    try:
+        main(["--version"])
+    except SystemExit:
+        assert capsys.readouterr().out == f"{__version__}\n"
 
 
 def test_overwrite_args(capsys):
