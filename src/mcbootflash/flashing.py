@@ -3,9 +3,14 @@ import argparse
 import logging
 from typing import Union
 
-import progressbar  # type: ignore[import]
+try:
+    import progressbar  # type: ignore[import]
 
-from mcbootflash.connection import Bootloader
+    _PROGRESSBAR_AVAILABLE = True
+except ImportError:
+    _PROGRESSBAR_AVAILABLE = False
+
+from mcbootflash.connection import Bootloader, ProgressCallback
 from mcbootflash.error import BootloaderError
 
 _logger = logging.getLogger(__name__)
@@ -84,11 +89,47 @@ def get_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Suppress output.",
     )
+
     return parser
 
 
+class _Bar:
+    pbar = None
+
+    @staticmethod
+    def callback(written_bytes: int, total_bytes: int) -> None:
+        if not _Bar.pbar:
+            widgets = [
+                progressbar.Percentage(),
+                " ",
+                progressbar.DataSize(),
+                " ",
+                progressbar.Bar(),
+                " ",
+                progressbar.Timer(),
+            ]
+            progress = progressbar.ProgressBar(widgets=widgets)
+            _Bar.pbar = progress.start(max_value=total_bytes)
+
+        if written_bytes == total_bytes:
+            assert isinstance(_Bar.pbar, progressbar.ProgressBar)
+            _Bar.pbar.finish()
+            _Bar.pbar = None
+        else:
+            assert isinstance(_Bar.pbar, progressbar.ProgressBar)
+            _Bar.pbar.update(value=written_bytes)
+
+    @staticmethod
+    def fallback(written_bytes: int, total_bytes: int) -> None:
+        print(f"{100 * written_bytes/total_bytes:.0f}%", end=" ")
+        print(f"Wrote {written_bytes}/{total_bytes} bytes.", end=" ")
+        print(end="\n" if written_bytes == total_bytes else "\r")
+
+
 def flash(parsed_args: Union[None, argparse.Namespace] = None) -> None:
-    """Entry point for console_script.
+    """Command line script for firmware flashing.
+
+    Use this directly or indirectly as entry point for project.scripts.
 
     Parameters
     ----------
@@ -97,14 +138,7 @@ def flash(parsed_args: Union[None, argparse.Namespace] = None) -> None:
         command line.
     """
     parsed_args = parsed_args or get_parser().parse_args()
-    progressbar.streams.wrap_stderr()
-
-    if parsed_args.verbose:
-        logging.basicConfig(level=logging.DEBUG)
-    elif not parsed_args.quiet:
-        logging.basicConfig(level=logging.INFO, format="%(message)s")
-    else:
-        logging.basicConfig(level=logging.WARNING)
+    callback = _logconf(parsed_args)
 
     try:
         boot = Bootloader(
@@ -112,10 +146,35 @@ def flash(parsed_args: Union[None, argparse.Namespace] = None) -> None:
             baudrate=parsed_args.baudrate,
             timeout=parsed_args.timeout,
         )
-        boot.flash(hexfile=parsed_args.file, quiet=parsed_args.quiet)
+        boot.flash(
+            hexfile=parsed_args.file,
+            progress_callback=callback,
+        )
     except BootloaderError as exc:
         print(
             "\nFlashing failed:",
             f"{type(exc).__name__}: {exc}" if str(exc) else f"{type(exc).__name__}",
         )
         logging.debug(exc, exc_info=True)
+
+
+def _logconf(parsed_args: argparse.Namespace) -> Union[ProgressCallback, None]:
+    callback = None
+
+    if not parsed_args.quiet:
+        if _PROGRESSBAR_AVAILABLE:
+            callback = _Bar.callback
+            progressbar.streams.wrap_stderr()
+        else:
+            _logger.warning("'progressbar' package not available. Using fallback.")
+            callback = _Bar.fallback
+
+        logging.basicConfig(
+            level=logging.DEBUG if parsed_args.verbose else logging.INFO,
+            format="%(message)s",
+        )
+
+    if parsed_args.verbose:
+        logging.basicConfig(level=logging.DEBUG)
+
+    return callback

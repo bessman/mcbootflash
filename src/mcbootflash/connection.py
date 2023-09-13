@@ -1,9 +1,9 @@
 # noqa: D100
 import logging
+from collections.abc import Callable
 from struct import error as structerror
 from typing import Any, Dict, Generator, Tuple, Type, Union
 
-import progressbar  # type: ignore[import]
 from intelhex import IntelHex  # type: ignore[import]
 from serial import Serial  # type: ignore[import]
 
@@ -45,6 +45,8 @@ _RESPONSE_TYPE_MAP: Dict[CommandCode, Type[ResponseBase]] = {
     CommandCode.GET_MEMORY_ADDRESS_RANGE: MemoryRange,
 }
 
+ProgressCallback = Callable[[int, int], None]
+
 
 class Bootloader:
     """Communication interface to device running MCC 16-bit bootloader.
@@ -77,17 +79,23 @@ class Bootloader:
         except structerror as exc:
             raise BootloaderError("No response from bootloader") from exc
         _logger.info("Connected")
-        self._bar = None
 
-    def flash(self, hexfile: str, quiet: bool = False) -> None:
+    def flash(
+        self,
+        hexfile: str,
+        progress_callback: Union[None, ProgressCallback] = None,
+    ) -> None:
         """Flash application firmware.
 
         Parameters
         ----------
         hexfile : str
             Path to a HEX-file containing application firmware.
-        quiet : bool (optional)
-            If true, don't print a progressbar while flashing. False by default.
+        progress_callback : Callable[[int, int], None] (optional)
+            A callable which takes the number of bytes written so far as its first
+            argument, and the total number of bytes to write as its second argument.
+            The callable returns None. If no callback is provided, progress is not
+            reported.
 
         Raises
         ------
@@ -126,8 +134,8 @@ class Bootloader:
                 )
                 self._checksum(chunk)
 
-                if not quiet:
-                    self._print_progress(written_bytes, total_bytes)
+                if progress_callback:
+                    progress_callback(written_bytes, total_bytes)
 
         self._self_verify()
 
@@ -136,25 +144,6 @@ class Bootloader:
         start = hexdata.minaddr()
         stop = hexdata.maxaddr()
         return (hexdata[i : i + size] for i in range(start, stop, size))
-
-    def _print_progress(self, written_bytes: int, total_bytes: int) -> None:
-        if self._bar is None:
-            widgets = [
-                progressbar.Percentage(),
-                " ",
-                progressbar.DataSize(),
-                " ",
-                progressbar.Bar(),
-                " ",
-                progressbar.Timer(),
-            ]
-            progress = progressbar.ProgressBar(widgets=widgets)
-            self._bar = progress.start(max_value=total_bytes)
-        elif written_bytes == total_bytes:
-            self._bar.finish()
-            self._bar = None
-        else:
-            self._bar.update(value=written_bytes)
 
     def _send_and_receive(self, command: Command, data: bytes = b"") -> ResponseBase:
         self.interface.write(bytes(command) + data)
