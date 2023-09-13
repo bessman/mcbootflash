@@ -12,7 +12,6 @@ license = {file = "LICENSE"}
 dependencies = [
     "pyserial",
     "intelhex",
-    "progressbar2",
 ]
 classifiers = [
     "Programming Language :: Python :: 3",
@@ -47,6 +46,7 @@ doc = [
   "sphinx_mdinclude",
   "sphinx_rtd_theme",
 ]
+progressbar = ["progressbar2"]
 
 [tool.tox]
 legacy_tox_ini = """
@@ -58,6 +58,7 @@ envlist =
     prospector
     pydocstyle
     test
+    progressbar
     docs
     report
 
@@ -85,17 +86,30 @@ usedevelop = True
 deps =
     pytest
     coverage
-    pytest-reserial >= 0.2.2
-commands = coverage run -m pytest --replay
+    pytest-reserial >= 0.2.4
+commands = coverage run --parallel-mode -m pytest --replay
+
+[testenv:progressbar]
+usedevelop = True
+deps =
+    pytest
+    coverage
+    pytest-reserial >= 0.2.4
+    progressbar2
+commands = coverage run --parallel-mode -m pytest -k test_flash --replay
 
 [testenv:report]
 deps = coverage
-commands = coverage report
+commands =
+    coverage combine
+    coverage report
 depends = test
 
 [testenv:xml]
 deps = coverage
-commands = coverage xml
+commands =
+    coverage combine
+    coverage xml
 depends = test
 
 [testenv:docs]
