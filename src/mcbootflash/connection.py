@@ -23,6 +23,7 @@ from mcbootflash.protocol import (
     ResponseBase,
     ResponseCode,
     Version,
+    get_response,
 )
 
 if sys.version_info.minor < 9:
@@ -31,24 +32,6 @@ else:
     from collections.abc import Callable
 
 _logger = logging.getLogger(__name__)
-
-_BOOTLOADER_EXCEPTIONS: Dict[ResponseCode, Type[BootloaderError]] = {
-    ResponseCode.UNSUPPORTED_COMMAND: UnsupportedCommand,
-    ResponseCode.BAD_ADDRESS: BadAddress,
-    ResponseCode.BAD_LENGTH: BadLength,
-    ResponseCode.VERIFY_FAIL: VerifyFail,
-}
-
-_RESPONSE_TYPE_MAP: Dict[CommandCode, Type[ResponseBase]] = {
-    CommandCode.READ_VERSION: Version,
-    CommandCode.READ_FLASH: Response,
-    CommandCode.WRITE_FLASH: Response,
-    CommandCode.ERASE_FLASH: Response,
-    CommandCode.CALC_CHECKSUM: Checksum,
-    CommandCode.RESET_DEVICE: Response,
-    CommandCode.SELF_VERIFY: Response,
-    CommandCode.GET_MEMORY_ADDRESS_RANGE: MemoryRange,
-}
 
 ProgressCallback = Callable[[int, int], None]
 
@@ -152,7 +135,7 @@ class Bootloader:
 
     def _send_and_receive(self, command: Command, data: bytes = b"") -> ResponseBase:
         self.interface.write(bytes(command) + data)
-        response = _RESPONSE_TYPE_MAP[command.command].from_serial(self.interface)
+        response = get_response(self.interface)
         self._verify_good_response(command, response)
         return response
 
@@ -177,7 +160,13 @@ class Bootloader:
             _logger.debug("Command failed:")
             _logger.debug(f"Command:  {bytes(command_packet)!r}")
             _logger.debug(f"Response: {bytes(response_packet)!r}")
-            raise _BOOTLOADER_EXCEPTIONS[response_packet.success]
+            bootloader_exceptions: Dict[ResponseCode, Type[BootloaderError]] = {
+                ResponseCode.UNSUPPORTED_COMMAND: UnsupportedCommand,
+                ResponseCode.BAD_ADDRESS: BadAddress,
+                ResponseCode.BAD_LENGTH: BadLength,
+                ResponseCode.VERIFY_FAIL: VerifyFail,
+            }
+            raise bootloader_exceptions[response_packet.success]
 
     def _read_version(self) -> Tuple[int, int, int, int, int]:
         """Read bootloader version and some other useful information.
