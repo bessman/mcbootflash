@@ -249,6 +249,8 @@ def get_response(interface: Serial) -> ResponseBase:
         CommandCode.SELF_VERIFY: Response,
         CommandCode.GET_MEMORY_ADDRESS_RANGE: MemoryRange,
     }
-    packet_type = response_type_map[CommandCode(int.from_bytes(peek))]
+    packet_type = response_type_map[
+        CommandCode(int.from_bytes(peek, byteorder="little"))
+    ]
     remainder = interface.read(packet_type.get_size() - 1)
     return packet_type.from_bytes(peek + remainder)
