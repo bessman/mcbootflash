@@ -122,3 +122,11 @@ def test_no_response_from_bootloader(reserial, capsys):
         )
     )
     assert "No response from bootloader" in capsys.readouterr().out
+
+
+def test_checksum_workaround(reserial, caplog):
+    caplog.set_level(logging.DEBUG)
+    boot = Bootloader(port=PORTNAME, baudrate=460800, timeout=1)
+    boot.flash("tests/testcases/flash/test.hex")
+    # Final log message is 'Self verify OK', we want the one before that.
+    assert "skipping checksum calculation" in caplog.messages[-2]
