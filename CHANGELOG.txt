@@ -1,3 +1,18 @@
+v6.1.0
+======
+
+API changes
+-----------
+- Added function mcbootflash.protocol.get_response to read response packets from serial
+  in a more robust way.
+- Packet.from_serial is deprecated in favor of get_response.
+
+Bug fixes
+---------
+- Fixed an off-by-one error which skipped the final word within program memory range.
+- Added a workaround for a bug in the bootloader where checksum calculation would fail
+  close to the upper end of program memory range (fix #13).
+
 6.0.0
 
 Dependency changes:
