@@ -2,7 +2,8 @@
 import enum
 import struct
 from dataclasses import asdict, dataclass
-from typing import ClassVar, Type, TypeVar
+from typing import ClassVar, Dict, Type, TypeVar
+from warnings import warn
 
 from serial import Serial  # type: ignore[import]
 
@@ -87,12 +88,19 @@ class Packet:
             return cls(*struct.unpack(cls.FORMAT, data))
         except struct.error as exc:
             raise struct.error(
-                f"{cls} expected {struct.calcsize(cls.FORMAT)} bytes, got {len(data)}."
+                f"{cls} expected {struct.calcsize(cls.FORMAT)} bytes, got {len(data)}"
             ) from exc
 
     @classmethod
     def from_serial(cls: Type[_P], interface: Serial) -> _P:
         """Create a Packet instance by reading from a serial interface."""
+        warn(
+            (
+                "Packet.from_serial is deprecated and will be removed in a future "
+                "version. Use get_pocket instead."
+            ),
+            DeprecationWarning,
+        )
         return cls.from_bytes(interface.read(cls.get_size()))
 
     @classmethod
@@ -212,3 +220,35 @@ class Checksum(Response):
 
     checksum: int = 0
     FORMAT: ClassVar[str] = Response.FORMAT + "H"
+
+
+def get_response(interface: Serial) -> ResponseBase:
+    """Get a Response packet from a serial connection.
+
+    First, the Packet type is determined by peeking the first byte. Then the remaining
+    data is read and an instance of the appropriate Packet subclass is returned.
+
+    Parameters
+    ----------
+    interface : Serial
+        An open Serial instance.
+
+    Returns
+    -------
+    packet : ResponseBase
+        An instance of a ResponseBase packet or a subclass thereof.
+    """
+    peek = interface.read()
+    response_type_map: Dict[CommandCode, Type[ResponseBase]] = {
+        CommandCode.READ_VERSION: Version,
+        CommandCode.READ_FLASH: Response,
+        CommandCode.WRITE_FLASH: Response,
+        CommandCode.ERASE_FLASH: Response,
+        CommandCode.CALC_CHECKSUM: Checksum,
+        CommandCode.RESET_DEVICE: Response,
+        CommandCode.SELF_VERIFY: Response,
+        CommandCode.GET_MEMORY_ADDRESS_RANGE: MemoryRange,
+    }
+    packet_type = response_type_map[CommandCode(int.from_bytes(peek))]
+    remainder = interface.read(packet_type.get_size() - 1)
+    return packet_type.from_bytes(peek + remainder)
