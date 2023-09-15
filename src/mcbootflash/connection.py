@@ -94,7 +94,9 @@ class Bootloader:
         # Since the MCU uses 16-bit instructions, each "address" in the (8-bit) hex file
         # is actually only half an address. Therefore, we need to multiply addresses
         # received from MCC by two to get the corresponding address in the hex file.
-        hexdata = IntelHex(path)[2 * self._memory_range[0] : 2 * self._memory_range[-1]]
+        hexdata = IntelHex(path)[
+            2 * self._memory_range[0] : 2 * (self._memory_range[-1] + 1)
+        ]
         segments = [hexdata[u:l] for u, l in hexdata.segments()]
 
         if not segments:
