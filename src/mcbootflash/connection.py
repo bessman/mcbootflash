@@ -342,6 +342,18 @@ class Bootloader:
         length : int
             Number of bytes to checksum.
         """
+        upper_legal_address = self._memory_range[-1] + 1
+        lower_data_address = hexdata.minaddr() >> 1
+
+        # Workaround for bug in bootloader. The bootloader incorrectly raises
+        # BAD_ADDRESS when trying to calculate checksums close to the upper bound of the
+        # program memory range.
+        if (upper_legal_address - lower_data_address) < len(hexdata):
+            _logger.debug(
+                "Too close to upper memory bound, skipping checksum calculation"
+            )
+            return
+
         checksum1 = self._get_local_checksum(hexdata)
         checksum2 = self._get_remote_checksum(hexdata.minaddr() >> 1, len(hexdata))
 
