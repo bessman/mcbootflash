@@ -97,7 +97,7 @@ class Packet:
         warn(
             (
                 "Packet.from_serial is deprecated and will be removed in a future "
-                "version. Use get_pocket instead."
+                "version. Use get_response instead."
             ),
             DeprecationWarning,
         )
