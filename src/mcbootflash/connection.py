@@ -2,26 +2,18 @@
 import logging
 import sys
 from struct import error as structerror
-from typing import Any, Dict, Tuple, Type, Union
+from typing import Any, Tuple, Union
 
 import bincopy  # type: ignore[import]
 from serial import Serial  # type: ignore[import]
 
-from mcbootflash.error import (
-    BadAddress,
-    BadLength,
-    BootloaderError,
-    UnsupportedCommand,
-    VerifyFail,
-)
+from mcbootflash.error import BootloaderError, VerifyFail
 from mcbootflash.protocol import (
     Checksum,
     Command,
     CommandCode,
     MemoryRange,
-    Response,
     ResponseBase,
-    ResponseCode,
     Version,
     get_response,
 )
@@ -130,39 +122,12 @@ class Bootloader:
         self._self_verify()
 
     def _send_and_receive(self, command: Command, data: bytes = b"") -> ResponseBase:
+        msg = f"TX: {' '.join(f'{b:X}' for b in bytes(command))}"
+        msg += f" plus {len(data)} data bytes" if data else ""
+        _logger.debug(msg)
         self.interface.write(bytes(command) + data)
-        response = get_response(self.interface)
-        self._verify_good_response(command, response)
+        response = get_response(self.interface, command)
         return response
-
-    @staticmethod
-    def _verify_good_response(
-        command_packet: Command,
-        response_packet: ResponseBase,
-    ) -> None:
-        """Check that response is not an error."""
-        if response_packet.command != command_packet.command:
-            _logger.debug("Command code mismatch:")
-            _logger.debug(f"Sent: {command_packet.command.name}")
-            _logger.debug(f"{CommandCode(response_packet.command).name}")
-            raise BootloaderError("Command code mismatch")
-
-        if isinstance(response_packet, Version):
-            return
-
-        assert isinstance(response_packet, Response)
-
-        if response_packet.success != ResponseCode.SUCCESS:
-            _logger.debug("Command failed:")
-            _logger.debug(f"Command:  {bytes(command_packet)!r}")
-            _logger.debug(f"Response: {bytes(response_packet)!r}")
-            bootloader_exceptions: Dict[ResponseCode, Type[BootloaderError]] = {
-                ResponseCode.UNSUPPORTED_COMMAND: UnsupportedCommand,
-                ResponseCode.BAD_ADDRESS: BadAddress,
-                ResponseCode.BAD_LENGTH: BadLength,
-                ResponseCode.VERIFY_FAIL: VerifyFail,
-            }
-            raise bootloader_exceptions[response_packet.success]
 
     def _read_version(self) -> Tuple[int, int, int, int, int]:
         """Read bootloader version and some other useful information.
