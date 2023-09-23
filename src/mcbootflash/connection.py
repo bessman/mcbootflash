@@ -119,7 +119,7 @@ class Bootloader:
         self._self_verify()
 
     def _send_and_receive(self, command: Command, data: bytes = b"") -> ResponseBase:
-        msg = f"TX: {' '.join(f'{b:X}' for b in bytes(command))}"
+        msg = f"TX: {' '.join(f'{b:02X}' for b in bytes(command))}"
         msg += f" plus {len(data)} data bytes" if data else ""
         _logger.debug(msg)
         self.interface.write(bytes(command) + data)
