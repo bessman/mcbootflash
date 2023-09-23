@@ -2,20 +2,27 @@
 import logging
 import sys
 from struct import error as structerror
-from typing import Any, Tuple, Union
+from typing import Any, Dict, Tuple, Type, Union
 
 import bincopy  # type: ignore[import]
 from serial import Serial  # type: ignore[import]
 
-from mcbootflash.error import BootloaderError, UnsupportedCommand, VerifyFail
+from mcbootflash.error import (
+    BadAddress,
+    BadLength,
+    BootloaderError,
+    UnsupportedCommand,
+    VerifyFail,
+)
 from mcbootflash.protocol import (
     Checksum,
     Command,
     CommandCode,
     MemoryRange,
+    Response,
     ResponseBase,
+    ResponseCode,
     Version,
-    get_response,
 )
 
 if sys.version_info.minor < 9:
@@ -60,6 +67,7 @@ class Bootloader:
             raise BootloaderError("No response from bootloader") from exc
         _logger.info("Connected")
         self._disable_checksum = False
+        self._most_recent_command: Union[None, Command] = None
 
     def flash(
         self,
@@ -117,13 +125,81 @@ class Bootloader:
 
         self._self_verify()
 
+    def _get_response(self) -> ResponseBase:
+        """Get a Response packet.
+
+        Returns
+        -------
+        packet : ResponseBase
+            An instance of a ResponseBase packet or a subclass thereof.
+        """
+        # Can't read the whole response in one go. Its length depends on whether it's an
+        # error or not. Start by reading the command echo to determine the response
+        # type.
+        response = ResponseBase.from_bytes(self.interface.read(ResponseBase.get_size()))
+        _logger.debug(f"RX: {self._format_debug_bytes(bytes(response))}")
+
+        assert isinstance(self._most_recent_command, Command)
+
+        if response.command != self._most_recent_command.command:
+            raise BootloaderError("Command code mismatch")
+
+        response_type_map: Dict[CommandCode, Type[ResponseBase]] = {
+            CommandCode.READ_VERSION: Version,
+            CommandCode.READ_FLASH: Response,
+            CommandCode.WRITE_FLASH: Response,
+            CommandCode.ERASE_FLASH: Response,
+            CommandCode.CALC_CHECKSUM: Checksum,
+            CommandCode.RESET_DEVICE: Response,
+            CommandCode.SELF_VERIFY: Response,
+            CommandCode.GET_MEMORY_ADDRESS_RANGE: MemoryRange,
+        }
+        response_type = response_type_map[CommandCode(response.command)]
+
+        # READ_VERSION has no 'success' flag.
+        if response_type is Version:
+            remainder = self.interface.read(
+                response_type.get_size() - response.get_size()
+            )
+            _logger.debug(f"RX: {self._format_debug_bytes(remainder, bytes(response))}")
+            return response_type.from_bytes(bytes(response) + remainder)
+
+        success = self.interface.read(1)
+        _logger.debug(f"RX: {self._format_debug_bytes(success, bytes(response))}")
+
+        if success[0] != ResponseCode.SUCCESS:
+            bootloader_exceptions: Dict[ResponseCode, Type[BootloaderError]] = {
+                ResponseCode.UNSUPPORTED_COMMAND: UnsupportedCommand,
+                ResponseCode.BAD_ADDRESS: BadAddress,
+                ResponseCode.BAD_LENGTH: BadLength,
+                ResponseCode.VERIFY_FAIL: VerifyFail,
+            }
+            raise bootloader_exceptions[success[0]]
+
+        response = Response.from_bytes(bytes(response) + success)
+        remainder = self.interface.read(response_type.get_size() - response.get_size())
+
+        if remainder:
+            _logger.debug(f"RX: {self._format_debug_bytes(remainder, bytes(response))}")
+
+        response = response_type.from_bytes(bytes(response) + remainder)
+
+        return response
+
     def _send_and_receive(self, command: Command, data: bytes = b"") -> ResponseBase:
-        msg = f"TX: {' '.join(f'{b:02X}' for b in bytes(command))}"
+        msg = f"TX: {self._format_debug_bytes(bytes(command))}"
         msg += f" plus {len(data)} data bytes" if data else ""
         _logger.debug(msg)
         self.interface.write(bytes(command) + data)
-        response = get_response(self.interface, command)
+        self._most_recent_command = command
+        response = self._get_response()
         return response
+
+    @staticmethod
+    def _format_debug_bytes(debug_bytes: bytes, pad: bytes = b"") -> str:
+        padding = " " * len(f"{' '.join(f'{b:02X}' for b in pad)}")
+        padding += " " if padding else ""
+        return f"{padding}{' '.join(f'{b:02X}' for b in debug_bytes)}"
 
     def _read_version(self) -> Tuple[int, int, int, int, int]:
         """Read bootloader version and some other useful information.

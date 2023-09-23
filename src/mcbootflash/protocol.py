@@ -1,22 +1,11 @@
 """Definitions and representations for data sent to and from the bootloader."""
 import enum
-import logging
 import struct
 from dataclasses import asdict, dataclass
-from typing import ClassVar, Dict, Type, TypeVar
+from typing import ClassVar, Type, TypeVar
 from warnings import warn
 
 from serial import Serial  # type: ignore[import]
-
-from mcbootflash.error import (
-    BadAddress,
-    BadLength,
-    BootloaderError,
-    UnsupportedCommand,
-    VerifyFail,
-)
-
-_logger = logging.getLogger(__name__)
 
 
 class CommandCode(enum.IntEnum):
@@ -231,73 +220,3 @@ class Checksum(Response):
 
     checksum: int = 0
     FORMAT: ClassVar[str] = Response.FORMAT + "H"
-
-
-def get_response(interface: Serial, in_response_to: Command) -> ResponseBase:
-    """Get a Response packet from a serial connection.
-
-    Parameters
-    ----------
-    interface : Serial
-        An open Serial instance.
-    in_response_to : Command
-        The most recently sent Command packet.
-
-    Returns
-    -------
-    packet : ResponseBase
-        An instance of a ResponseBase packet or a subclass thereof.
-    """
-    # Can't read the whole response in one go. Its length depends on whether it's an
-    # error or not. Start by reading the command echo to determine the response type.
-    response = ResponseBase.from_bytes(interface.read(ResponseBase.get_size()))
-    _logger.debug(_format_rx(bytes(response)))
-
-    if response.command != in_response_to.command:
-        raise BootloaderError("Command code mismatch")
-
-    response_type_map: Dict[CommandCode, Type[ResponseBase]] = {
-        CommandCode.READ_VERSION: Version,
-        CommandCode.READ_FLASH: Response,
-        CommandCode.WRITE_FLASH: Response,
-        CommandCode.ERASE_FLASH: Response,
-        CommandCode.CALC_CHECKSUM: Checksum,
-        CommandCode.RESET_DEVICE: Response,
-        CommandCode.SELF_VERIFY: Response,
-        CommandCode.GET_MEMORY_ADDRESS_RANGE: MemoryRange,
-    }
-    response_type = response_type_map[CommandCode(response.command)]
-
-    # READ_VERSION has no 'success' flag.
-    if response_type is Version:
-        remainder = interface.read(response_type.get_size() - response.get_size())
-        _logger.debug(_format_rx(remainder, bytes(response)))
-        return response_type.from_bytes(bytes(response) + remainder)
-
-    success = interface.read(1)
-    _logger.debug(_format_rx(success, bytes(response)))
-
-    if success[0] != ResponseCode.SUCCESS:
-        bootloader_exceptions: Dict[ResponseCode, Type[BootloaderError]] = {
-            ResponseCode.UNSUPPORTED_COMMAND: UnsupportedCommand,
-            ResponseCode.BAD_ADDRESS: BadAddress,
-            ResponseCode.BAD_LENGTH: BadLength,
-            ResponseCode.VERIFY_FAIL: VerifyFail,
-        }
-        raise bootloader_exceptions[success[0]]
-
-    response = Response.from_bytes(bytes(response) + success)
-    remainder = interface.read(response_type.get_size() - response.get_size())
-
-    if remainder:
-        _logger.debug(_format_rx(remainder, bytes(response)))
-
-    response = response_type.from_bytes(bytes(response) + remainder)
-
-    return response
-
-
-def _format_rx(rxbytes: bytes, pad: bytes = b"") -> str:
-    padding = " " * len(f"{' '.join(f'{b:02X}' for b in pad)}")
-    padding += " " if padding else ""
-    return f"RX: {padding}{' '.join(f'{b:02X}' for b in rxbytes)}"
