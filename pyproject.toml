@@ -11,7 +11,7 @@ requires-python = ">=3.7"
 license = {file = "LICENSE"}
 dependencies = [
     "pyserial",
-    "bincopy@git+https://github.com/eerimoq/bincopy",
+    "bincopy >= 19.0.0",
 ]
 classifiers = [
     "Programming Language :: Python :: 3",

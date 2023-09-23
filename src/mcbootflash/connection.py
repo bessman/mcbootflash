@@ -93,7 +93,13 @@ class Bootloader:
         """
         path = hexfile
         hexdata = bincopy.BinFile()
-        hexdata.add_microchip_hex_file(path)
+        hexdata.add_ihex_file(path)
+        hexdata.word_size_bytes = 2
+        hexdata.segments.word_size_bytes = 2
+
+        for segment in hexdata.segments:
+            segment.word_size_bytes = 2
+
         hexdata.crop(*self._memory_range)
 
         if not hexdata.segments:
