@@ -100,9 +100,8 @@ class Bootloader:
         chunk_size //= hexdata.word_size_bytes
         total_bytes = len(hexdata) * hexdata.word_size_bytes
         written_bytes = 0
-        alignment = self._write_size // hexdata.word_size_bytes
 
-        for chunk in hexdata.segments.chunks(chunk_size, alignment):
+        for chunk in hexdata.segments.chunks(chunk_size):
             self._write_flash(chunk)
             written_bytes += len(chunk.data)
             _logger.debug(
@@ -247,15 +246,21 @@ class Bootloader:
             A bincopy.Segment instance of length no greater than the bootloader's
             max_packet_length attribute.
         """
-        _logger.debug(f"Writing {len(chunk.data)} bytes to {chunk.address:#08x}")
+        # Ensure data length is a multiple of write size.
+        padding = b"\xff" * (
+            (self._write_size - (len(chunk.data) % self._write_size)) % self._write_size
+        )
+        _logger.debug(
+            f"Writing {len(chunk.data) + len(padding)} bytes to {chunk.address:#08x}"
+        )
         self._send_and_receive(
             Command(
                 command=CommandCode.WRITE_FLASH,
-                data_length=len(chunk.data),
+                data_length=len(chunk.data) + len(padding),
                 unlock_sequence=self._FLASH_UNLOCK_KEY,
                 address=chunk.address,
             ),
-            chunk.data,
+            chunk.data + padding,
         )
 
     def _self_verify(self) -> None:
