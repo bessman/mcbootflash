@@ -298,6 +298,6 @@ def get_response(interface: Serial, in_response_to: Command) -> ResponseBase:
 
 
 def _format_rx(rxbytes: bytes, pad: bytes = b"") -> str:
-    padding = " " * len(f"{' '.join(f'{b:X}' for b in pad)}")
+    padding = " " * len(f"{' '.join(f'{b:02X}' for b in pad)}")
     padding += " " if padding else ""
-    return f"RX: {padding}{' '.join(f'{b:X}' for b in rxbytes)}"
+    return f"RX: {padding}{' '.join(f'{b:02X}' for b in rxbytes)}"
