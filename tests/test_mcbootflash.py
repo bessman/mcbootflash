@@ -130,3 +130,9 @@ def test_checksum_workaround(reserial, caplog):
     boot.flash("tests/testcases/flash/test.hex")
     # There's some other stuff after the message we're interested in.
     assert "skipping checksum calculation" in caplog.messages[-5]
+
+
+def test_checksum_not_supported(reserial, caplog):
+    boot = Bootloader(port=PORTNAME, baudrate=460800, timeout=5)
+    boot.flash("tests/testcases/flash/test.hex")
+    assert "Bootloader does not support checksums" in caplog.messages

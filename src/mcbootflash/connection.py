@@ -7,7 +7,7 @@ from typing import Any, Tuple, Union
 import bincopy  # type: ignore[import]
 from serial import Serial  # type: ignore[import]
 
-from mcbootflash.error import BootloaderError, VerifyFail
+from mcbootflash.error import BootloaderError, UnsupportedCommand, VerifyFail
 from mcbootflash.protocol import (
     Checksum,
     Command,
@@ -59,6 +59,7 @@ class Bootloader:
         except structerror as exc:
             raise BootloaderError("No response from bootloader") from exc
         _logger.info("Connected")
+        self._disable_checksum = False
 
     def flash(
         self,
@@ -108,13 +109,9 @@ class Bootloader:
                 f"{written_bytes} bytes written of {total_bytes} "
                 f"({written_bytes / total_bytes * 100:.2f}%)"
             )
-            segment = bincopy.Segment(
-                chunk.address * hexdata.word_size_bytes,
-                (chunk.address + len(chunk.data)) * hexdata.word_size_bytes,
-                data=chunk.data,
-                word_size_bytes=hexdata.word_size_bytes,
-            )
-            self._checksum(segment)
+
+            if not self._disable_checksum:
+                self._checksum(chunk)
 
             if progress_callback:
                 progress_callback(written_bytes, total_bytes)
@@ -305,7 +302,13 @@ class Bootloader:
             return
 
         checksum1 = self._get_local_checksum(chunk)
-        checksum2 = self._get_remote_checksum(chunk.address, len(chunk.data))
+
+        try:
+            checksum2 = self._get_remote_checksum(chunk.address, len(chunk.data))
+        except UnsupportedCommand:
+            _logger.warning("Bootloader does not support checksums")
+            self._disable_checksum = True
+            return
 
         if checksum1 != checksum2:
             _logger.debug(f"Checksum mismatch: {checksum1} != {checksum2}")
