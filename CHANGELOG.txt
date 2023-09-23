@@ -1,3 +1,19 @@
+v7.0.0
+======
+
+API changes
+-----------
+- get_response removed from public API.
+
+Bug fixes
+---------
+- Don't checksum if bootloader doesn't support it (fix #16).
+
+Misc
+----
+- HEX file parser changed from intelhex to bincopy.
+- Improved error handling and debug logging.
+
 v6.1.0
 ======
 
