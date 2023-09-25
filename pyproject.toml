@@ -7,11 +7,11 @@ name = "mcbootflash"
 authors = [{name = "Alexander Bessman", email = "alexander.bessman@gmail.com"}]
 dynamic = ["version", "description"]
 readme = "README.md"
-requires-python = ">=3.7"
+requires-python = ">=3.8"
 license = {file = "LICENSE"}
 dependencies = [
     "pyserial",
-    "bincopy >= 19.0.0",
+    "bincopy >= 19.1.0",
 ]
 classifiers = [
     "Programming Language :: Python :: 3",
