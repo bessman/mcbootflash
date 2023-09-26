@@ -101,8 +101,8 @@ class Bootloader:
                 "HEX file contains no data that fits entirely within program memory"
             )
 
-        self.erase_flash(range(*self._memory_range))
         _logger.info(f"Flashing {path}")
+        self.erase_flash()
         chunk_size = self._max_packet_length - Command.get_size()
         chunk_size -= chunk_size % self._write_size
         chunk_size //= hexdata.word_size_bytes
@@ -236,6 +236,11 @@ class Bootloader:
         )
 
     def _get_memory_address_range(self) -> Tuple[int, int]:
+        """Get the program memory range, i.e. the range of writable addresses.
+
+        The returned tuple is suitable for use in `range`, i.e. the upper bound is not
+        part of the writable range.
+        """
         mem_range_response = self._send_and_receive(
             Command(CommandCode.GET_MEMORY_ADDRESS_RANGE)
         )
@@ -245,7 +250,12 @@ class Bootloader:
             f"{mem_range_response.program_start:#08x}:"
             f"{mem_range_response.program_end:#08x}"
         )
-        return mem_range_response.program_start, mem_range_response.program_end
+        # program_end + 2 explanation:
+        # +1 because the upper bound reported by the bootloader is inclusive, but we
+        # want to use it as a Python range, which is half-open.
+        # +1 because the final byte of the final 24-bit instruction is not included in
+        # the range reported by the bootloader, but it is still writable.
+        return mem_range_response.program_start, mem_range_response.program_end + 2
 
     def erase_flash(
         self,
@@ -269,11 +279,11 @@ class Bootloader:
             erase was successful by checking that no application is detected after the
             erase. Set `verify` to False to skip this check.
         """
-        start, *_, end = erase_range if erase_range else self._memory_range
+        start, *_, end = erase_range if erase_range else range(*self._memory_range)
 
         if force or self._detect_program():
             _logger.info("Erasing flash...")
-            self._erase_flash(start, end)
+            self._erase_flash(start, end + 1)
         else:
             _logger.info("No application detected, skipping flash erase")
             return
@@ -286,6 +296,7 @@ class Bootloader:
             _logger.info("No application detected; flash erase successful")
 
     def _erase_flash(self, start_address: int, end_address: int) -> None:
+        # [start, end)
         _logger.debug(f"Erasing addresses {start_address:#08x}:{end_address:#08x}")
         normal_timeout = self.interface.timeout
 
