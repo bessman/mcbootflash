@@ -41,8 +41,8 @@ class Bootloader:
     Parameters
     ----------
     port : str
-       Serial port name. Typically /dev/ttyUSBx or /dev/ttyACMx on Posix, or COMx on
-       Windows.
+        Serial port name. Typically /dev/ttyUSBx or /dev/ttyACMx on Posix, or COMx on
+        Windows.
     **kwargs, optional
         Any additional arguments for the serial.Serial constructor.
     """
