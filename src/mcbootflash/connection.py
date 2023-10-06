@@ -35,6 +35,15 @@ _logger = logging.getLogger(__name__)
 ProgressCallback = Callable[[int, int], None]
 
 
+def _align_segments(
+    binfile: bincopy.BinFile, aligment: int, padding: bytes = b"\xff"
+) -> None:
+    for segment in binfile.segments:
+        offset = segment.minimum_address % aligment
+        segment.minimum_address -= offset
+        segment.data = offset * padding + segment.data
+
+
 class Bootloader:
     """Communication interface to device running MCC 16-bit bootloader.
 
@@ -95,21 +104,23 @@ class Bootloader:
         hexdata = bincopy.BinFile()
         hexdata.add_microchip_hex_file(path)
         hexdata.crop(*self._memory_range)
+        _align_segments(hexdata, self._write_size)
 
         if not hexdata.segments:
             raise BootloaderError(
                 "HEX file contains no data that fits entirely within program memory"
             )
 
-        _logger.info(f"Flashing {path}")
         self.erase_flash()
+        _logger.info(f"Flashing {path}")
         chunk_size = self._max_packet_length - Command.get_size()
         chunk_size -= chunk_size % self._write_size
         chunk_size //= hexdata.word_size_bytes
         total_bytes = len(hexdata) * hexdata.word_size_bytes
         written_bytes = 0
+        align = self._write_size // hexdata.word_size_bytes
 
-        for chunk in hexdata.segments.chunks(chunk_size):
+        for chunk in hexdata.segments.chunks(chunk_size, align):
             self._write_flash(chunk)
             written_bytes += len(chunk.data)
             _logger.debug(
