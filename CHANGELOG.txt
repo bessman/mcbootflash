@@ -1,3 +1,10 @@
+v7.0.4
+======
+
+Bug fixes
+---------
+- Ensure all write commands are aligned with write_size (fix #21).
+
 v7.0.3
 ======
 
