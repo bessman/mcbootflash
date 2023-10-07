@@ -5,4 +5,4 @@ from .flashing import flash, get_parser
 
 __all__ = ["Bootloader", "BootloaderError", "flash", "get_parser"]
 
-__version__ = "7.0.3"
+__version__ = "7.0.4"
