@@ -1,6 +1,11 @@
 Developer's overview
 ====================
 
+Tl;dr
+-----
+
+Just run :code:`tox`. If everything passes, you're OK. If not, read on.
+
 Code style
 ----------
 
@@ -15,11 +20,19 @@ best-practice conventions (default settings unless otherwise noted):
   - bandit
   - dodgy
   - mccabe (max-complexity 5)
-  - pycodestyle (E203 disabled because it conflicts with black)
-  - pydocstyle
+  - pycodestyle (E203 disabled [#E203]_)
+  - pydocstyle (numpy style)
   - pyflakes
-  - pylint (W1203 disabled because f-strings are nice)
+  - pylint (W1203 disabled [#W1203]_)
   - mypy (strict)
+
+.. [#E203] pycodestyle E203 conflicts with black, see
+           https://github.com/PyCQA/pycodestyle/issues/373.
+.. [#W1203] See https://github.com/pylint-dev/pylint/issues/2354. Tl;dr:
+            F-strings in log messages negatively impact performance compared
+            to %s-style formatting. However, the impact is very small. Because
+            f-strings are more readable, mcbootflash accepts the performance
+            hit.
 
 In addition to these automatically enforced rules, the following conventions are
 used:
@@ -46,10 +59,10 @@ used:
 
     from os import getcwd 
     from os import path
-		
+
     FUM = 0                                            # (8)
-		
-		
+
+
     class Foo:                                         # (5)
     """This is a doc string."""                        # (4)
 
@@ -68,7 +81,7 @@ used:
         for bar in bars:
             if len(bar) == 1):                         # (3)
                 fies.append(ham + 2 * bar)
-				                       # (1)
+                                                       # (1)
         # This is a comment.                           # (4)
         if fum in None:
             fum = 5
@@ -92,45 +105,20 @@ program's behavior changes, i.e. the data it writes to the serial bus in
 response to any given command. If a test fails when you didn't intend to
 change the program's behavior, you broke something.
 
-Tests should be representative of real-world scenarios. For this reason, tests
-should mimic user actions to the greatest extent possible. Tests should
-interface with the program like a user would interface with the program. Every
-test should model an action the user might take, or a situation the user might
-face. If you find it difficult to write tests that exercise the entire codebase
-under these constraints, consider if the hard-to-hit lines are really necessary
-for the program to do its job.
-
 Recording serial traffic
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
 In order to test mcbootflash's behavior in isolation, i.e. without a connected
 device running an appropriate bootloader, serial traffic is first recorded with
 a real device. Then, during tests the recorded traffic is replayed using a
-mocked serial port. A test passes if the bits written to the mocked port match
-the recorded traffic exactly.
+mocked serial port. A test passes if the bits written to and read from the
+mocked port match the recorded traffic exactly.
 
-Since the ability to record serial traffic is not part of mcbootflash's normal
-functionality, it is maintained as a small patch in the `record` branch. To
-record serial traffic, do the following:
+A pytest plugin, pytest-reserial_, is used to record and replay serial traffic.
+To create a new test, or update an old one when intentionally changing
+mcbootflash's behavior, run :code:`pytest --record -k <test_name>` with a device
+running the bootloader connected at /dev/ttyUSB0 with a baudrate of 460800
+(this port name and baudrate are currently hardcoded during testing; pull
+requests welcome if you need them to be dynamic).
 
-    1. Rebase the `record` branch on top of your working branch.
-    2. Modify your test by running `.dump_log(<path_to_log.json>)` on the
-       BootloaderConnection instance before finishing the test.
-    3. Run the test.
-    4. The recorded traffic can now be found in the `<path_to_log.json>` file.
-       Place this file in the directory test/testcases/<your_test>/, where
-       <your_test> is either a new test if you're adding new functionality, or
-       an existing test if you are changing existing functionality.
-
-A note on test coverage
-^^^^^^^^^^^^^^^^^^^^^^^
-
-  "If a line of code is important enough to write, it is important enough to test."
-
-While this rule is not applicable to every piece of software out there,
-mcbootflash is small and simple enough that the rule can be applied. This
-project therefore aims for 100% test coverage.
-
-100% test coverage is not a goal unto itself. Tests should never be written for
-the sole purpose of increasing coverage. 100% test coverage should happen as a
-side-effect of good tests.
+.. _pytest-reserial: https://github.com/bessman/pytest-reserial
