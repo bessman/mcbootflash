@@ -122,11 +122,11 @@ commands = sphinx-build -W -a docs/source docs/build
 
 [gh-actions]
 python =
-    3.7: test
     3.8: test
     3.9: test
     3.10: test
-    3.11: black, prospector, test, report
+    3.11: test
+    3.12: black, prospector, test, report
 """
 
 [tool.isort]
