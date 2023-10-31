@@ -1,4 +1,4 @@
-# CHANGELOG.md
+# Changelog
 
 ## [7.0.5] - 2023-10-31
 
