@@ -35,15 +35,6 @@ _logger = logging.getLogger(__name__)
 ProgressCallback = Callable[[int, int], None]
 
 
-def _align_segments(
-    binfile: bincopy.BinFile, aligment: int, padding: bytes = b"\xff"
-) -> None:
-    for segment in binfile.segments:
-        offset = segment.minimum_address % aligment
-        segment.minimum_address -= offset
-        segment.data = offset * padding + segment.data
-
-
 class Bootloader:
     """Communication interface to device running MCC 16-bit bootloader.
 
@@ -104,7 +95,6 @@ class Bootloader:
         hexdata = bincopy.BinFile()
         hexdata.add_microchip_hex_file(path)
         hexdata.crop(*self._memory_range)
-        _align_segments(hexdata, self._write_size)
 
         if not hexdata.segments:
             raise BootloaderError(
@@ -344,21 +334,15 @@ class Bootloader:
             A bincopy.Segment instance of length no greater than the bootloader's
             max_packet_length attribute.
         """
-        # Ensure data length is a multiple of write size.
-        padding = b"\xff" * (
-            (self._write_size - (len(chunk.data) % self._write_size)) % self._write_size
-        )
-        _logger.debug(
-            f"Writing {len(chunk.data) + len(padding)} bytes to {chunk.address:#08x}"
-        )
+        _logger.debug(f"Writing {len(chunk.data)} bytes to {chunk.address:#08x}")
         self._send_and_receive(
             Command(
                 command=CommandCode.WRITE_FLASH,
-                data_length=len(chunk.data) + len(padding),
+                data_length=len(chunk.data),
                 unlock_sequence=self._FLASH_UNLOCK_KEY,
                 address=chunk.address,
             ),
-            chunk.data + padding,
+            chunk.data,
         )
 
     def _self_verify(self) -> None:
