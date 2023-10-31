@@ -1,3 +1,20 @@
+v7.0.5
+======
+
+Documentation and maintenance release.
+
+Documentation
+-------------
+- Update developer guide.
+
+Maintenance
+--------------
+- Use bincopy for alignment of first and final chunks in each segment.
+- Use __version__ string in sphinx conf.py.
+- Narrow mypy import ignores.
+- Update readthedocs python to 3.11.
+- Use python3.12 instead of python3.12-dev in github-actions.
+
 v7.0.4
 ======
 
