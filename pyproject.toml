@@ -125,8 +125,8 @@ python =
     3.8: test
     3.9: test
     3.10: test
-    3.11: test
-    3.12: black, prospector, test, report
+    3.11: prospector, test
+    3.12: black, test, report
 """
 
 [tool.isort]
