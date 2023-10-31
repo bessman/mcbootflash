@@ -5,7 +5,7 @@ from dataclasses import asdict, dataclass
 from typing import ClassVar, Type, TypeVar
 from warnings import warn
 
-from serial import Serial  # type: ignore[import]
+from serial import Serial  # type: ignore[import-untyped]
 
 
 class CommandCode(enum.IntEnum):

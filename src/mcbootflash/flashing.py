@@ -4,7 +4,7 @@ import logging
 from typing import Union
 
 try:
-    import progressbar  # type: ignore[import]
+    import progressbar  # type: ignore[import-not-found]
 
     _PROGRESSBAR_AVAILABLE = True
 except ImportError:

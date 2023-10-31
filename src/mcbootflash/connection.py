@@ -4,8 +4,8 @@ import sys
 from struct import error as structerror
 from typing import Any, Dict, Tuple, Type, Union
 
-import bincopy  # type: ignore[import]
-from serial import Serial  # type: ignore[import]
+import bincopy  # type: ignore[import-untyped]
+from serial import Serial  # type: ignore[import-untyped]
 
 from mcbootflash.error import (
     BadAddress,
