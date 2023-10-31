@@ -13,6 +13,8 @@
 import os
 import sys
 
+from mcbootflash import __version__
+
 sys.path.insert(0, os.path.abspath("../.."))
 sys.path.insert(0, os.path.abspath("../../src"))
 
@@ -24,7 +26,7 @@ copyright = "2022, Alexander Bessman"
 author = "Alexander Bessman"
 
 # The full version, including alpha/beta/rc tags
-release = "4.1.0"
+release = __version__
 
 
 # -- General configuration ---------------------------------------------------
