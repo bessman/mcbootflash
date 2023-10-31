@@ -1,168 +1,193 @@
-v7.0.5
-======
+# CHANGELOG.md
 
-Documentation and maintenance release.
+## [7.0.5] - 2023-10-31
 
-Documentation
--------------
-- Update developer guide.
+_Maintanence release._
 
-Maintenance
---------------
-- Use bincopy for alignment of first and final chunks in each segment.
-- Use __version__ string in sphinx conf.py.
-- Narrow mypy import ignores.
-- Update readthedocs python to 3.11.
-- Use python3.12 instead of python3.12-dev in github-actions.
+### Changed
 
-v7.0.4
-======
+- Update developer guide
+- Use bincopy for alignment of first and final chunks in each segment
+- Use `__version__` string in sphinx `conf.py`
+- Narrow mypy import ignores
+- Update readthedocs python to 3.11
+- Use python3.12 instead of python3.12-dev in github-actions
 
-Bug fixes
----------
-- Ensure all write commands are aligned with write_size (fix #21).
+## [7.0.4] - 2023-10-07
 
-v7.0.3
-======
+### Fixed
 
-Bug fixes
----------
-- The final two words of the program memory range were not written (fix #19).
+- Align all write commands with `write_size` ([#21](https://github.com/bessman/mcbootflash/issues/21))
 
-v7.0.0
-======
+## [7.0.3] - 2023-09-26
 
-API changes
------------
-- get_response removed from public API.
+### Fixed
 
-Bug fixes
----------
-- Don't checksum if bootloader doesn't support it (fix #16).
+- Write the final two words of the program memory range ([#19](https://github.com/bessman/mcbootflash/issues/19))
 
-Misc
-----
-- HEX file parser changed from intelhex to bincopy.
-- Improved error handling and debug logging.
+## [7.0.0] - 2023-09-23
 
-v6.1.0
-======
+### Changed
 
-API changes
------------
-- Added function mcbootflash.protocol.get_response to read response packets from serial
-  in a more robust way.
-- Packet.from_serial is deprecated in favor of get_response.
+- Change HEX file parser from intelhex to bincopy
+- Improve error handling and debug logging
 
-Bug fixes
----------
-- Fixed an off-by-one error which skipped the final word within program memory range.
-- Added a workaround for a bug in the bootloader where checksum calculation would fail
-  close to the upper end of program memory range (fix #13).
+### Removed
 
-6.0.0
+- __Breaking:__ Remove `get_response`
 
-Dependency changes:
-- `progressbar2` is now optional (fix #11).
+### Fixed
 
-API changes:
-- The signature of mcbootflash.Bootloader.flash has changed. The `quiet` option is
-  removed, and a new `progress_callback` option is added.
+- Don't checksum if bootloader doesn't support it ([#16](https://github.com/bessman/mcbootflash/issues/16))
 
-CLI changes:
-- Added `--version` option to display mcbootflash version string.
-- If `progressbar2` is not installed, the script falls back on displaying the progress
-  as just a percentage.
+## [6.1.0] - 2023-09-15
 
-Bug fixes:
-- All data within program memory range is now flashed. Previously, data which was part
-  of a contiguous block of data was ignored if any part of the block did not fit within
-  the program memory range (fix #9).
+### Changed
 
-5.1.1
+- Deprecate `Packet.from_serial` in favor of `get_response`
 
-Bug fixes:
-- Increase timeout during flash erase (#6)
+### Added
 
-5.1.0
+- Add function `mcbootflash.protocol.get_response`
 
-Misc
-- Re-add some logging messages that were removed by mistake
+### Fixed
+
+- Fix an off-by-one error which skipped the final word within program memory range
+- Skip checksum calculation close to the upper end of program memory range ([#13](https://github.com/bessman/mcbootflash/issues/13))
+
+## [6.0.0] - 2023-09-13
+
+### Changed
+
+- Make `progressbar2` optional ([#11](https://github.com/bessman/mcbootflash/issues/11))
+- Display progress as a percentage value if `progressbar2` is not installed
+
+### Added
+
+- Add parameter `progress_callback` to `mcbootflash.Bootloader.flash`
+- Add `--version` option to display mcbootflash version string
+
+### Removed
+
+- __Breaking:__ Remove parameter `quiet` from `mcbootflash.Bootloader.flash`
+
+### Fixed
+
+- Flash all data within program memory range ([#9](https://github.com/bessman/mcbootflash/issues/9))
+
+## [5.1.1] - 2023-04-26
+
+### Fixed
+
+- Increase timeout during flash erase ([#6](https://github.com/bessman/mcbootflash/issues/6))
+
+## [5.1.0] - 2023-01-13
+
+### Changed
+
 - Fix some minor docstring mistakes
 - Improve error message when receiving unexpected data
+
+### Added
+
+- Re-add some logging messages that were removed by mistake
 - Add build status badge
 
-5.0.0
+## [5.0.0] - 2022-11-29
 
-API changes:
-- Simplify exceptions; Rename McbootflashException to
-  BootloaderError and remove all derived exceptions except
-  those that directly correspond to an error code.
-- Simplify protocol names (modules are not namespaces).
-- Rename BootloaderConnection to Bootloader and reduce code
-  duplication.
+### Changed
 
-Misc:
-- Use pytest-reserial for testing.
+- __Breaking:__ Rename McbootflashException to BootloaderError
+- __Breaking:__ Simplify protocol names (modules are not namespaces)
+- __Breaking:__ Rename BootloaderConnection to Bootloader
+- Use pytest-reserial for testing
 
-4.1.1
+### Removed
 
-Bug fixes:
-- Fix final chunk not being written in certain situations.
+- __Breaking:__ Remove several custom exceptions
 
-Misc:
-- Minor changes to console output.
+## 4.1.1 - 2022-09-17
 
-4.1.0
-Documentation
-- Added documentation.
-- Added readthedocs.
+### Fixed
 
-Misc:
-- Added codacy badges.
+- Fix final chunk not being written in certain situations
+- Fix minor errors in console output
 
-4.0.0
-API changes:
-- BootloaderConnection.flash will always raise an exception if flashing did not succeed.
-- 'quiet' is now a parameter of BootloaderConnection.flash instead of BootloaderConnection itself.
+## [4.1.0] - 2022-07-19
 
+### Added
 
-3.0.0
-Features:
-- By default, a progress bar is now shown while flashing. Suppress with --quiet flag.
-- Command line arguments can now be overriden by applications using mcbootflash as a library. See the get_parser function for more information.
+- Add documentation
+- Add readthedocs
+- Add codacy badges
 
-API changes:
-- flash.py -> flashing.py
-- BootResponseCode --> BootResponse
-- FLASH_UNLOCK_KEY removed from API.
-- BootloaderConnection.{quiet, hexfile} removed from API.
-- BootloaderConnection.erase_flash added to API.
-- Exceptions have changed significantly. See error.py for more information.
+## 4.0.0 - 2022-07-12
 
-Under the hood:
-- Major testing overhaul: Tests now use recorded serial traffic to verify behavior.
-- Switch to flit build system.
-- Enforce alphabetically sorted imports with isort.
-- Enable docstring linting.
-- Application code now lives in src/
-- Lots of changes to logging messages.
+### Changed
 
+- __Breaking:__ Move `quiet` parameter to `BootloaderConnection.flash`
+- Raise exception from BootloaderConnection.flash if flashing did not succeed
 
-2.0.0
-Features:
-- Public interface available directly via __init__.py.
-- Add ChecksumPacket class.
-- Add reset command.
-- Improve CLI help message.
-- Improve package metadata.
-- Reworked exceptions to more closely match those thrown by the bootloader.
+## [3.0.0] - 2022-07-11
 
-Bug fixes:
-- Off-by-one error when firmware uses all available space.
+### Changed
 
-Under the hood:
-- Add tests.
-- Add linters.
-- Add CI via Github Actions.
+- __Breaking:__ Rename `flash.py` -> `flashing.py`
+- __Breaking:__ Rename `BootResponseCode` -> `BootResponse`
+- __Breaking:__ Refactor exceptions
+- Use recorded serial traffic to verify behavior
+- Move application code to src/
+- Switch to flit build system
+- Enable docstring linting
+- Enforce alphabetically sorted imports with isort
+- Change lots of logging messages
 
+### Added
+
+- Add progress bar while flashing. Suppress with `--quiet` flag
+- Allow overriding CLI arguments
+- Add `BootloaderConnection.erase_flash`
+
+### Removed
+
+- __Breaking:__ Remove `FLASH_UNLOCK_KEY`
+- __Breaking:__ Remove `BootloaderConnection.{quiet, hexfile}`
+
+## [2.0.0] - 2022-06-12
+
+### Changed
+
+- Improve CLI help message
+- Improve package metadata
+- Reworke exceptions to more closely match those thrown by the bootloader
+
+### Added
+
+- Add public interface to `__init__.py`
+- Add `ChecksumPacket` class
+- Add `reset` command
+- Add tests
+- Add linters
+- Add CI via Github Actions
+
+### Fixes
+
+- Fix off-by-one error when firmware uses all available space
+
+## [1.0.0] - 2022-05-27
+
+_Initial release._
+
+[7.0.5]: https://github.com/bessman/mcbootflash/releases/tag/v7.0.5
+[7.0.4]: https://github.com/bessman/mcbootflash/releases/tag/v7.0.4
+[7.0.3]: https://github.com/bessman/mcbootflash/releases/tag/v7.0.3
+[7.0.0]: https://github.com/bessman/mcbootflash/releases/tag/v7.0.0
+[6.1.0]: https://github.com/bessman/mcbootflash/releases/tag/v6.1.0
+[6.0.0]: https://github.com/bessman/mcbootflash/releases/tag/v6.0.0
+[5.1.1]: https://github.com/bessman/mcbootflash/releases/tag/v5.1.1
+[5.1.0]: https://github.com/bessman/mcbootflash/releases/tag/v5.1.0
+[5.0.0]: https://github.com/bessman/mcbootflash/releases/tag/v5.0.0
+[4.1.0]: https://github.com/bessman/mcbootflash/releases/tag/4.1.0
+[3.0.0]: https://github.com/bessman/mcbootflash/releases/tag/3.0.0
+[2.0.0]: https://github.com/bessman/mcbootflash/releases/tag/2.0.0
+[1.0.0]: https://github.com/bessman/mcbootflash/releases/tag/1.0.0
