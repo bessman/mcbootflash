@@ -1,5 +1,15 @@
 # Changelog
 
+## [7.0.6] - 2023-11-01
+
+### Changed
+
+- Reformat changelog per Common Changelog style
+
+### Fixed
+
+- Actually use bincopy for alignment ([#25](https://github.com/bessman/mcbootflash/issues/25))
+
 ## [7.0.5] - 2023-10-31
 
 _Maintanence release._
