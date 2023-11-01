@@ -188,6 +188,7 @@ _Maintanence release._
 
 _Initial release._
 
+[7.0.6]: https://github.com/bessman/mcbootflash/releases/tag/v7.0.6
 [7.0.5]: https://github.com/bessman/mcbootflash/releases/tag/v7.0.5
 [7.0.4]: https://github.com/bessman/mcbootflash/releases/tag/v7.0.4
 [7.0.3]: https://github.com/bessman/mcbootflash/releases/tag/v7.0.3
