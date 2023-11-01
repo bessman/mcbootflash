@@ -107,10 +107,11 @@ class Bootloader:
         chunk_size -= chunk_size % self._write_size
         chunk_size //= hexdata.word_size_bytes
         total_bytes = len(hexdata) * hexdata.word_size_bytes
+        total_bytes += (self._write_size - total_bytes) % self._write_size
         written_bytes = 0
         align = self._write_size // hexdata.word_size_bytes
 
-        for chunk in hexdata.segments.chunks(chunk_size, align):
+        for chunk in hexdata.segments.chunks(chunk_size, align, b"\x00\x00"):
             self._write_flash(chunk)
             written_bytes += len(chunk.data)
             _logger.debug(
