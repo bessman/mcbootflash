@@ -6,11 +6,11 @@
 
 ### Changed
 
-- Reformat changelog per Common Changelog style
+- Reformat changelog per Common Changelog style ([`6447957`](https://github.com/bessman/mcbootflash/commit/6447957005efc681646df59536c68dac3d24619d))
 
 ### Fixed
 
-- Actually use bincopy for alignment ([#25](https://github.com/bessman/mcbootflash/issues/25))
+- Actually use bincopy for alignment ([#25](https://github.com/bessman/mcbootflash/issues/25))([`a668b9d`](https://github.com/bessman/mcbootflash/commit/a668b9d02394e255d28eb68c36bc6a226191d968))
 
 ## [7.0.5] - 2023-10-31
 
