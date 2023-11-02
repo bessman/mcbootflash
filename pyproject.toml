@@ -39,7 +39,7 @@ keywords = [
 Home = "https://github.com/bessman/mcbootflash"
 
 [project.scripts]
-mcbootflash = "mcbootflash.__main__:main"
+mcbootflash = "mcbootflash.__main__:flash"
 
 [project.optional-dependencies]
 doc = [
@@ -47,7 +47,6 @@ doc = [
   "sphinx_mdinclude",
   "sphinx_rtd_theme",
 ]
-progressbar = ["progressbar2"]
 
 [tool.tox]
 legacy_tox_ini = """
@@ -59,7 +58,6 @@ envlist =
     prospector
     pydocstyle
     test
-    progressbar
     docs
     report
 
@@ -90,19 +88,9 @@ deps =
     pytest-reserial >= 0.2.4
 commands = coverage run --parallel-mode -m pytest --replay
 
-[testenv:progressbar]
-usedevelop = True
-deps =
-    pytest
-    coverage
-    pytest-reserial >= 0.2.4
-    progressbar2
-commands = coverage run --parallel-mode -m pytest -k test_flash --replay
-
 [testenv:report]
 deps = coverage
 commands =
-    coverage combine
     coverage report
 depends = test
 
