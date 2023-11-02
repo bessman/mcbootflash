@@ -1,5 +1,7 @@
 # Changelog
 
+## [7.0.7] - Development
+
 ## [7.0.6] - 2023-11-01
 
 ### Changed
@@ -188,6 +190,7 @@ _Maintanence release._
 
 _Initial release._
 
+[7.0.7]: https://github.com/bessman/mcbootflash/releases/tag/v7.0.7
 [7.0.6]: https://github.com/bessman/mcbootflash/releases/tag/v7.0.6
 [7.0.5]: https://github.com/bessman/mcbootflash/releases/tag/v7.0.5
 [7.0.4]: https://github.com/bessman/mcbootflash/releases/tag/v7.0.4
