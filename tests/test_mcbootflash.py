@@ -1,27 +1,35 @@
 import argparse
 import logging
+import struct
 
+import bincopy
 import pytest
+from serial import Serial
 
-from mcbootflash import Bootloader, BootloaderError, __version__
-from mcbootflash.__main__ import flash
+import mcbootflash as mcbf
+from mcbootflash.__main__ import _checksum, _chunk, _flash, main
 
 PORTNAME = "/dev/ttyUSB0"
+
+
+@pytest.fixture
+def connection():
+    yield Serial(port=PORTNAME, baudrate=460800, timeout=5)
 
 
 @pytest.mark.parametrize(
     ["verbose", "quiet"],
     [(False, False), (True, False), (False, True)],
 )
-def test_flash(reserial, verbose, quiet, caplog):
+def test_cli(reserial, verbose, quiet, caplog):
     caplog.set_level(logging.INFO)
-    flash(
+    main(
         argparse.Namespace(
             **{
                 "file": "tests/testcases/flash/test.hex",
                 "port": PORTNAME,
                 "baudrate": 460800,
-                "timeout": 5,
+                "timeout": 1,
                 "verbose": verbose,
                 "quiet": quiet,
             }
@@ -30,95 +38,73 @@ def test_flash(reserial, verbose, quiet, caplog):
     assert "Self verify OK" in caplog.messages[-1]
 
 
-def test_erase(reserial, caplog):
+def test_erase(reserial, caplog, connection):
     caplog.set_level(logging.INFO)
-    boot = Bootloader(port=PORTNAME, baudrate=460800, timeout=5)
-    boot.erase_flash(force=True)
+    mcbf.erase_flash(connection, (0, 0), 1, force=True)
     assert "No application detected; flash erase successful" in caplog.messages[-1]
 
 
-def test_erase_empty(reserial, caplog):
+def test_erase_empty(reserial, caplog, connection):
     caplog.set_level(logging.INFO)
-    boot = Bootloader(port=PORTNAME, baudrate=460800, timeout=5)
-    boot.erase_flash()
+    mcbf.erase_flash(connection, (0, 0), 1)
     assert "No application detected, skipping flash erase" in caplog.messages[-1]
 
 
-def test_erase_fail(reserial):
-    boot = Bootloader(port=PORTNAME, baudrate=460800, timeout=5)
-    boot._FLASH_UNLOCK_KEY = 0
-    with pytest.raises(BootloaderError) as excinfo:
-        boot.erase_flash()
+def test_erase_fail(reserial, connection):
+    with pytest.raises(mcbf.BootloaderError) as excinfo:
+        mcbf.erase_flash(connection, (0, 0), 1)
     assert "could not be erased" in str(excinfo.value)
 
 
-def test_flash_empty(reserial, caplog):
-    caplog.set_level(logging.INFO)
-    boot = Bootloader(port=PORTNAME, baudrate=460800, timeout=5)
-    boot.flash("tests/testcases/flash_empty/test.hex")
-    assert "Self verify OK" in caplog.messages[-1]
+def test_erase_misaligned(connection):
+    with pytest.raises(ValueError) as excinfo:
+        mcbf.erase_flash(connection, (0, 1), 2)
+    assert "not a multiple" in str(excinfo.value)
 
 
-def test_checksum_error(reserial):
-    boot = Bootloader(port=PORTNAME, baudrate=460800, timeout=5)
-    boot._FLASH_UNLOCK_KEY = 0
-    with pytest.raises(BootloaderError) as excinfo:
-        boot.flash("tests/testcases/checksum_error/test.hex")
+def test_checksum_error(reserial, connection):
+    chunk = bincopy.Segment()
+    with pytest.raises(mcbf.BootloaderError) as excinfo:
+        mcbf.checksum(connection, chunk)
     assert "Checksum mismatch" in str(excinfo.value)
 
 
-def test_no_data(reserial):
-    boot = Bootloader(port=PORTNAME, baudrate=460800, timeout=1)
-    with pytest.raises(BootloaderError) as excinfo:
-        boot.flash("tests/testcases/no_data/test.hex")
+def test_no_data():
+    bootattrs = mcbf.BootAttrs()
+    with pytest.raises(mcbf.BootloaderError) as excinfo:
+        _chunk("tests/testcases/no_data/test.hex", bootattrs)
     assert "no data" in str(excinfo.value)
 
 
-def test_reset(reserial, caplog):
+def test_reset(reserial, caplog, connection):
     caplog.set_level(logging.INFO)
-    boot = Bootloader(port=PORTNAME, baudrate=460800, timeout=1)
-    boot.reset()
+    mcbf.reset(connection)
     assert "Device reset" in caplog.messages[-1]
 
 
-def test_unexpected_response(reserial):
-    boot = Bootloader(port=PORTNAME, baudrate=460800, timeout=1)
-    with pytest.raises(BootloaderError) as excinfo:
-        boot.reset()
+def test_unexpected_response(reserial, connection):
+    with pytest.raises(mcbf.BootloaderError) as excinfo:
+        mcbf.reset(connection)
     assert "Command code mismatch" in str(excinfo.value)
 
 
 def test_read_flash(reserial):
-    boot = Bootloader(port=PORTNAME, baudrate=460800, timeout=1)
+    connection = Serial(port=PORTNAME, baudrate=460800)
     with pytest.raises(NotImplementedError):
-        boot._read_flash()
+        mcbf._read_flash(connection)
 
 
-def test_no_response_from_bootloader(reserial, capsys):
-    flash(
-        argparse.Namespace(
-            **{
-                "file": "tests/testcases/no_response/test.hex",
-                "port": PORTNAME,
-                "baudrate": 460800,
-                "timeout": 1,
-                "verbose": False,
-                "quiet": False,
-            }
-        )
-    )
-    assert "No response from bootloader" in capsys.readouterr().out
-
-
-def test_checksum_workaround(reserial, caplog):
+def test_checksum_workaround(caplog, connection):
     caplog.set_level(logging.DEBUG)
-    boot = Bootloader(port=PORTNAME, baudrate=460800, timeout=1)
-    boot.flash("tests/testcases/flash/test.hex")
+    chunk = bincopy.Segment()
+    bootattrs = mcbf.BootAttrs()
+    _checksum(connection, chunk, bootattrs)
     # There's some other stuff after the message we're interested in.
     assert "skipping checksum calculation" in caplog.messages[-5]
 
 
-def test_checksum_not_supported(reserial, caplog):
-    boot = Bootloader(port=PORTNAME, baudrate=460800, timeout=5)
-    boot.flash("tests/testcases/flash/test.hex")
+def test_checksum_not_supported(reserial, caplog, connection):
+    chunk = bincopy.Segment()
+    bootattrs = mcbf.BootAttrs()
+    _flash(connection, [chunk], 0, bootattrs)
     assert "Bootloader does not support checksums" in caplog.messages

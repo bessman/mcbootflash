@@ -39,7 +39,7 @@ keywords = [
 Home = "https://github.com/bessman/mcbootflash"
 
 [project.scripts]
-mcbootflash = "mcbootflash.__main__:flash"
+mcbootflash = "mcbootflash.__main__:main"
 
 [project.optional-dependencies]
 doc = [
