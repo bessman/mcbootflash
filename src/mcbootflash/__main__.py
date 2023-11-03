@@ -3,9 +3,12 @@ import argparse
 import logging
 import os
 import time
-from typing import Union
+from typing import Iterator, Tuple, Union
 
-from mcbootflash import Bootloader, BootloaderError, __version__
+import bincopy  # type: ignore[import-untyped]
+from serial import Serial  # type: ignore[import-untyped]
+
+import mcbootflash as mcbf
 
 _logger = logging.getLogger(__name__)
 
@@ -74,7 +77,7 @@ def parse() -> argparse.Namespace:
     parser.add_argument(
         "--version",
         action="version",
-        version=f"{__version__}",
+        version=f"{mcbf.__version__}",
     )
 
     return parser.parse_args()
@@ -122,34 +125,80 @@ class _Progress:
             pass
 
 
-def flash(args: Union[None, argparse.Namespace] = None) -> None:
+def main(args: Union[None, argparse.Namespace] = None) -> None:
     """Entry point for CLI."""
     args = args if args is not None else parse()
-
-    if not args.quiet:
-        logging.basicConfig(
-            level=logging.DEBUG if args.verbose else logging.INFO,
-            format="%(message)s",
-        )
-
-    if args.verbose:
-        logging.basicConfig(level=logging.DEBUG)
-
-    _logger.debug(f"mcbootflash {__version__}")
+    _logconf(args.verbose, args.quiet)
+    _logger.debug(f"mcbootflash {mcbf.__version__}")
 
     try:
-        boot = Bootloader(
+        connection = Serial(
             port=args.port,
             baudrate=args.baudrate,
             timeout=args.timeout,
         )
-        boot.flash(
-            hexfile=args.file,
-            progress_callback=None if args.quiet else _Progress().print_progress,
-        )
-    except BootloaderError as exc:
+        _logger.info("Connecting to bootloader...")
+        bootattrs = mcbf.get_boot_attrs(connection)
+        _logger.info("Connected")
+        total_bytes, chunks = _chunks(args.file, bootattrs)
+        connection.timeout *= 10
+        mcbf.erase_flash(connection, bootattrs.memory_range, bootattrs.erase_size)
+        connection.timeout /= 10
+        _flash(connection, chunks, total_bytes, bootattrs, args.quiet)
+        mcbf.self_verify(connection)
+    except Exception as exc:  # pylint: disable=broad-exception-caught
         print(
             "\nFlashing failed:",
             f"{type(exc).__name__}: {exc}" if str(exc) else f"{type(exc).__name__}",
         )
         logging.debug(exc, exc_info=True)
+
+
+def _chunks(
+    file: str, bootattrs: mcbf.BootAttrs
+) -> Tuple[int, Iterator[bincopy.Segment]]:
+    total_bytes, chunks = mcbf.chunks(file, bootattrs)
+
+    if not chunks:
+        raise mcbf.BootloaderError(
+            "HEX file contains no data within program memory range"
+        )
+
+    return total_bytes, chunks
+
+
+def _flash(
+    connection: Serial,
+    chunks: Iterator[bincopy.Segment],
+    total_bytes: int,
+    bootattrs: mcbf.BootAttrs,
+    quiet: bool,
+) -> None:
+    has_checksum = True
+    progress = _Progress() if not quiet else None
+    written_bytes = 0
+
+    for chunk in chunks:
+        mcbf.write_flash(connection, chunk)
+        if has_checksum:
+            try:
+                mcbf.checksum(connection, chunk, bootattrs.memory_range)
+            except mcbf.UnsupportedCommand:
+                _logger.warning("Bootloader does not support checksumming")
+                has_checksum = False
+
+        written_bytes += len(chunk)
+
+        if progress is not None:
+            progress.print_progress(written_bytes, total_bytes)
+
+
+def _logconf(verbose: bool, quiet: bool) -> None:
+    if not quiet:
+        logging.basicConfig(
+            level=logging.DEBUG if verbose else logging.INFO,
+            format="%(message)s",
+        )
+
+    if verbose:
+        logging.basicConfig(level=logging.DEBUG)
