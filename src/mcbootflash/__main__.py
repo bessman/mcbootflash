@@ -99,7 +99,7 @@ def main(args: Union[None, argparse.Namespace] = None) -> None:
         _logger.info("Connecting to bootloader...")
         bootattrs = mcbf.get_boot_attrs(connection)
         _logger.info("Connected")
-        total_bytes, chunks = _chunks(args.file, bootattrs)
+        total_bytes, chunks = mcbf.chunked(args.file, bootattrs)
         connection.timeout *= 10
         mcbf.erase_flash(connection, bootattrs.memory_range, bootattrs.erase_size)
         connection.timeout /= 10
@@ -113,17 +113,8 @@ def main(args: Union[None, argparse.Namespace] = None) -> None:
         logging.debug(exc, exc_info=True)
 
 
-def _chunks(
-    file: str, bootattrs: mcbf.BootAttrs
-) -> Tuple[int, Iterator[bincopy.Segment]]:
-    total_bytes, chunks = mcbf.chunks(file, bootattrs)
 
-    if not chunks:
-        raise mcbf.BootloaderError(
-            "HEX file contains no data within program memory range"
-        )
 
-    return total_bytes, chunks
 
 
 def _flash(
