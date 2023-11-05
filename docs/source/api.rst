@@ -12,7 +12,7 @@ parameters, set help messages, etc. See :ref:`cli`.
 
 connection
 ----------
-.. automodule:: mcbootflash.connection
+.. automodule:: mcbootflash.flash
    :members:
    :undoc-members:
    :show-inheritance:
@@ -26,16 +26,6 @@ See also :ref:`protocol_specification`.
    :undoc-members:
    :show-inheritance:
 
-
-flashing
---------
-See also :ref:`cli`.
-
-.. automodule:: mcbootflash.flashing
-   :members:
-   :undoc-members:
-   :show-inheritance:
-      
 error
 -----
 .. automodule:: mcbootflash.error
