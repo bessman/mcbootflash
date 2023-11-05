@@ -9,7 +9,7 @@ from .error import (
 from .flash import (
     BootAttrs,
     checksum,
-    chunks,
+    chunked,
     erase_flash,
     get_boot_attrs,
     reset,
@@ -25,7 +25,7 @@ __all__ = [
     "VerifyFail",
     "BootAttrs",
     "checksum",
-    "chunks",
+    "chunked",
     "erase_flash",
     "get_boot_attrs",
     "reset",

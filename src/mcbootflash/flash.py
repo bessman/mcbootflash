@@ -56,7 +56,7 @@ def get_boot_attrs(connection: Serial) -> BootAttrs:
     return BootAttrs(max_packet_length, erase_size, write_size, memory_range)
 
 
-def chunks(
+def chunked(
     hexfile: str, bootattrs: BootAttrs
 ) -> Tuple[int, Iterator[bincopy.Segments]]:
     hexdata = bincopy.BinFile()
@@ -66,6 +66,10 @@ def chunks(
     chunk_size -= chunk_size % bootattrs.write_size
     chunk_size //= hexdata.word_size_bytes
     total_bytes = len(hexdata) * hexdata.word_size_bytes
+
+    if not total_bytes:
+        raise ValueError("HEX file contains no data within program memory range")
+
     total_bytes += (bootattrs.write_size - total_bytes) % bootattrs.write_size
     align = bootattrs.write_size // hexdata.word_size_bytes
 
