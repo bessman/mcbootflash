@@ -1,7 +1,6 @@
 """Functions to communicate with bootloader."""
 import logging
 from dataclasses import dataclass
-from struct import error as structerror
 from typing import Dict, Iterator, Tuple, Type
 
 import bincopy  # type: ignore[import-untyped]
@@ -36,24 +35,42 @@ _FLASH_UNLOCK_KEY = 0x00AA0055
 class BootAttrs:
     """Bootloader attributes."""
 
+    version: int
     max_packet_length: int
+    device_id: int
     erase_size: int
     write_size: int
     memory_range: Tuple[int, int]
+    has_checksum: bool
 
 
 def get_boot_attrs(connection: Serial) -> BootAttrs:
     """Read bootloader attributes from bootloader."""
     (
-        _,  # version
+        version,
         max_packet_length,
-        _,  # device_id
+        device_id,
         erase_size,
         write_size,
     ) = _read_version(connection)
     memory_range = _get_memory_address_range(connection)
 
-    return BootAttrs(max_packet_length, erase_size, write_size, memory_range)
+    try:
+        _get_remote_checksum(connection, memory_range[0], write_size)
+        has_checksum = True
+    except UnsupportedCommand:
+        _logger.warning("Bootloader does not support checksumming")
+        has_checksum = False
+
+    return BootAttrs(
+        version,
+        max_packet_length,
+        device_id,
+        erase_size,
+        write_size,
+        memory_range,
+        has_checksum,
+    )
 
 
 def chunked(
@@ -236,6 +253,7 @@ def write_flash(connection: Serial, chunk: bincopy.Segment) -> None:
 
 def self_verify(connection: Serial) -> None:
     _send_and_receive(connection, Command(command=CommandCode.SELF_VERIFY))
+    _logger.info("Self verify OK")
 
 
 def checksum(

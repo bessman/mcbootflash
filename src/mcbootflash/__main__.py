@@ -85,8 +85,8 @@ def get_parser() -> argparse.ArgumentParser:
 
 def main(args: Union[None, argparse.Namespace] = None) -> None:
     """Entry point for CLI."""
-    _logconf(args.verbose, args.quiet)
     args = args if args is not None else get_parser().parse_args()
+    logconf(args.verbose, args.quiet)
     _logger.debug(f"mcbootflash {mcbf.__version__}")
 
     try:
@@ -102,7 +102,14 @@ def main(args: Union[None, argparse.Namespace] = None) -> None:
         connection.timeout *= 10
         mcbf.erase_flash(connection, bootattrs.memory_range, bootattrs.erase_size)
         connection.timeout /= 10
-        _flash(connection, chunks, total_bytes, bootattrs, args.quiet)
+        _logger.info(f"Flashing {args.file}")
+        flash(
+            connection,
+            chunks,
+            total_bytes,
+            bootattrs,
+            args.quiet or args.verbose,
+        )
         mcbf.self_verify(connection)
     except Exception as exc:  # pylint: disable=broad-exception-caught
         print(
@@ -112,31 +119,35 @@ def main(args: Union[None, argparse.Namespace] = None) -> None:
         logging.debug(exc, exc_info=True)
 
 
+def logconf(verbose: bool, quiet: bool) -> None:
+    """Configure log level based on command-line arguments.
+
+    if verbose:
+        logging.basicConfig(level=logging.DEBUG)
+        return
+
+    if not quiet:
+        logging.basicConfig(
+            level=logging.DEBUG if verbose else logging.INFO,
+            format="%(message)s",
+        )
 
 
-
-
-def _flash(
+def flash(
     connection: Serial,
     chunks: Iterator[bincopy.Segment],
     total_bytes: int,
     bootattrs: mcbf.BootAttrs,
     quiet: bool,
 ) -> None:
-    has_checksum = True
     written_bytes = 0
     start = time.time()
 
     for chunk in chunks:
         mcbf.write_flash(connection, chunk)
-        if has_checksum:
-            try:
-                mcbf.checksum(connection, chunk, bootattrs.memory_range)
-            except mcbf.UnsupportedCommand:
-                _logger.warning("Bootloader does not support checksumming")
-                has_checksum = False
 
-        written_bytes += len(chunk)
+        if bootattrs.has_checksum:
+            mcbf.checksum(connection, chunk)
 
         written_bytes += len(chunk.data)
         _logger.debug(
@@ -147,15 +158,7 @@ def _flash(
         if not quiet:
             print_progress(written_bytes, total_bytes, time.time() - start)
 
-def _logconf(verbose: bool, quiet: bool) -> None:
-    if not quiet:
-        logging.basicConfig(
-            level=logging.DEBUG if verbose else logging.INFO,
-            format="%(message)s",
-        )
 
-    if verbose:
-        logging.basicConfig(level=logging.DEBUG)
 def print_progress(written_bytes: int, total_bytes: int, elapsed: float) -> None:
     """Print progressbar.
 
