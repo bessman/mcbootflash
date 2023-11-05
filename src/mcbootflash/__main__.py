@@ -3,7 +3,7 @@ import argparse
 import logging
 import shutil
 import time
-from typing import Iterator, Tuple, Union
+from typing import Iterator, Union
 
 import bincopy  # type: ignore[import-untyped]
 from serial import Serial  # type: ignore[import-untyped]
@@ -13,7 +13,7 @@ import mcbootflash as mcbf
 _logger = logging.getLogger(__name__)
 
 
-def parse() -> argparse.Namespace:
+def get_parser() -> argparse.ArgumentParser:
     """Parse arguments from command line.
 
     If `--version` is passed as an argument, print mcbootflash version and exit.
@@ -21,7 +21,7 @@ def parse() -> argparse.Namespace:
     Returns
     -------
     argparse.Namespace
-        The returned Namespace contains the following arguments::
+        The returned ArgumentParser contains the following arguments::
 
             file: str
             port: str
@@ -80,14 +80,13 @@ def parse() -> argparse.Namespace:
         version=f"{mcbf.__version__}",
     )
 
-    return parser.parse_args()
-
+    return parser
 
 
 def main(args: Union[None, argparse.Namespace] = None) -> None:
     """Entry point for CLI."""
-    args = args if args is not None else parse()
     _logconf(args.verbose, args.quiet)
+    args = args if args is not None else get_parser().parse_args()
     _logger.debug(f"mcbootflash {mcbf.__version__}")
 
     try:
