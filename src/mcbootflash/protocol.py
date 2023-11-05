@@ -3,9 +3,6 @@ import enum
 import struct
 from dataclasses import asdict, dataclass
 from typing import ClassVar, Type, TypeVar
-from warnings import warn
-
-from serial import Serial  # type: ignore[import-untyped]
 
 
 class CommandCode(enum.IntEnum):
@@ -90,18 +87,6 @@ class Packet:
             raise struct.error(
                 f"{cls} expected {struct.calcsize(cls.FORMAT)} bytes, got {len(data)}"
             ) from exc
-
-    @classmethod
-    def from_serial(cls: Type[_P], interface: Serial) -> _P:
-        """Create a Packet instance by reading from a serial interface."""
-        warn(
-            (
-                "Packet.from_serial is deprecated and will be removed in a future "
-                "version. Use get_response instead."
-            ),
-            DeprecationWarning,
-        )
-        return cls.from_bytes(interface.read(cls.get_size()))
 
     @classmethod
     def get_size(cls: Type[_P]) -> int:
