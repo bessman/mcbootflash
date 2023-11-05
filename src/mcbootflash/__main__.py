@@ -1,7 +1,7 @@
 """Command line tool for flashing firmware."""
 import argparse
 import logging
-import os
+import shutil
 import time
 from typing import Iterator, Tuple, Union
 
@@ -83,47 +83,6 @@ def parse() -> argparse.Namespace:
     return parser.parse_args()
 
 
-class _Progress:
-    def __init__(self) -> None:
-        self._start = time.time()
-
-    def print_progress(self, written_bytes: int, total_bytes: int) -> None:
-        ratio = written_bytes / total_bytes
-        percentage = f"{100 * ratio:.0f}%  "
-        print(percentage, end="")
-        digits = len(str(written_bytes))
-
-        if digits < 4:
-            data = f"{written_bytes} B "
-        elif digits < 7:
-            data = f"{written_bytes / 1024:.1f} KiB "
-        else:
-            data = f"{written_bytes / 1024**2:.1f} MiB "
-
-        print(data, end="")
-        elapsed = time.time() - self._start
-        hours, minutes = divmod(elapsed, 3600)
-        hours = int(hours)
-        minutes, seconds = divmod(minutes, 60)
-        minutes = int(minutes)
-        seconds = int(seconds)
-        timer = f" Elapsed Time: {hours}:{minutes:02}:{seconds:02}"
-        self.print_bar(ratio, len(percentage) + len(data) + len(timer))
-        print(timer, end="")
-        print(end="\n" if written_bytes == total_bytes else "\r")
-
-    @staticmethod
-    def print_bar(ratio: float, used_width: int) -> None:
-        try:
-            bar_width = os.get_terminal_size().columns - used_width
-            done = int(bar_width * ratio)
-            left = bar_width - done
-            progressbar = "|" + done * "#" + left * " " + "|"
-            print(progressbar, end="")
-        except OSError:
-            # If get_terminal_size fails, skip the progressbar.
-            pass
-
 
 def main(args: Union[None, argparse.Namespace] = None) -> None:
     """Entry point for CLI."""
@@ -175,8 +134,8 @@ def _flash(
     quiet: bool,
 ) -> None:
     has_checksum = True
-    progress = _Progress() if not quiet else None
     written_bytes = 0
+    start = time.time()
 
     for chunk in chunks:
         mcbf.write_flash(connection, chunk)
@@ -189,9 +148,14 @@ def _flash(
 
         written_bytes += len(chunk)
 
-        if progress is not None:
-            progress.print_progress(written_bytes, total_bytes)
+        written_bytes += len(chunk.data)
+        _logger.debug(
+            f"{written_bytes} bytes written of {total_bytes} "
+            f"({written_bytes / total_bytes * 100:.2f}%)"
+        )
 
+        if not quiet:
+            print_progress(written_bytes, total_bytes, time.time() - start)
 
 def _logconf(verbose: bool, quiet: bool) -> None:
     if not quiet:
@@ -202,3 +166,93 @@ def _logconf(verbose: bool, quiet: bool) -> None:
 
     if verbose:
         logging.basicConfig(level=logging.DEBUG)
+def print_progress(written_bytes: int, total_bytes: int, elapsed: float) -> None:
+    """Print progressbar.
+
+    Parameters
+    ----------
+    written_bytes : int
+        Number of bytes written so far.
+    total_bytes : int
+        Total number of bytes to write.
+    elapsed : float
+        Seconds since start.
+    """
+    ratio = written_bytes / total_bytes
+    percentage = f"{100 * ratio:.0f}%"
+    print(percentage, end="  ")
+    datasize = get_datasize(written_bytes)
+    print(datasize, end=" ")
+    timer = get_timer(elapsed)
+    pbar = get_bar(ratio, len(percentage) + len(datasize) + len(timer))
+    print(pbar, end="  ")
+    print(timer, end="")
+    print(end="\n" if written_bytes == total_bytes else "\r")
+
+
+def get_datasize(written_bytes: int) -> str:
+    """Get human-readable datasize as string.
+
+    Parameters
+    ----------
+    written_bytes : int
+        Number of bytes written so far.
+
+    Returns
+    -------
+    str
+    """
+    digits = len(str(written_bytes))
+
+    if digits < 4:
+        datasize = f"{written_bytes} B"
+    elif digits < 7:
+        datasize = f"{written_bytes / 1024:.1f} KiB"
+    else:
+        datasize = f"{written_bytes / 1024**2:.1f} MiB"
+
+    return datasize
+
+
+def get_timer(elapsed: float) -> str:
+    """Get a timer string formatted as H:MM:SS.
+
+    Parameters
+    ----------
+    elapsed : float
+        Time since start.
+
+    Returns
+    -------
+    str
+    """
+    hours, minutes = divmod(elapsed, 3600)
+    hours = int(hours)
+    minutes, seconds = divmod(minutes, 60)
+    minutes = int(minutes)
+    seconds = int(seconds)
+
+    return f"Elapsed Time: {hours}:{minutes:02}:{seconds:02}"
+
+
+def get_bar(done_ratio: float, used_width: int) -> str:
+    """Get progressbar string.
+
+    Parameters
+    ----------
+    done_ratio : float
+        A value between zero and one.
+    used_width : int
+        Number of characters already used by other elements.
+
+    Returns
+    -------
+    str
+    """
+    max_width = min(shutil.get_terminal_size().columns, 80)
+    bar_width = max_width - used_width - 2
+    done = int(bar_width * done_ratio)
+    left = bar_width - done
+    progressbar = "|" + done * "#" + left * " " + "|"
+
+    return progressbar
