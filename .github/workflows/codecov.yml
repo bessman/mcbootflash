@@ -8,18 +8,17 @@ jobs:
         os: [ubuntu-latest]
     env:
       OS: ${{ matrix.os }}
-      PYTHON: '3.11'
+      PYTHON: '3.12'
     steps:
     - uses: actions/checkout@master
     - name: Setup Python
       uses: actions/setup-python@master
       with:
-        python-version: '3.11'
+        python-version: '3.12'
     - name: Generate coverage report
       run: |
         pip install tox
         tox -e test
-        tox -e progressbar
         tox -e xml
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v3
