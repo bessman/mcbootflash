@@ -46,3 +46,10 @@ profile = "black"
 
 [tool.bandit]
 skips = ["B101"]
+
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = ["D203", "D213", "G004", "N818", "S101", "ANN101"]
+
+[tool.ruff.lint.per-file-ignores]
+"**/{tests,docs}/*" = ["ALL"]
