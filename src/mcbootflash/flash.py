@@ -192,7 +192,7 @@ def _get_memory_address_range(connection: Serial) -> tuple[int, int]:
     _logger.debug(
         "Got program memory range: "
         f"{mem_range_response.program_start:#08x}:"
-        f"{mem_range_response.program_end:#08x}"
+        f"{mem_range_response.program_end:#08x}",
     )
     # program_end + 2 explanation:
     # +1 because the upper bound reported by the bootloader is inclusive, but we
