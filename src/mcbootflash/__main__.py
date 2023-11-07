@@ -123,12 +123,9 @@ def main(args: None | argparse.Namespace = None) -> None:
         )
         verify(connection)
     except Exception as exc:  # pylint: disable=broad-exception-caught
-        print(
-            "\nFlashing failed:",
-            f"{type(exc).__name__}: {exc}" if str(exc) else f"{type(exc).__name__}",
-        )
-        logging.debug(exc, exc_info=True)
-
+        _logger.error("Flashing failed:")
+        _logger.error(exc)
+        _logger.debug(exc, exc_info=True)
 
 
 def erase(connection: Serial, erase_range: tuple[int, int], erase_size: int) -> None:
