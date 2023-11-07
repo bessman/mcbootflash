@@ -206,10 +206,13 @@ def erase_flash(
     connection: Serial,
     erase_range: tuple[int, int],
     erase_size: int,
-    force: bool = False,
-    verify: bool = True,
 ) -> None:
     """Erase program memory area.
+
+    Note
+    ----
+    Erasing a large memory area can take several seconds. Set the connection timeout
+    accordingly.
 
     Parameters
     ----------
@@ -221,63 +224,28 @@ def erase_flash(
     erase_size : int
         Size of a flash page, i.e. the smallest number of bytes which can be atomically
         erased.
-    force : bool, optional
-        By default, flash erase will be skipped if no program is detected in the
-        program memory area. Setting `force` to True skips program detection and
-        erases regardless of whether a program is present or not.
-    verify : bool, optional
-        The ERASE_FLASH command may fail silently if the `unlock_sequence` field of
-        the command packet is incorrect. By default, this method verifies that the
-        erase was successful by checking that no application is detected after the
-        erase. Set `verify` to False to skip this check.
 
     Raises
     ------
     ValueError
         If `erase_range[1] - erase_range[0]` is not a multiple of `erase_size`.
-    BootloaderError
-        If an application is still detected after erase attempt.
     """
     start, end = erase_range
 
     if (end - start) % erase_size:
-        raise ValueError("Address range is not a multiple of erase size")
+        msg = "Address range is not a multiple of erase size"
+        raise ValueError(msg)
 
-    if force or _detect_program(connection):
-        _logger.info("Erasing flash...")
-        _logger.debug(f"Erasing addresses {start:#08x}:{end:#08x}")
-        _send_and_receive(
-            connection,
-            command=Command(
-                command=CommandCode.ERASE_FLASH,
-                data_length=(end - start) // erase_size,
-                unlock_sequence=_FLASH_UNLOCK_KEY,
-                address=start,
-            ),
-        )
-    else:
-        _logger.info("No application detected, skipping flash erase")
-        return
-
-    if verify:
-        if _detect_program(connection):
-            _logger.debug("An application was detected; flash erase failed")
-            _logger.debug("unlock_sequence field may be incorrect")
-            raise BootloaderError("Existing application could not be erased")
-        _logger.info("No application detected; flash erase successful")
-
-
-def _detect_program(connection: Serial) -> bool:
-    try:
-        # Program memory may be empty, which should not be logged as an error.
-        _logger.disabled = True
-        self_verify(connection)
-    except VerifyFail:
-        return False
-    finally:
-        _logger.disabled = False
-
-    return True
+    _logger.debug(f"Erasing addresses {start:#08x}:{end:#08x}")
+    _send_and_receive(
+        connection,
+        command=Command(
+            command=CommandCode.ERASE_FLASH,
+            data_length=(end - start) // erase_size,
+            unlock_sequence=_FLASH_UNLOCK_KEY,
+            address=start,
+        ),
+    )
 
 
 def write_flash(connection: Serial, chunk: bincopy.Segment) -> None:
