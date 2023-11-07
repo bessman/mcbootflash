@@ -119,7 +119,8 @@ def chunked(
     total_bytes = len(hexdata) * hexdata.word_size_bytes
 
     if not total_bytes:
-        raise ValueError("HEX file contains no data within program memory range")
+        msg = "HEX file contains no data within program memory range"
+        raise ValueError(msg)
 
     total_bytes += (bootattrs.write_size - total_bytes) % bootattrs.write_size
     align = bootattrs.write_size // hexdata.word_size_bytes
@@ -316,7 +317,8 @@ def checksum(
     if checksum1 != checksum2:
         _logger.debug(f"Checksum mismatch: {checksum1} != {checksum2}")
         _logger.debug("unlock_sequence field may be incorrect")
-        raise BootloaderError("Checksum mismatch while writing")
+        msg = "Checksum mismatch"
+        raise BootloaderError(msg)
 
     _logger.debug(f"Checksum OK: {checksum1}")
 
@@ -354,10 +356,10 @@ def reset(connection: Serial) -> None:
         Open serial connection to device in bootloader mode.
     """
     _send_and_receive(connection, Command(command=CommandCode.RESET_DEVICE))
-    _logger.info("Device reset")
+    _logger.debug("Device reset")
 
 
-def _read_flash(connection: Serial) -> None:
+def _read_flash() -> None:
     raise NotImplementedError
 
 
@@ -383,7 +385,8 @@ def _get_response(connection: Serial, in_response_to: Command) -> ResponseBase:
     _logger.debug(f"RX: {_format_debug_bytes(bytes(response))}")
 
     if response.command != in_response_to.command:
-        raise BootloaderError("Command code mismatch")
+        msg = "Command code mismatch"
+        raise BootloaderError(msg)
 
     response_type_map: dict[CommandCode, type[ResponseBase]] = {
         CommandCode.READ_VERSION: Version,
@@ -421,21 +424,20 @@ def _get_response(connection: Serial, in_response_to: Command) -> ResponseBase:
     if remainder:
         _logger.debug(f"RX: {_format_debug_bytes(remainder, bytes(response))}")
 
-    response = response_type.from_bytes(bytes(response) + remainder)
-
-    return response
+    return response_type.from_bytes(bytes(response) + remainder)
 
 
 def _send_and_receive(
-    connection: Serial, command: Command, data: bytes = b""
+    connection: Serial,
+    command: Command,
+    data: bytes = b"",
 ) -> ResponseBase:
     msg = f"TX: {_format_debug_bytes(bytes(command))}"
     msg += f" plus {len(data)} data bytes" if data else ""
     _logger.debug(msg)
     connection.write(bytes(command) + data)
-    response = _get_response(connection, command)
 
-    return response
+    return _get_response(connection, command)
 
 
 def _format_debug_bytes(debug_bytes: bytes, pad: bytes = b"") -> str:
