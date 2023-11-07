@@ -271,21 +271,25 @@ def write_flash(connection: Serial, chunk: bincopy.Segment) -> None:
     )
 
 
-def self_verify(connection: Serial) -> None:
-    """Verify presence of application.
+def self_verify(connection: Serial) -> bool:
+    """Check if an application is installed.
 
     Parameters
     ----------
     connection : serial.Serial
         Open serial connection to device in bootloader mode.
 
-    Raises
-    ------
-    VerifyFail
-        If no application is detected.
+    Returns
+    -------
+    bool
+        `True` if an application is detected, `False` if no application is detected.
     """
-    _send_and_receive(connection, Command(command=CommandCode.SELF_VERIFY))
-    _logger.info("Self verify OK")
+    try:
+        _send_and_receive(connection, Command(command=CommandCode.SELF_VERIFY))
+    except VerifyFail:
+        return False
+
+    return True
 
 
 def checksum(
