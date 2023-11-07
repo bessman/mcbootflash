@@ -14,9 +14,9 @@ PORTNAME = "/dev/ttyUSB0"
 BAUDRATE = 460800
 
 
-@pytest.fixture
+@pytest.fixture()
 def connection():
-    yield Serial(port=PORTNAME, baudrate=BAUDRATE, timeout=1)
+    return Serial(port=PORTNAME, baudrate=BAUDRATE, timeout=1)
 
 
 def test_wrong_packet():
@@ -27,40 +27,37 @@ def test_wrong_packet():
 
 
 @pytest.mark.parametrize(
-    ["verbose", "quiet"],
+    ("verbose", "quiet"),
     [(False, False), (True, False), (False, True)],
 )
 def test_cli(reserial, caplog, verbose, quiet):
     caplog.set_level(logging.INFO)
     mcmain.main(
         argparse.Namespace(
-            **{
-                "file": "tests/testcases/flash/test.hex",
-                "port": PORTNAME,
-                "baudrate": BAUDRATE,
-                "timeout": 1,
-                "verbose": verbose,
-                "quiet": quiet,
-            }
-        )
+            file="tests/testcases/flash/test.hex",
+            port=PORTNAME,
+            baudrate=BAUDRATE,
+            timeout=1,
+            verbose=verbose,
+            quiet=quiet,
+        ),
     )
     assert "Self verify OK" in caplog.messages[-1]
 
 
-def test_cli_no_response(reserial, capsys):
+def test_cli_error(reserial, caplog):
+    caplog.set_level(logging.INFO)
     mcmain.main(
         argparse.Namespace(
-            **{
-                "file": "tests/testcases/flash/test.hex",
-                "port": PORTNAME,
-                "baudrate": BAUDRATE,
-                "timeout": 1,
-                "verbose": True,
-                "quiet": False,
-            }
-        )
+            file="tests/testcases/flash/test.hex",
+            port=PORTNAME,
+            baudrate=BAUDRATE,
+            timeout=1,
+            verbose=True,
+            quiet=False,
+        ),
     )
-    assert "Flashing failed" in capsys.readouterr().out
+    assert "Flashing failed" in caplog.messages[-2]
 
 
 def test_get_parser():
@@ -72,13 +69,13 @@ def test_get_parser():
 
 
 def test_datasize_large():
-    assert mcmain.get_datasize(1e6) == "1.0 MiB"
+    assert mcmain.get_datasize(2**20) == "1.0 MiB"
 
 
 def test_progressbar(capsys):
     mcmain.print_progress(100, 200, 5)
     expected = (
-        "50%  100 B |########################                         |  "
+        "50%  100 B  |#####################                      |  "
         "Elapsed Time: 0:00:05\r"
     )
     assert capsys.readouterr().out == expected
@@ -97,33 +94,33 @@ def test_get_bootattrs(reserial, connection):
 
 
 def test_erase(reserial, caplog, connection):
-    # To record data for this test, connect a device with an application installed.
+    # To record data for this test, connect a device with a program installed.
     caplog.set_level(logging.INFO)
     bootattrs = mcbf.get_boot_attrs(connection)
     connection.timeout = 10
-    mcbf.erase_flash(connection, bootattrs.memory_range, bootattrs.erase_size)
-    assert "No application detected; flash erase successful" in caplog.messages[-1]
+    mcmain.erase(connection, bootattrs.memory_range, bootattrs.erase_size)
+    assert "Application erased" in caplog.messages[-1]
 
 
 def test_erase_empty(reserial, caplog, connection):
-    # To record data for this test, connect a device with no application installed.
+    # To record data for this test, connect a device with no program installed.
     caplog.set_level(logging.INFO)
     bootattrs = mcbf.get_boot_attrs(connection)
-    mcbf.erase_flash(connection, bootattrs.memory_range, bootattrs.erase_size)
-    assert "No application detected, skipping flash erase" in caplog.messages[-1]
+    mcmain.erase(connection, bootattrs.memory_range, bootattrs.erase_size)
+    assert "No application detected, skipping erase" in caplog.messages[-1]
 
 
 def test_erase_fail(reserial, connection):
-    # To record data for this test, connect a device with an application installed.
+    # To record data for this test, connect a device with a program installed.
     bootattrs = mcbf.get_boot_attrs(connection)
     mcbf._FLASH_UNLOCK_KEY = 0
     with pytest.raises(mcbf.BootloaderError) as excinfo:
-        mcbf.erase_flash(
+        mcmain.erase(
             connection,
             bootattrs.memory_range,
             bootattrs.erase_size,
         )
-    assert "could not be erased" in str(excinfo.value)
+    assert "Erase failed" in str(excinfo.value)
 
 
 def test_erase_misaligned():
@@ -166,7 +163,7 @@ def test_no_data():
 
 
 def test_reset(reserial, caplog, connection):
-    caplog.set_level(logging.INFO)
+    caplog.set_level(logging.DEBUG)
     mcbf.reset(connection)
     assert "Device reset" in caplog.messages[-1]
 
@@ -177,6 +174,11 @@ def test_unexpected_response(reserial, connection):
     assert "Command code mismatch" in str(excinfo.value)
 
 
+def test_verify_fail(reserial, connection):
+    with pytest.raises(mcbf.VerifyFail):
+        mcmain.verify(connection)
+
+
 def test_read_flash():
     with pytest.raises(NotImplementedError):
-        mcbf._read_flash(Serial())
+        mcbf._read_flash()
