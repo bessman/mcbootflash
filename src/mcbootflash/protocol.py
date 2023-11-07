@@ -1,8 +1,13 @@
 """Definitions and representations for data sent to and from the bootloader."""
+from __future__ import annotations
+
 import enum
 import struct
 from dataclasses import asdict, dataclass
-from typing import ClassVar, Type, TypeVar
+from typing import TYPE_CHECKING, ClassVar
+
+if TYPE_CHECKING:
+    from typing_extensions import Self
 
 
 class CommandCode(enum.IntEnum):
@@ -26,9 +31,6 @@ class ResponseCode(enum.IntEnum):
     BAD_ADDRESS = 0xFE
     BAD_LENGTH = 0xFD
     VERIFY_FAIL = 0xFC
-
-
-_P = TypeVar("_P", bound="Packet")
 
 
 @dataclass
@@ -79,17 +81,16 @@ class Packet:
         return struct.pack(self.FORMAT, *list(asdict(self).values()))
 
     @classmethod
-    def from_bytes(cls: Type[_P], data: bytes) -> _P:
+    def from_bytes(cls: type[Self], data: bytes) -> Self:
         """Create a Packet instance from a bytes-like object."""
         try:
             return cls(*struct.unpack(cls.FORMAT, data))
         except struct.error as exc:
-            raise struct.error(
-                f"{cls} expected {struct.calcsize(cls.FORMAT)} bytes, got {len(data)}"
-            ) from exc
+            msg = f"{cls} expected {struct.calcsize(cls.FORMAT)} bytes, got {len(data)}"
+            raise struct.error(msg) from exc
 
     @classmethod
-    def get_size(cls: Type[_P]) -> int:
+    def get_size(cls: type[Self]) -> int:
         """Get the size of Packet in bytes."""
         return struct.calcsize(cls.FORMAT)
 
