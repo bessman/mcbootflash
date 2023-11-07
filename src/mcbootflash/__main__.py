@@ -205,14 +205,20 @@ def print_progress(written_bytes: int, total_bytes: int, elapsed: float) -> None
     """
     ratio = written_bytes / total_bytes
     percentage = f"{100 * ratio:.0f}%"
-    print(percentage, end="  ")
     datasize = get_datasize(written_bytes)
-    print(datasize, end=" ")
     timer = get_timer(elapsed)
-    pbar = get_bar(ratio, len(percentage) + len(datasize) + len(timer))
-    print(pbar, end="  ")
-    print(timer, end="")
-    print(end="\n" if written_bytes == total_bytes else "\r")
+    progress = get_bar(
+        ratio,
+        len(percentage) + len(datasize) + len(timer) + 3 * len("  "),
+    )
+    print(
+        percentage,
+        datasize,
+        progress,
+        timer,
+        sep="  ",
+        end="\n" if written_bytes == total_bytes else "\r",
+    )
 
 
 def get_datasize(written_bytes: int) -> str:
@@ -278,6 +284,5 @@ def get_bar(done_ratio: float, used_width: int) -> str:
     bar_width = max_width - used_width - 2
     done = int(bar_width * done_ratio)
     left = bar_width - done
-    progressbar = "|" + done * "#" + left * " " + "|"
 
-    return progressbar
+    return "|" + done * "#" + left * " " + "|"
