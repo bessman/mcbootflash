@@ -38,7 +38,7 @@ def get_parser() -> argparse.ArgumentParser:
         description=(
             "Flash firmware over serial connection to a device running Microchip's "
             "16-bit bootloader."
-        )
+        ),
     )
     parser.add_argument(
         "file",
@@ -174,7 +174,7 @@ def flash(
         written_bytes += len(chunk.data)
         _logger.debug(
             f"{written_bytes} bytes written of {total_bytes} "
-            f"({written_bytes / total_bytes * 100:.2f}%)"
+            f"({written_bytes / total_bytes * 100:.2f}%)",
         )
 
         if _logger.isEnabledFor(logging.INFO) and not _logger.isEnabledFor(
