@@ -1,14 +1,18 @@
 """Command line tool for flashing firmware."""
+from __future__ import annotations
+
 import argparse
 import logging
 import shutil
 import time
-from typing import Iterator, Union
+from typing import TYPE_CHECKING, Iterator
 
-import bincopy  # type: ignore[import-untyped]
 from serial import Serial  # type: ignore[import-untyped]
 
 import mcbootflash as mcbf
+
+if TYPE_CHECKING:  # pragma: no cover
+    import bincopy  # type: ignore[import-untyped]
 
 _logger = logging.getLogger(__name__)
 
@@ -83,7 +87,7 @@ def get_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def main(args: Union[None, argparse.Namespace] = None) -> None:
+def main(args: None | argparse.Namespace = None) -> None:
     """Entry point for CLI."""
     args = args if args is not None else get_parser().parse_args()
     logconf(args.verbose, args.quiet)
