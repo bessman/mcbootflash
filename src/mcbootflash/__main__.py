@@ -90,16 +90,24 @@ def get_parser() -> argparse.ArgumentParser:
 def main(args: None | argparse.Namespace = None) -> None:
     """Entry point for CLI."""
     args = args if args is not None else get_parser().parse_args()
-    logconf(args.verbose, args.quiet)
+    loglevel = min(
+        [
+            logging.WARNING,
+            logging.INFO + args.quiet * logging.WARNING,
+            logging.DEBUG + (not args.verbose) * logging.WARNING,
+        ],
+    )
+    logformat = logging.BASIC_FORMAT if loglevel == logging.DEBUG else "%(message)s"
+    logging.basicConfig(level=loglevel, format=logformat)
     _logger.debug(f"mcbootflash {mcbf.__version__}")
 
     try:
+        _logger.info("Connecting to bootloader...")
         connection = Serial(
             port=args.port,
             baudrate=args.baudrate,
             timeout=args.timeout,
         )
-        _logger.info("Connecting to bootloader...")
         bootattrs = mcbf.get_boot_attrs(connection)
         _logger.info("Connected")
         total_bytes, chunks = mcbf.chunked(args.file, bootattrs)
@@ -108,11 +116,10 @@ def main(args: None | argparse.Namespace = None) -> None:
         connection.timeout /= 10
         _logger.info(f"Flashing {args.file}")
         flash(
-            connection,
-            chunks,
-            total_bytes,
-            bootattrs,
-            args.quiet or args.verbose,
+            connection=connection,
+            chunks=chunks,
+            total_bytes=total_bytes,
+            bootattrs=bootattrs,
         )
         mcbf.self_verify(connection)
     except Exception as exc:  # pylint: disable=broad-exception-caught
@@ -123,25 +130,9 @@ def main(args: None | argparse.Namespace = None) -> None:
         logging.debug(exc, exc_info=True)
 
 
-def logconf(verbose: bool, quiet: bool) -> None:
-    """Configure log level based on command-line arguments.
 
-    Parameters
-    ----------
-    verbose : bool
-        Print debug messages. Overrides `quiet`.
-    quiet : bool
-        Print nothing.
-    """
-    if verbose:
-        logging.basicConfig(level=logging.DEBUG)
         return
 
-    if not quiet:
-        logging.basicConfig(
-            level=logging.DEBUG if verbose else logging.INFO,
-            format="%(message)s",
-        )
 
 
 def flash(
@@ -149,7 +140,6 @@ def flash(
     chunks: Iterator[bincopy.Segment],
     total_bytes: int,
     bootattrs: mcbf.BootAttrs,
-    quiet: bool,
 ) -> None:
     """Flash application firmware.
 
@@ -163,8 +153,6 @@ def flash(
         Total number of bytes to be written.
     bootattrs : mcbf.BootAttrs
         Bootloader attributes, as read by `get_boot_attrs`.
-    quiet : bool
-        Whether to print progressbar.
     """
     written_bytes = 0
     start = time.time()
@@ -181,7 +169,9 @@ def flash(
             f"({written_bytes / total_bytes * 100:.2f}%)"
         )
 
-        if not quiet:
+        if _logger.isEnabledFor(logging.INFO) and not _logger.isEnabledFor(
+            logging.DEBUG,
+        ):
             print_progress(written_bytes, total_bytes, time.time() - start)
 
 
