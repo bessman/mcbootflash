@@ -41,13 +41,6 @@ Home = "https://github.com/bessman/mcbootflash"
 [project.scripts]
 mcbootflash = "mcbootflash.__main__:main"
 
-[project.optional-dependencies]
-doc = [
-  "sphinx",
-  "sphinx_mdinclude",
-  "sphinx_rtd_theme",
-]
-
 [tool.isort]
 profile = "black"
 
