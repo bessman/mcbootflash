@@ -233,16 +233,19 @@ def get_datasize(written_bytes: int) -> str:
     -------
     str
     """
-    digits = len(str(written_bytes))
+    value: float = written_bytes
+    decimals = 0
 
-    if digits < 4:
-        datasize = f"{written_bytes} B"
-    elif digits < 7:
-        datasize = f"{written_bytes / 1024:.1f} KiB"
-    else:
-        datasize = f"{written_bytes / 1024**2:.1f} MiB"
+    for _prefix in ("", "Ki", "Mi"):
+        next_prefix = 1000
 
-    return datasize
+        if value < next_prefix:
+            break
+
+        value /= 1024
+        decimals = 1
+
+    return f"{value:.{decimals}f} {_prefix}B"
 
 
 def get_timer(elapsed: float) -> str:
