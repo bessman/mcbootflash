@@ -112,7 +112,7 @@ def main(args: None | argparse.Namespace = None) -> None:
         _logger.info("Connected")
         total_bytes, chunks = mcbf.chunked(args.file, bootattrs)
         connection.timeout *= 10
-        mcbf.erase_flash(connection, bootattrs.memory_range, bootattrs.erase_size)
+        erase(connection, bootattrs.memory_range, bootattrs.erase_size)
         connection.timeout /= 10
         _logger.info(f"Flashing {args.file}")
         flash(
@@ -121,7 +121,7 @@ def main(args: None | argparse.Namespace = None) -> None:
             total_bytes=total_bytes,
             bootattrs=bootattrs,
         )
-        mcbf.self_verify(connection)
+        verify(connection)
     except Exception as exc:  # pylint: disable=broad-exception-caught
         print(
             "\nFlashing failed:",
@@ -131,8 +131,19 @@ def main(args: None | argparse.Namespace = None) -> None:
 
 
 
+def erase(connection: Serial, erase_range: tuple[int, int], erase_size: int) -> None:
+    """Erase flash if an application is detected, and verify erasure."""
+    if mcbf.self_verify(connection):
+        mcbf.erase_flash(connection, erase_range, erase_size)
+    else:
+        _logger.info("No application detected, skipping erase")
         return
 
+    if mcbf.self_verify(connection):
+        msg = "Erase failed"
+        raise mcbf.BootloaderError(msg)
+
+    _logger.info("Application erased")
 
 
 def flash(
@@ -173,6 +184,14 @@ def flash(
             logging.DEBUG,
         ):
             print_progress(written_bytes, total_bytes, time.time() - start)
+
+
+def verify(connection: Serial) -> None:
+    """Raise `VerifyFail` if no application is detected."""
+    if mcbf.self_verify(connection):
+        _logger.info("Self verify OK")
+    else:
+        raise mcbf.VerifyFail
 
 
 def print_progress(written_bytes: int, total_bytes: int, elapsed: float) -> None:
