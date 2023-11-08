@@ -441,6 +441,6 @@ def _send_and_receive(
 
 
 def _format_debug_bytes(debug_bytes: bytes, pad: bytes = b"") -> str:
-    padding = " " * len(f"{' '.join(f'{b:02X}' for b in pad)}")
-    padding += " " if padding else ""
+    padding = " " * len(pad) * 3
+
     return f"{padding}{' '.join(f'{b:02X}' for b in debug_bytes)}"
