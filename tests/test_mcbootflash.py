@@ -182,3 +182,12 @@ def test_verify_fail(reserial, connection):
 def test_read_flash():
     with pytest.raises(NotImplementedError):
         mcbf._read_flash()
+
+
+def test_format_debug_bytes():
+    testbytes_tx = b"0123"
+    testbytes_rx = b"456789"
+    formatted_tx = mcbf._format_debug_bytes(testbytes_tx)
+    formatted_rx = mcbf._format_debug_bytes(testbytes_rx, testbytes_tx)
+    expected = "30 31 32 33\n            34 35 36 37 38 39"
+    assert formatted_tx + "\n" + formatted_rx == expected
