@@ -57,7 +57,7 @@ def test_cli_error(reserial, caplog):
             quiet=False,
         ),
     )
-    assert "Flashing failed" in caplog.messages[-2]
+    assert caplog.records[-1].levelno == logging.ERROR
 
 
 def test_get_parser():
