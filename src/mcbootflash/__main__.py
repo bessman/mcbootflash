@@ -122,10 +122,9 @@ def main(args: None | argparse.Namespace = None) -> None:
             bootattrs=bootattrs,
         )
         verify(connection)
-    except Exception as exc:  # pylint: disable=broad-exception-caught
-        _logger.error("Flashing failed:")
-        _logger.error(exc)
-        _logger.debug(exc, exc_info=True)
+    except Exception as exc:  # noqa: BLE001
+        _logger.error(exc)  # noqa: TRY400
+        _logger.debug("", exc_info=True)
 
 
 def erase(connection: Serial, erase_range: tuple[int, int], erase_size: int) -> None:
@@ -211,7 +210,7 @@ def print_progress(written_bytes: int, total_bytes: int, elapsed: float) -> None
         ratio,
         len(percentage) + len(datasize) + len(timer) + 3 * len("  "),
     )
-    print(
+    print(  # noqa: T201
         percentage,
         datasize,
         progress,
