@@ -175,10 +175,11 @@ def flash(
             f"{written_bytes} bytes written of {total_bytes} "
             f"({written_bytes / total_bytes * 100:.2f}%)",
         )
+        # Only print progressbar if log level is exactly INFO, not higher or lower.
+        loglevel: int = _logger.isEnabledFor(logging.INFO)
+        loglevel += _logger.isEnabledFor(logging.DEBUG)
 
-        if _logger.isEnabledFor(logging.INFO) and not _logger.isEnabledFor(
-            logging.DEBUG,
-        ):
+        if loglevel == 1:
             print_progress(written_bytes, total_bytes, time.time() - start)
 
 
