@@ -120,6 +120,7 @@ def chunked(
 
     if not total_bytes:
         msg = "HEX file contains no data within program memory range"
+
         raise ValueError(msg)
 
     total_bytes += (bootattrs.write_size - total_bytes) % bootattrs.write_size
@@ -154,7 +155,9 @@ def _read_version(connection: Serial) -> tuple[int, int, int, int, int]:
         connection,
         Command(CommandCode.READ_VERSION),
     )
+
     assert isinstance(read_version_response, Version)
+
     _logger.debug("Got bootloader attributes:")
     _logger.debug(f"Max packet length: {read_version_response.max_packet_length}")
     _logger.debug(f"Erase size:        {read_version_response.erase_size}")
@@ -189,7 +192,9 @@ def _get_memory_address_range(connection: Serial) -> tuple[int, int]:
         connection,
         Command(CommandCode.GET_MEMORY_ADDRESS_RANGE),
     )
+
     assert isinstance(mem_range_response, MemoryRange)
+
     _logger.debug(
         "Got program memory range: "
         f"{mem_range_response.program_start:#08x}:"
@@ -235,6 +240,7 @@ def erase_flash(
 
     if (end - start) % erase_size:
         msg = "Address range is not a multiple of erase size"
+
         raise ValueError(msg)
 
     _logger.debug(f"Erasing addresses {start:#08x}:{end:#08x}")
@@ -318,6 +324,7 @@ def checksum(
         _logger.debug(f"Checksum mismatch: {checksum1} != {checksum2}")
         _logger.debug("unlock_sequence field may be incorrect")
         msg = "Checksum mismatch"
+
         raise BootloaderError(msg)
 
     _logger.debug(f"Checksum OK: {checksum1}")
@@ -332,7 +339,9 @@ def _get_remote_checksum(connection: Serial, address: int, length: int) -> int:
             address=address,
         ),
     )
+
     assert isinstance(checksum_response, Checksum)
+
     return checksum_response.checksum
 
 
@@ -386,6 +395,7 @@ def _get_response(connection: Serial, in_response_to: Command) -> ResponseBase:
 
     if response.command != in_response_to.command:
         msg = "Command code mismatch"
+
         raise BootloaderError(msg)
 
     response_type_map: dict[CommandCode, type[ResponseBase]] = {
@@ -404,6 +414,7 @@ def _get_response(connection: Serial, in_response_to: Command) -> ResponseBase:
     if response_type is Version:
         remainder = connection.read(response_type.get_size() - response.get_size())
         _logger.debug(f"RX: {_format_debug_bytes(remainder, bytes(response))}")
+
         return response_type.from_bytes(bytes(response) + remainder)
 
     success = connection.read(1)
@@ -416,6 +427,7 @@ def _get_response(connection: Serial, in_response_to: Command) -> ResponseBase:
             ResponseCode.BAD_LENGTH: BadLength,
             ResponseCode.VERIFY_FAIL: VerifyFail,
         }
+
         raise bootloader_exceptions[success[0]]
 
     response = Response.from_bytes(bytes(response) + success)
