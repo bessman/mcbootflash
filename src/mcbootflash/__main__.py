@@ -80,7 +80,6 @@ def get_parser() -> argparse.ArgumentParser:
         action="version",
         version=f"{mcbf.__version__}",
     )
-
     return parser
 
 
@@ -258,7 +257,6 @@ def get_timer(elapsed: float) -> str:
     minutes, seconds = divmod(minutes, 60)
     minutes = int(minutes)
     seconds = int(seconds)
-
     return f"Elapsed Time: {hours}:{minutes:02}:{seconds:02}"
 
 
@@ -280,5 +278,4 @@ def get_bar(done_ratio: float, used_width: int) -> str:
     bar_width = max_width - used_width - 2
     done = int(bar_width * done_ratio)
     left = bar_width - done
-
     return "|" + done * "#" + left * " " + "|"

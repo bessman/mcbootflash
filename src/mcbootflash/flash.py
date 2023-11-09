@@ -195,7 +195,6 @@ def erase_flash(
 
     if (end - start) % erase_size:
         msg = "Address range is not a multiple of erase size"
-
         raise ValueError(msg)
 
     _logger.debug(f"Erasing addresses {start:#08x}:{end:#08x}")
@@ -274,7 +273,6 @@ def checksum(
         _logger.debug(f"Checksum mismatch: {checksum1} != {checksum2}")
         _logger.debug("unlock_sequence field may be incorrect")
         msg = "Checksum mismatch"
-
         raise BootloaderError(msg)
 
     _logger.debug(f"Checksum OK: {checksum1}")
@@ -289,9 +287,7 @@ def _get_remote_checksum(connection: Connection, address: int, length: int) -> i
             address=address,
         ),
     )
-
     assert isinstance(checksum_response, Checksum)
-
     return checksum_response.checksum
 
 
@@ -344,7 +340,6 @@ def _get_response(connection: Connection, in_response_to: Command) -> ResponseBa
 
     if response.command != in_response_to.command:
         msg = "Command code mismatch"
-
         raise BootloaderError(msg)
 
     response_type_map: dict[CommandCode, type[ResponseBase]] = {
@@ -363,7 +358,6 @@ def _get_response(connection: Connection, in_response_to: Command) -> ResponseBa
     if response_type is Version:
         remainder = connection.read(response_type.get_size() - response.get_size())
         _logger.debug(f"RX: {_format_debug_bytes(remainder, bytes(response))}")
-
         return response_type.from_bytes(bytes(response) + remainder)
 
     success = connection.read(1)
@@ -376,7 +370,6 @@ def _get_response(connection: Connection, in_response_to: Command) -> ResponseBa
             ResponseCode.BAD_LENGTH: BadLength,
             ResponseCode.VERIFY_FAIL: VerifyFail,
         }
-
         raise bootloader_exceptions[ResponseCode(success[0])]
 
     response = Response.from_bytes(bytes(response) + success)
@@ -397,11 +390,9 @@ def _send_and_receive(
     msg += f" plus {len(data)} data bytes" if data else ""
     _logger.debug(msg)
     connection.write(bytes(command) + data)
-
     return _get_response(connection, command)
 
 
 def _format_debug_bytes(debug_bytes: bytes, pad: bytes = b"") -> str:
     padding = " " * len(pad) * 3
-
     return f"{padding}{' '.join(f'{b:02X}' for b in debug_bytes)}"
