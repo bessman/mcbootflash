@@ -14,7 +14,7 @@ from .flash import (
     self_verify,
     write_flash,
 )
-from .protocol import BootAttrs, Chunk, Command
+from .types import BootAttrs, Chunk, Command
 from .util import chunked
 
 __all__ = [
