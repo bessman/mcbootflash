@@ -27,9 +27,6 @@ In addition to these automatically enforced rules, the following style rules app
 - Blank lines before and after indented code blocks (1), unless the block starts at the
   beginning of another block (2).
 
-- Blank lines between sections of code that are meaningful to separate within a single
-  code block (2.5).
-
 - Comments and docstrings are sentences; They start with capital letter and end with a
   period. Docstrings follow
   [Numpydoc](https://numpydoc.readthedocs.io/en/latest/format.html) style (3).
@@ -106,7 +103,7 @@ serial port. A test passes if the bits written to and read from the mocked
 port match the recorded traffic exactly.
 
 To create a new test, or update an old one, run
-`pytest --record -k <test_name>` with a device running the bootloader
-connected at /dev/ttyUSB0 with a baudrate of 460800 (this port name and
-baudrate are currently hardcoded during testing; pull requests welcome if you
-need them to be dynamic).
+`pytest --record -k <test_name>` with a device in bootloader mode connected at
+/dev/ttyUSB0 with a baudrate of 460800 (the port name and baudrate are
+currently hardcoded during testing; pull requests welcome if you need them to
+be dynamic).
