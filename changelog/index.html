@@ -1,0 +1,1352 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://mcbootflash.readthedocs.io/changelog/">
+      
+      
+        <link rel="prev" href="../develop/">
+      
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.4.8">
+    
+    
+      
+        <title>Changelog - mcbootflash</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.4b4a2bd9.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&"object"==typeof palette.color)for(var key of Object.keys(palette.color))document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#changelog" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="mcbootflash" class="md-header__button md-logo" aria-label="mcbootflash" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            mcbootflash
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Changelog
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="mcbootflash" class="md-nav__button md-logo" aria-label="mcbootflash" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    mcbootflash
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    API Reference
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../develop/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Developer's Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Changelog
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Changelog
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#707-development" class="md-nav__link">
+    7.0.7 - Development
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#706-2023-11-01" class="md-nav__link">
+    7.0.6 - 2023-11-01
+  </a>
+  
+    <nav class="md-nav" aria-label="7.0.6 - 2023-11-01">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#changed" class="md-nav__link">
+    Changed
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fixed" class="md-nav__link">
+    Fixed
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#705-2023-10-31" class="md-nav__link">
+    7.0.5 - 2023-10-31
+  </a>
+  
+    <nav class="md-nav" aria-label="7.0.5 - 2023-10-31">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#changed_1" class="md-nav__link">
+    Changed
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#704-2023-10-07" class="md-nav__link">
+    7.0.4 - 2023-10-07
+  </a>
+  
+    <nav class="md-nav" aria-label="7.0.4 - 2023-10-07">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fixed_1" class="md-nav__link">
+    Fixed
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#703-2023-09-26" class="md-nav__link">
+    7.0.3 - 2023-09-26
+  </a>
+  
+    <nav class="md-nav" aria-label="7.0.3 - 2023-09-26">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fixed_2" class="md-nav__link">
+    Fixed
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#700-2023-09-23" class="md-nav__link">
+    7.0.0 - 2023-09-23
+  </a>
+  
+    <nav class="md-nav" aria-label="7.0.0 - 2023-09-23">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#changed_2" class="md-nav__link">
+    Changed
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#removed" class="md-nav__link">
+    Removed
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fixed_3" class="md-nav__link">
+    Fixed
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#610-2023-09-15" class="md-nav__link">
+    6.1.0 - 2023-09-15
+  </a>
+  
+    <nav class="md-nav" aria-label="6.1.0 - 2023-09-15">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#changed_3" class="md-nav__link">
+    Changed
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#added" class="md-nav__link">
+    Added
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fixed_4" class="md-nav__link">
+    Fixed
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#600-2023-09-13" class="md-nav__link">
+    6.0.0 - 2023-09-13
+  </a>
+  
+    <nav class="md-nav" aria-label="6.0.0 - 2023-09-13">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#changed_4" class="md-nav__link">
+    Changed
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#added_1" class="md-nav__link">
+    Added
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#removed_1" class="md-nav__link">
+    Removed
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fixed_5" class="md-nav__link">
+    Fixed
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#511-2023-04-26" class="md-nav__link">
+    5.1.1 - 2023-04-26
+  </a>
+  
+    <nav class="md-nav" aria-label="5.1.1 - 2023-04-26">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fixed_6" class="md-nav__link">
+    Fixed
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#510-2023-01-13" class="md-nav__link">
+    5.1.0 - 2023-01-13
+  </a>
+  
+    <nav class="md-nav" aria-label="5.1.0 - 2023-01-13">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#changed_5" class="md-nav__link">
+    Changed
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#added_2" class="md-nav__link">
+    Added
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#500-2022-11-29" class="md-nav__link">
+    5.0.0 - 2022-11-29
+  </a>
+  
+    <nav class="md-nav" aria-label="5.0.0 - 2022-11-29">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#changed_6" class="md-nav__link">
+    Changed
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#removed_2" class="md-nav__link">
+    Removed
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#411-2022-09-17" class="md-nav__link">
+    4.1.1 - 2022-09-17
+  </a>
+  
+    <nav class="md-nav" aria-label="4.1.1 - 2022-09-17">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fixed_7" class="md-nav__link">
+    Fixed
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#410-2022-07-19" class="md-nav__link">
+    4.1.0 - 2022-07-19
+  </a>
+  
+    <nav class="md-nav" aria-label="4.1.0 - 2022-07-19">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#added_3" class="md-nav__link">
+    Added
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#400-2022-07-12" class="md-nav__link">
+    4.0.0 - 2022-07-12
+  </a>
+  
+    <nav class="md-nav" aria-label="4.0.0 - 2022-07-12">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#changed_7" class="md-nav__link">
+    Changed
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#300-2022-07-11" class="md-nav__link">
+    3.0.0 - 2022-07-11
+  </a>
+  
+    <nav class="md-nav" aria-label="3.0.0 - 2022-07-11">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#changed_8" class="md-nav__link">
+    Changed
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#added_4" class="md-nav__link">
+    Added
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#removed_3" class="md-nav__link">
+    Removed
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#200-2022-06-12" class="md-nav__link">
+    2.0.0 - 2022-06-12
+  </a>
+  
+    <nav class="md-nav" aria-label="2.0.0 - 2022-06-12">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#changed_9" class="md-nav__link">
+    Changed
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#added_5" class="md-nav__link">
+    Added
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fixes" class="md-nav__link">
+    Fixes
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#100-2022-05-27" class="md-nav__link">
+    1.0.0 - 2022-05-27
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#707-development" class="md-nav__link">
+    7.0.7 - Development
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#706-2023-11-01" class="md-nav__link">
+    7.0.6 - 2023-11-01
+  </a>
+  
+    <nav class="md-nav" aria-label="7.0.6 - 2023-11-01">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#changed" class="md-nav__link">
+    Changed
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fixed" class="md-nav__link">
+    Fixed
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#705-2023-10-31" class="md-nav__link">
+    7.0.5 - 2023-10-31
+  </a>
+  
+    <nav class="md-nav" aria-label="7.0.5 - 2023-10-31">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#changed_1" class="md-nav__link">
+    Changed
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#704-2023-10-07" class="md-nav__link">
+    7.0.4 - 2023-10-07
+  </a>
+  
+    <nav class="md-nav" aria-label="7.0.4 - 2023-10-07">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fixed_1" class="md-nav__link">
+    Fixed
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#703-2023-09-26" class="md-nav__link">
+    7.0.3 - 2023-09-26
+  </a>
+  
+    <nav class="md-nav" aria-label="7.0.3 - 2023-09-26">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fixed_2" class="md-nav__link">
+    Fixed
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#700-2023-09-23" class="md-nav__link">
+    7.0.0 - 2023-09-23
+  </a>
+  
+    <nav class="md-nav" aria-label="7.0.0 - 2023-09-23">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#changed_2" class="md-nav__link">
+    Changed
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#removed" class="md-nav__link">
+    Removed
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fixed_3" class="md-nav__link">
+    Fixed
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#610-2023-09-15" class="md-nav__link">
+    6.1.0 - 2023-09-15
+  </a>
+  
+    <nav class="md-nav" aria-label="6.1.0 - 2023-09-15">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#changed_3" class="md-nav__link">
+    Changed
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#added" class="md-nav__link">
+    Added
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fixed_4" class="md-nav__link">
+    Fixed
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#600-2023-09-13" class="md-nav__link">
+    6.0.0 - 2023-09-13
+  </a>
+  
+    <nav class="md-nav" aria-label="6.0.0 - 2023-09-13">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#changed_4" class="md-nav__link">
+    Changed
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#added_1" class="md-nav__link">
+    Added
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#removed_1" class="md-nav__link">
+    Removed
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fixed_5" class="md-nav__link">
+    Fixed
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#511-2023-04-26" class="md-nav__link">
+    5.1.1 - 2023-04-26
+  </a>
+  
+    <nav class="md-nav" aria-label="5.1.1 - 2023-04-26">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fixed_6" class="md-nav__link">
+    Fixed
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#510-2023-01-13" class="md-nav__link">
+    5.1.0 - 2023-01-13
+  </a>
+  
+    <nav class="md-nav" aria-label="5.1.0 - 2023-01-13">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#changed_5" class="md-nav__link">
+    Changed
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#added_2" class="md-nav__link">
+    Added
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#500-2022-11-29" class="md-nav__link">
+    5.0.0 - 2022-11-29
+  </a>
+  
+    <nav class="md-nav" aria-label="5.0.0 - 2022-11-29">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#changed_6" class="md-nav__link">
+    Changed
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#removed_2" class="md-nav__link">
+    Removed
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#411-2022-09-17" class="md-nav__link">
+    4.1.1 - 2022-09-17
+  </a>
+  
+    <nav class="md-nav" aria-label="4.1.1 - 2022-09-17">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fixed_7" class="md-nav__link">
+    Fixed
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#410-2022-07-19" class="md-nav__link">
+    4.1.0 - 2022-07-19
+  </a>
+  
+    <nav class="md-nav" aria-label="4.1.0 - 2022-07-19">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#added_3" class="md-nav__link">
+    Added
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#400-2022-07-12" class="md-nav__link">
+    4.0.0 - 2022-07-12
+  </a>
+  
+    <nav class="md-nav" aria-label="4.0.0 - 2022-07-12">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#changed_7" class="md-nav__link">
+    Changed
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#300-2022-07-11" class="md-nav__link">
+    3.0.0 - 2022-07-11
+  </a>
+  
+    <nav class="md-nav" aria-label="3.0.0 - 2022-07-11">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#changed_8" class="md-nav__link">
+    Changed
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#added_4" class="md-nav__link">
+    Added
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#removed_3" class="md-nav__link">
+    Removed
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#200-2022-06-12" class="md-nav__link">
+    2.0.0 - 2022-06-12
+  </a>
+  
+    <nav class="md-nav" aria-label="2.0.0 - 2022-06-12">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#changed_9" class="md-nav__link">
+    Changed
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#added_5" class="md-nav__link">
+    Added
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fixes" class="md-nav__link">
+    Fixes
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#100-2022-05-27" class="md-nav__link">
+    1.0.0 - 2022-05-27
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+<!-- BEGIN INCLUDE ../CHANGELOG.md -->
+<h1 id="changelog">Changelog</h1>
+<h2 id="707-development"><a href="https://github.com/bessman/mcbootflash/releases/tag/v7.0.7">7.0.7</a> - Development</h2>
+<h2 id="706-2023-11-01"><a href="https://github.com/bessman/mcbootflash/releases/tag/v7.0.6">7.0.6</a> - 2023-11-01</h2>
+<h3 id="changed">Changed</h3>
+<ul>
+<li>Reformat changelog per <a href="https://common-changelog.org/">Common Changelog</a> style (<a href="https://github.com/bessman/mcbootflash/commit/6447957005efc681646df59536c68dac3d24619d"><code>6447957</code></a>)</li>
+</ul>
+<h3 id="fixed">Fixed</h3>
+<ul>
+<li>Actually use bincopy for alignment (<a href="https://github.com/bessman/mcbootflash/issues/25">#25</a>)(<a href="https://github.com/bessman/mcbootflash/commit/a668b9d02394e255d28eb68c36bc6a226191d968"><code>a668b9d</code></a>)</li>
+</ul>
+<h2 id="705-2023-10-31"><a href="https://github.com/bessman/mcbootflash/releases/tag/v7.0.5">7.0.5</a> - 2023-10-31</h2>
+<p><em>Maintanence release.</em></p>
+<h3 id="changed_1">Changed</h3>
+<ul>
+<li>Update developer guide</li>
+<li>Use bincopy for alignment of first and final chunks in each segment</li>
+<li>Use <code>__version__</code> string in sphinx <code>conf.py</code></li>
+<li>Narrow mypy import ignores</li>
+<li>Update readthedocs python to 3.11</li>
+<li>Use python3.12 instead of python3.12-dev in github-actions</li>
+</ul>
+<h2 id="704-2023-10-07"><a href="https://github.com/bessman/mcbootflash/releases/tag/v7.0.4">7.0.4</a> - 2023-10-07</h2>
+<h3 id="fixed_1">Fixed</h3>
+<ul>
+<li>Align all write commands with <code>write_size</code> (<a href="https://github.com/bessman/mcbootflash/issues/21">#21</a>)</li>
+</ul>
+<h2 id="703-2023-09-26"><a href="https://github.com/bessman/mcbootflash/releases/tag/v7.0.3">7.0.3</a> - 2023-09-26</h2>
+<h3 id="fixed_2">Fixed</h3>
+<ul>
+<li>Write the final two words of the program memory range (<a href="https://github.com/bessman/mcbootflash/issues/19">#19</a>)</li>
+</ul>
+<h2 id="700-2023-09-23"><a href="https://github.com/bessman/mcbootflash/releases/tag/v7.0.0">7.0.0</a> - 2023-09-23</h2>
+<h3 id="changed_2">Changed</h3>
+<ul>
+<li>Change HEX file parser from intelhex to bincopy</li>
+<li>Improve error handling and debug logging</li>
+</ul>
+<h3 id="removed">Removed</h3>
+<ul>
+<li><strong>Breaking:</strong> Remove <code>get_response</code></li>
+</ul>
+<h3 id="fixed_3">Fixed</h3>
+<ul>
+<li>Don't checksum if bootloader doesn't support it (<a href="https://github.com/bessman/mcbootflash/issues/16">#16</a>)</li>
+</ul>
+<h2 id="610-2023-09-15"><a href="https://github.com/bessman/mcbootflash/releases/tag/v6.1.0">6.1.0</a> - 2023-09-15</h2>
+<h3 id="changed_3">Changed</h3>
+<ul>
+<li>Deprecate <code>Packet.from_serial</code> in favor of <code>get_response</code></li>
+</ul>
+<h3 id="added">Added</h3>
+<ul>
+<li>Add function <code>mcbootflash.protocol.get_response</code></li>
+</ul>
+<h3 id="fixed_4">Fixed</h3>
+<ul>
+<li>Fix an off-by-one error which skipped the final word within program memory range</li>
+<li>Skip checksum calculation close to the upper end of program memory range (<a href="https://github.com/bessman/mcbootflash/issues/13">#13</a>)</li>
+</ul>
+<h2 id="600-2023-09-13"><a href="https://github.com/bessman/mcbootflash/releases/tag/v6.0.0">6.0.0</a> - 2023-09-13</h2>
+<h3 id="changed_4">Changed</h3>
+<ul>
+<li>Make <code>progressbar2</code> optional (<a href="https://github.com/bessman/mcbootflash/issues/11">#11</a>)</li>
+<li>Display progress as a percentage value if <code>progressbar2</code> is not installed</li>
+</ul>
+<h3 id="added_1">Added</h3>
+<ul>
+<li>Add parameter <code>progress_callback</code> to <code>mcbootflash.Bootloader.flash</code></li>
+<li>Add <code>--version</code> option to display mcbootflash version string</li>
+</ul>
+<h3 id="removed_1">Removed</h3>
+<ul>
+<li><strong>Breaking:</strong> Remove parameter <code>quiet</code> from <code>mcbootflash.Bootloader.flash</code></li>
+</ul>
+<h3 id="fixed_5">Fixed</h3>
+<ul>
+<li>Flash all data within program memory range (<a href="https://github.com/bessman/mcbootflash/issues/9">#9</a>)</li>
+</ul>
+<h2 id="511-2023-04-26"><a href="https://github.com/bessman/mcbootflash/releases/tag/v5.1.1">5.1.1</a> - 2023-04-26</h2>
+<h3 id="fixed_6">Fixed</h3>
+<ul>
+<li>Increase timeout during flash erase (<a href="https://github.com/bessman/mcbootflash/issues/6">#6</a>)</li>
+</ul>
+<h2 id="510-2023-01-13"><a href="https://github.com/bessman/mcbootflash/releases/tag/v5.1.0">5.1.0</a> - 2023-01-13</h2>
+<h3 id="changed_5">Changed</h3>
+<ul>
+<li>Fix some minor docstring mistakes</li>
+<li>Improve error message when receiving unexpected data</li>
+</ul>
+<h3 id="added_2">Added</h3>
+<ul>
+<li>Re-add some logging messages that were removed by mistake</li>
+<li>Add build status badge</li>
+</ul>
+<h2 id="500-2022-11-29"><a href="https://github.com/bessman/mcbootflash/releases/tag/v5.0.0">5.0.0</a> - 2022-11-29</h2>
+<h3 id="changed_6">Changed</h3>
+<ul>
+<li><strong>Breaking:</strong> Rename McbootflashException to BootloaderError</li>
+<li><strong>Breaking:</strong> Simplify protocol names (modules are not namespaces)</li>
+<li><strong>Breaking:</strong> Rename BootloaderConnection to Bootloader</li>
+<li>Use pytest-reserial for testing</li>
+</ul>
+<h3 id="removed_2">Removed</h3>
+<ul>
+<li><strong>Breaking:</strong> Remove several custom exceptions</li>
+</ul>
+<h2 id="411-2022-09-17">4.1.1 - 2022-09-17</h2>
+<h3 id="fixed_7">Fixed</h3>
+<ul>
+<li>Fix final chunk not being written in certain situations</li>
+<li>Fix minor errors in console output</li>
+</ul>
+<h2 id="410-2022-07-19"><a href="https://github.com/bessman/mcbootflash/releases/tag/4.1.0">4.1.0</a> - 2022-07-19</h2>
+<h3 id="added_3">Added</h3>
+<ul>
+<li>Add documentation</li>
+<li>Add readthedocs</li>
+<li>Add codacy badges</li>
+</ul>
+<h2 id="400-2022-07-12">4.0.0 - 2022-07-12</h2>
+<h3 id="changed_7">Changed</h3>
+<ul>
+<li><strong>Breaking:</strong> Move <code>quiet</code> parameter to <code>BootloaderConnection.flash</code></li>
+<li>Raise exception from BootloaderConnection.flash if flashing did not succeed</li>
+</ul>
+<h2 id="300-2022-07-11"><a href="https://github.com/bessman/mcbootflash/releases/tag/3.0.0">3.0.0</a> - 2022-07-11</h2>
+<h3 id="changed_8">Changed</h3>
+<ul>
+<li><strong>Breaking:</strong> Rename <code>flash.py</code> -&gt; <code>flashing.py</code></li>
+<li><strong>Breaking:</strong> Rename <code>BootResponseCode</code> -&gt; <code>BootResponse</code></li>
+<li><strong>Breaking:</strong> Refactor exceptions</li>
+<li>Use recorded serial traffic to verify behavior</li>
+<li>Move application code to src/</li>
+<li>Switch to flit build system</li>
+<li>Enable docstring linting</li>
+<li>Enforce alphabetically sorted imports with isort</li>
+<li>Change lots of logging messages</li>
+</ul>
+<h3 id="added_4">Added</h3>
+<ul>
+<li>Add progress bar while flashing. Suppress with <code>--quiet</code> flag</li>
+<li>Allow overriding CLI arguments</li>
+<li>Add <code>BootloaderConnection.erase_flash</code></li>
+</ul>
+<h3 id="removed_3">Removed</h3>
+<ul>
+<li><strong>Breaking:</strong> Remove <code>FLASH_UNLOCK_KEY</code></li>
+<li><strong>Breaking:</strong> Remove <code>BootloaderConnection.{quiet, hexfile}</code></li>
+</ul>
+<h2 id="200-2022-06-12"><a href="https://github.com/bessman/mcbootflash/releases/tag/2.0.0">2.0.0</a> - 2022-06-12</h2>
+<h3 id="changed_9">Changed</h3>
+<ul>
+<li>Improve CLI help message</li>
+<li>Improve package metadata</li>
+<li>Reworke exceptions to more closely match those thrown by the bootloader</li>
+</ul>
+<h3 id="added_5">Added</h3>
+<ul>
+<li>Add public interface to <code>__init__.py</code></li>
+<li>Add <code>ChecksumPacket</code> class</li>
+<li>Add <code>reset</code> command</li>
+<li>Add tests</li>
+<li>Add linters</li>
+<li>Add CI via Github Actions</li>
+</ul>
+<h3 id="fixes">Fixes</h3>
+<ul>
+<li>Fix off-by-one error when firmware uses all available space</li>
+</ul>
+<h2 id="100-2022-05-27"><a href="https://github.com/bessman/mcbootflash/releases/tag/1.0.0">1.0.0</a> - 2022-05-27</h2>
+<p><em>Initial release.</em></p>
+<!-- END INCLUDE -->
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.81fa17fe.min.js"></script>
+      
+    
+  </body>
+</html>

@@ -1,0 +1,514 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://mcbootflash.readthedocs.io/develop/">
+      
+      
+        <link rel="prev" href="../api/">
+      
+      
+        <link rel="next" href="../changelog/">
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.4.8">
+    
+    
+      
+        <title>Developer's Guide - mcbootflash</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.4b4a2bd9.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&"object"==typeof palette.color)for(var key of Object.keys(palette.color))document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#developers-guide" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="mcbootflash" class="md-header__button md-logo" aria-label="mcbootflash" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            mcbootflash
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Developer's Guide
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="mcbootflash" class="md-nav__button md-logo" aria-label="mcbootflash" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    mcbootflash
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    API Reference
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Developer's Guide
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Developer's Guide
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#tldr" class="md-nav__link">
+    Tl;dr
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#formatting-and-linting" class="md-nav__link">
+    Formatting and Linting
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#code-style" class="md-nav__link">
+    Code style
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#testing" class="md-nav__link">
+    Testing
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../changelog/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Changelog
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#tldr" class="md-nav__link">
+    Tl;dr
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#formatting-and-linting" class="md-nav__link">
+    Formatting and Linting
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#code-style" class="md-nav__link">
+    Code style
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#testing" class="md-nav__link">
+    Testing
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+<h1 id="developers-guide">Developer's Guide</h1>
+<h2 id="tldr">Tl;dr</h2>
+<p>Just run <code>tox</code>. If everything passes, you're OK. If not, read on.</p>
+<h2 id="formatting-and-linting">Formatting and Linting</h2>
+<p>Mcbootflash uses the following tools for automatic formatting, linting, and static type
+checking:</p>
+<ul>
+<li>black</li>
+<li>isort</li>
+<li>mypy</li>
+<li>ruff</li>
+</ul>
+<p>Autoformat with <code>tox -e format</code>.</p>
+<p>Lint and type check with <code>tox -e lint</code>.</p>
+<p>These checks run automatically for all pull requests, and must pass before merge.</p>
+<h2 id="code-style">Code style</h2>
+<p>In addition to these automatically enforced rules, the following style rules apply:</p>
+<ul>
+<li>
+<p>Blank lines before and after indented code blocks (1), unless the block starts at the
+  beginning of another block (2).</p>
+</li>
+<li>
+<p>Comments and docstrings are sentences; They start with capital letter and end with a
+  period. Docstrings follow
+  <a href="https://numpydoc.readthedocs.io/en/latest/format.html">Numpydoc</a> style (3).</p>
+</li>
+<li>
+<p>Class names are CamelCase. Underscore is not allowed except at the start of
+  the name to mark the class as private. Class names should be nouns (4).</p>
+</li>
+<li>
+<p>Function names are snake_case with underscore separating words. Function
+  names should be verbs or verb phrases (5).</p>
+</li>
+<li>
+<p>Variables which are local to a function scope are snake_case, same as functions.
+  Variable names should be nouns or adjectives (6).</p>
+</li>
+<li>
+<p>Module-level variables and class variables are SCREAMING_SNAKE_CASE (7).</p>
+</li>
+</ul>
+<details class="example">
+<summary>Code style example</summary>
+<div class="highlight"><pre><span></span><code><span class="sd">&quot;&quot;&quot;Spam-related things go here.&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="n">MAX_SPAM</span> <span class="o">=</span> <span class="mi">5</span>                                                     <span class="c1"># (7)</span>
+
+
+<span class="k">class</span> <span class="nc">Spam</span><span class="p">:</span>                                                      <span class="c1"># (4)</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Spiced ham.&quot;&quot;&quot;</span>
+
+
+<span class="k">def</span> <span class="nf">eat_spam</span><span class="p">(</span><span class="n">spams</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Spam</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>                          <span class="c1"># (5)</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Eat spam and report how many spams were eaten.            # (3)</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    spams : list[Spam]</span>
+<span class="sd">        Spam spam spam.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    eaten : int</span>
+<span class="sd">        Number of spams eaten.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">eaten</span> <span class="o">=</span> <span class="mi">0</span>                                                    <span class="c1"># (6)</span>
+                                                                 <span class="c1"># (1)</span>
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">spams</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">eaten</span> <span class="o">&gt;=</span> <span class="n">MAX_SPAM</span><span class="p">:</span>                                    <span class="c1"># (2)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Can&#39;t eat more spam.&quot;</span><span class="p">)</span>
+            <span class="k">break</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Ate spam.&quot;</span><span class="p">)</span>
+        <span class="n">eaten</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="k">return</span> <span class="n">eaten</span>
+</code></pre></div>
+</details>
+<h2 id="testing">Testing</h2>
+<p>Mcbootflash is tested with pytest. To run the tests, use <code>tox -e test</code>.</p>
+<p>Most of mcbootflash's functionality revolves around reading and writing data
+from/to a serial bus. Testing mcbootflash therefore involves checking that
+mcbootflash:</p>
+<ol>
+<li>writes the expected bytes to the bus,</li>
+<li>reads the correct number of bytes in response, and</li>
+<li>processes the response data correctly.</li>
+</ol>
+<p>This is accomplished by means of a pytest plugin,
+<a href="https://github.com/bessman/pytest-reserial">pytest-reserial</a>. Serial traffic
+is first recorded by running the tests against a real device running the
+bootloader. Then, during tests the recorded traffic is replayed using a mocked
+serial port. A test passes if the bits written to and read from the mocked
+port match the recorded traffic exactly.</p>
+<p>To create a new test, or update an old one, run
+<code>pytest --record -k &lt;test_name&gt;</code> with a device in bootloader mode connected at
+/dev/ttyUSB0 with a baudrate of 460800 (the port name and baudrate are
+currently hardcoded during testing; pull requests welcome if you need them to
+be dynamic).</p>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "..", "features": [], "search": "../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.81fa17fe.min.js"></script>
+      
+    
+  </body>
+</html>

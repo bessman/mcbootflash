@@ -1,0 +1,633 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://mcbootflash.readthedocs.io/">
+      
+      
+      
+        <link rel="next" href="api/">
+      
+      
+      <link rel="icon" href="assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.4.8">
+    
+    
+      
+        <title>mcbootflash</title>
+      
+    
+    
+      <link rel="stylesheet" href="assets/stylesheets/main.4b4a2bd9.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&"object"==typeof palette.color)for(var key of Object.keys(palette.color))document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#mcbootflash" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="." title="mcbootflash" class="md-header__button md-logo" aria-label="mcbootflash" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            mcbootflash
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Home
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="." title="mcbootflash" class="md-nav__button md-logo" aria-label="mcbootflash" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    mcbootflash
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="." class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what" class="md-nav__link">
+    What
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#why" class="md-nav__link">
+    Why
+  </a>
+  
+    <nav class="md-nav" aria-label="Why">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#scriptable" class="md-nav__link">
+    Scriptable
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#extensible" class="md-nav__link">
+    Extensible
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#free-and-open-source" class="md-nav__link">
+    Free and Open Source
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#written-in-python" class="md-nav__link">
+    Written in Python
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#installation" class="md-nav__link">
+    Installation
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#usage" class="md-nav__link">
+    Usage
+  </a>
+  
+    <nav class="md-nav" aria-label="Usage">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#command-line" class="md-nav__link">
+    Command-line
+  </a>
+  
+    <nav class="md-nav" aria-label="Command-line">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#example" class="md-nav__link">
+    Example
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#library" class="md-nav__link">
+    Library
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="api/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    API Reference
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="develop/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Developer's Guide
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="changelog/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Changelog
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what" class="md-nav__link">
+    What
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#why" class="md-nav__link">
+    Why
+  </a>
+  
+    <nav class="md-nav" aria-label="Why">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#scriptable" class="md-nav__link">
+    Scriptable
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#extensible" class="md-nav__link">
+    Extensible
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#free-and-open-source" class="md-nav__link">
+    Free and Open Source
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#written-in-python" class="md-nav__link">
+    Written in Python
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#installation" class="md-nav__link">
+    Installation
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#usage" class="md-nav__link">
+    Usage
+  </a>
+  
+    <nav class="md-nav" aria-label="Usage">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#command-line" class="md-nav__link">
+    Command-line
+  </a>
+  
+    <nav class="md-nav" aria-label="Command-line">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#example" class="md-nav__link">
+    Example
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#library" class="md-nav__link">
+    Library
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+<!-- BEGIN INCLUDE ../README.md -->
+<h1 id="mcbootflash">mcbootflash</h1>
+<p><img alt="build" src="https://github.com/bessman/mcbootflash/actions/workflows/main.yml/badge.svg" />
+<a href="https://mcbootflash.readthedocs.io/en/latest/?badge=latest"><img alt="Documentation Status" src="https://readthedocs.org/projects/mcbootflash/badge/?version=latest" /></a>
+<a href="https://www.codacy.com/gh/bessman/mcbootflash/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=bessman/mcbootflash&amp;utm_campaign=Badge_Grade"><img alt="Codacy Badge" src="https://app.codacy.com/project/badge/Grade/b0cdb1c0b3b94171866fbfc4489316be" /></a>
+<a href="https://codecov.io/gh/bessman/mcbootflash"><img alt="Codecov" src="https://codecov.io/gh/bessman/mcbootflash/branch/main/graph/badge.svg" /></a></p>
+<h2 id="what">What</h2>
+<p>Mcbootflash is a tool for flashing firmware to 16-bit Microchip MCUs and DSCs
+from the PIC24 and dsPIC33 families of devices, which are running a
+<a href="https://www.microchip.com/en-us/software-library/16-bit-bootloader">bootloader</a>
+generated by the MPLAB Code Configurator tool.</p>
+<p>Mcbootflash is intended to be a drop-in replacement for Microchip's official tool, the
+Unified Bootloader Host Application (UBHA).</p>
+<h2 id="why">Why</h2>
+<p>Mcbootflash is:</p>
+<h3 id="scriptable">Scriptable</h3>
+<p>Unlike the UBHA, mcbootflash has not GUI. As a command-line application, it is easily
+scriptable.</p>
+<h3 id="extensible">Extensible</h3>
+<p>In addition to its command-line interface, mcbootflash can be used as a library by
+applications wanting to implement firmware flashing as part of a larger suite of
+features.</p>
+<h3 id="free-and-open-source">Free and Open Source</h3>
+<p>Mcbootflash is distributed under the MIT license.</p>
+<h3 id="written-in-python">Written in Python</h3>
+<p><img alt="🚫" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@14.1.2/assets/svg/1f6ab.svg" title=":no_entry_sign:" /> <img alt="☕" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@14.1.2/assets/svg/2615.svg" title=":coffee:" /> <img alt="🚫" class="twemoji" src="https://cdn.jsdelivr.net/gh/jdecked/twemoji@14.1.2/assets/svg/1f6ab.svg" title=":no_entry_sign:" /></p>
+<h2 id="installation">Installation</h2>
+<p><code>pip install mcbootflash</code></p>
+<h2 id="usage">Usage</h2>
+<p>Mcbootflash can be used as both a command-line application and a library.</p>
+<h3 id="command-line">Command-line</h3>
+<div class="highlight"><pre><span></span><code>$ mcbootflash --help
+usage: mcbootflash [-h] -p PORT -b BAUDRATE [-t TIMEOUT] [-v] [-q] [--version] hexfile
+
+Flash firmware over serial connection to a device running Microchip&#39;s 16-bit bootloader.
+
+positional arguments:
+  hexfile               An Intel HEX file containing application firmware
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -p PORT, --port PORT  Serial port connected to the device you want to flash
+  -b BAUDRATE, --baudrate BAUDRATE
+                        Symbol rate of device&#39;s serial bus
+  -t TIMEOUT, --timeout TIMEOUT
+                        Try to read data from the bus for this many seconds before giving up
+  -v, --verbose         Print debug messages
+  -q, --quiet           Suppress output
+  --version             show program&#39;s version number and exit
+</code></pre></div>
+<h4 id="example">Example</h4>
+<div class="highlight"><pre><span></span><code>$ mcbootflash --port /dev/ttyUSB0 --baudrate 460800 firmware.hex
+Connecting to bootloader...
+Connected
+Existing application detected, erasing...
+Application erased
+Flashing firmware.hex
+100%  88.7 KiB |########################################| Elapsed Time: 0:00:05
+Self verify OK
+</code></pre></div>
+<h3 id="library">Library</h3>
+<p>When using mcbootflash as a library, typical workflow looks something like this:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">import</span> <span class="nn">mcbootflash</span> <span class="k">as</span> <span class="nn">bf</span>
+<span class="kn">import</span> <span class="nn">serial</span>
+
+
+<span class="c1"># Connect to a device in bootloader mode.</span>
+<span class="n">connection</span> <span class="o">=</span> <span class="n">serial</span><span class="o">.</span><span class="n">Serial</span><span class="p">(</span><span class="n">port</span><span class="o">=&lt;</span><span class="n">PORT</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">baudrate</span><span class="o">=&lt;</span><span class="n">BAUDRATE</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=&lt;</span><span class="n">TIMEOUT</span><span class="o">&gt;</span><span class="p">)</span>
+<span class="c1"># Query its attributes.</span>
+<span class="n">bootattrs</span> <span class="o">=</span> <span class="n">bf</span><span class="o">.</span><span class="n">get_boot_attrs</span><span class="p">(</span><span class="n">connection</span><span class="p">)</span>
+<span class="c1"># Load the firmware image and split it into chunks.</span>
+<span class="n">total_bytes</span><span class="p">,</span> <span class="n">chunks</span> <span class="o">=</span> <span class="n">bf</span><span class="o">.</span><span class="n">chunked</span><span class="p">(</span><span class="n">hexfile</span><span class="o">=&lt;</span><span class="n">HEXFILE_PATH_STRING</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">bootattrs</span><span class="p">)</span>
+<span class="c1"># Erase the device&#39;s program memory area.</span>
+<span class="n">bf</span><span class="o">.</span><span class="n">erase_flash</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span> <span class="n">bootattrs</span><span class="o">.</span><span class="n">memory_range</span><span class="p">,</span> <span class="n">bootattrs</span><span class="o">.</span><span class="n">erase_size</span><span class="p">)</span>
+
+<span class="c1"># Write the firmware chunks to the bootloader in a loop.</span>
+<span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="n">chunks</span><span class="p">:</span>
+    <span class="n">bf</span><span class="o">.</span><span class="n">write_flash</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span> <span class="n">chunk</span><span class="p">)</span>
+    <span class="c1"># Optionally, check that the write is OK by checksumming.</span>
+    <span class="k">if</span> <span class="n">bootattrs</span><span class="o">.</span><span class="n">has_checksum</span><span class="p">:</span>
+        <span class="n">bf</span><span class="o">.</span><span class="n">checksum</span><span class="p">(</span><span class="n">connection</span><span class="p">,</span> <span class="n">chunk</span><span class="p">)</span>
+    <span class="c1"># At this point, you may want to give an indication of the flashing progress,</span>
+    <span class="c1"># like updating a progress bar.</span>
+
+<span class="c1"># Verify that the new application is detected.</span>
+<span class="n">bf</span><span class="o">.</span><span class="n">self_verify</span><span class="p">(</span><span class="n">connection</span><span class="p">)</span>
+</code></pre></div>
+<p>See also the <a class="autorefs autorefs-internal" href="api/#flash-operations">API Reference</a>.</p>
+<!-- END INCLUDE -->
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": ".", "features": [], "search": "assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="assets/javascripts/bundle.81fa17fe.min.js"></script>
+      
+    
+  </body>
+</html>
