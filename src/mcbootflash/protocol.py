@@ -1,4 +1,4 @@
-"""Definitions and representations for data sent to and from the bootloader."""
+"""Custom types used by mcbootflash."""
 from __future__ import annotations
 
 import enum
@@ -37,7 +37,7 @@ class ResponseCode(enum.IntEnum):
 class Packet:
     """Base class for communication packets to and from the bootloader.
 
-    Layout::
+    Layout:
 
         | uint8   | uint16      | uint32          | uint32   |
         | command | data_length | unlock_sequence | address  |
@@ -47,7 +47,7 @@ class Packet:
     command : CommandCode
         Command code which specifies which command should be executed by the bootloader.
     data_length : uint16
-        Meaning depends on value of 'command'-field::
+        Meaning depends on value of 'command'-field:
 
             WRITE_FLASH: Number of bytes following the command packet.
             ERASE_FLASH: Number of flash pages to be erased.
@@ -55,8 +55,8 @@ class Packet:
 
         For other commands this field is ignored.
     unlock_sequence : uint32
-        Key to unlock flash memory for writing. Write operations (WRITE_FLASH,
-        ERASE_FLASH) will fail SILENTLY if this key is incorrect.
+        Key to unlock flash memory for writing. Write operations (`WRITE_FLASH`,
+        `ERASE_FLASH`) will fail SILENTLY if this key is incorrect.
     address : uint32
         Address at which to perform command.
     FORMAT : ClassVar[str]
@@ -64,11 +64,11 @@ class Packet:
 
     Note
     ----
-    No error is raised if the key is incorrect. A failed WRITE_FLASH operation
-    can be detected by comparing checksums of the written bytes and the flash area
-    they were written to. A failed ERASE_FLASH operation can be detected by issuing
-    a SELF_VERIFY command. If the erase succeeded, SELF_VERIFY should return
-    VERIFY_FAIL.
+    No error is raised if `unlock_sequence` is incorrect. A failed `WRITE_FLASH`
+    operation can be detected by comparing checksums of the written bytes and the flash
+    area they were written to. A failed ERASE_FLASH operation can be detected by issuing
+    a `SELF_VERIFY` command. If the erase succeeded, `SELF_VERIFY` should return
+    `VERIFY_FAIL`.
     """
 
     command: CommandCode
@@ -113,7 +113,7 @@ class ResponseBase(Packet):
 
 @dataclass
 class Version(ResponseBase):
-    """Response to a READ_VERSION command.
+    """Response to a `READ_VERSION` command.
 
     Layout::
 
@@ -127,7 +127,7 @@ class Version(ResponseBase):
     ----------
     version : uint16
         Bootloader version number.
-    max_packet_length : int16
+    max_packet_length : uint16
         Maximum number of bytes which can be sent to the bootloader per packet. Includes
         the size of the packet itself plus associated data.
     device_id : uint16
@@ -150,7 +150,7 @@ class Version(ResponseBase):
 
 @dataclass
 class Response(ResponseBase):
-    """Response to any command except READ_VERSION.
+    """Response to any command except `READ_VERSION`.
 
     Layout::
 
@@ -169,7 +169,7 @@ class Response(ResponseBase):
 
 @dataclass
 class MemoryRange(Response):
-    """Response to GET_MEMORY_RANGE command.
+    """Response to `GET_MEMORY_RANGE` command.
 
     Layout::
 
@@ -191,7 +191,7 @@ class MemoryRange(Response):
 
 @dataclass
 class Checksum(Response):
-    """Response to CALCULATE_CHECKSUM command.
+    """Response to `CALCULATE_CHECKSUM` command.
 
     Layout::
 
