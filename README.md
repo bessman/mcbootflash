@@ -1,8 +1,8 @@
 # mcbootflash
 
 ![build](https://github.com/bessman/mcbootflash/actions/workflows/main.yml/badge.svg)
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/b0cdb1c0b3b94171866fbfc4489316be)](https://www.codacy.com/gh/bessman/mcbootflash/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=bessman/mcbootflash&amp;utm_campaign=Badge_Grade)
-[![Codecov](https://codecov.io/gh/bessman/mcbootflash/branch/main/graph/badge.svg)](https://codecov.io/gh/bessman/mcbootflash)
+[![Documentation](https://img.shields.io/badge/doc-latest-blue.svg)](https://bessman.github.io/mcbootflash/)
+[![PyPI](https://img.shields.io/pypi/v/mcbootflash.svg)](https://pypi.org/project/mcbootflash/)
 
 ## What
 
