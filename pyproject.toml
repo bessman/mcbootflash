@@ -36,7 +36,7 @@ keywords = [
 ]
 
 [project.urls]
-Home = "https://github.com/bessman/mcbootflash"
+Home = "https://bessman.github.io/mcbootflash/"
 
 [project.scripts]
 mcbootflash = "mcbootflash.__main__:main"
