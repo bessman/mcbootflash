@@ -1,0 +1,1 @@
+::: mcbootflash.protocol
