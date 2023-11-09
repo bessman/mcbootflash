@@ -7,20 +7,22 @@ from .error import (
     VerifyFail,
 )
 from .flash import (
-    BootAttrs,
     checksum,
-    chunked,
     erase_flash,
     get_boot_attrs,
     reset,
     self_verify,
     write_flash,
 )
+from .protocol import BootAttrs, Chunk, Command
+from .util import chunked
 
 __all__ = [
     "BadAddress",
     "BadLength",
     "BootloaderError",
+    "Chunk",
+    "Command",
     "UnsupportedCommand",
     "VerifyFail",
     "BootAttrs",

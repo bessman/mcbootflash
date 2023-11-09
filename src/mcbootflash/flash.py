@@ -2,10 +2,23 @@
 from __future__ import annotations
 
 import logging
-from dataclasses import dataclass
-from typing import TYPE_CHECKING, Iterator
 
-import bincopy  # type: ignore[import-untyped]
+try:
+    # New in python 3.12.
+    from itertools import batched  # type: ignore[attr-defined]
+except ImportError:
+    from itertools import islice
+    from typing import no_type_check
+
+    @no_type_check
+    def batched(iterable, n):  # pragma: no cover  # noqa: ANN001,ANN201,D103
+        # batched('ABCDEFG', 3) --> ABC DEF G
+        if n < 1:
+            raise ValueError("n must be at least one")  # noqa: TRY003,EM101
+        it = iter(iterable)
+        while batch := tuple(islice(it, n)):
+            yield batch
+
 
 from mcbootflash.error import (
     BadAddress,
@@ -15,9 +28,12 @@ from mcbootflash.error import (
     VerifyFail,
 )
 from mcbootflash.protocol import (
+    BootAttrs,
     Checksum,
+    Chunk,
     Command,
     CommandCode,
+    Connection,
     MemoryRange,
     Response,
     ResponseBase,
@@ -25,37 +41,21 @@ from mcbootflash.protocol import (
     Version,
 )
 
-if TYPE_CHECKING:  # pragma: no cover
-    from serial import Serial  # type: ignore[import-untyped]
-
 _logger = logging.getLogger(__name__)
 _FLASH_UNLOCK_KEY = 0x00AA0055
 
 
-@dataclass
-class BootAttrs:
-    """Bootloader attributes."""
-
-    version: int
-    max_packet_length: int
-    device_id: int
-    erase_size: int
-    write_size: int
-    memory_range: tuple[int, int]
-    has_checksum: bool
-
-
-def get_boot_attrs(connection: Serial) -> BootAttrs:
+def get_boot_attrs(connection: Connection) -> BootAttrs:
     """Read bootloader attributes.
 
     Parameters
     ----------
-    connection : serial.Serial
-        Open serial connection to device in bootloader mode.
+    connection : Connection
+        Connection to device in bootloader mode.
 
     Returns
     -------
-    BootAttrs
+    : BootAttrs
     """
     (
         version,
@@ -84,58 +84,13 @@ def get_boot_attrs(connection: Serial) -> BootAttrs:
     )
 
 
-def chunked(
-    hexfile: str,
-    bootattrs: BootAttrs,
-) -> tuple[int, Iterator[bincopy.Segments]]:
-    """Split a HEX file into chunks.
-
-    Parameters
-    ----------
-    hexfile : str
-        Path of a HEX file containing application firmare.
-    bootattrs : BootAttrs
-        The bootloader's attributes, as read by `get_boot_attrs`.
-
-    Returns
-    -------
-    total_bytes : int
-        The total number of bytes in all chunks.
-    chunks : Iterator[bincopy.Segment]
-        Appropriatelly sized chunks of data, suitable for writing in a loop with
-        `write_flash`.
-
-    Raises
-    ------
-    ValueError
-        If HEX file contains no data in program memory range.
-    """
-    hexdata = bincopy.BinFile()
-    hexdata.add_microchip_hex_file(hexfile)
-    hexdata.crop(*bootattrs.memory_range)
-    chunk_size = bootattrs.max_packet_length - Command.get_size()
-    chunk_size -= chunk_size % bootattrs.write_size
-    chunk_size //= hexdata.word_size_bytes
-    total_bytes = len(hexdata) * hexdata.word_size_bytes
-
-    if not total_bytes:
-        msg = "HEX file contains no data within program memory range"
-
-        raise ValueError(msg)
-
-    total_bytes += (bootattrs.write_size - total_bytes) % bootattrs.write_size
-    align = bootattrs.write_size // hexdata.word_size_bytes
-
-    return total_bytes, hexdata.segments.chunks(chunk_size, align, b"\x00\x00")
-
-
-def _read_version(connection: Serial) -> tuple[int, int, int, int, int]:
+def _read_version(connection: Connection) -> tuple[int, int, int, int, int]:
     """Read bootloader version and some other useful information.
 
     Parameters
     ----------
-    connection : serial.Serial
-        Open serial connection to device in bootloader mode.
+    connection : Connection
+        Connection to device in bootloader mode.
 
     Returns
     -------
@@ -172,13 +127,13 @@ def _read_version(connection: Serial) -> tuple[int, int, int, int, int]:
     )
 
 
-def _get_memory_address_range(connection: Serial) -> tuple[int, int]:
+def _get_memory_address_range(connection: Connection) -> tuple[int, int]:
     """Get the program memory range, i.e. the range of writable addresses.
 
     Parameters
     ----------
-    connection : serial.Serial
-        Open serial connection to device in bootloader mode.
+    connection : Connection
+        Connection to device in bootloader mode.
 
     Returns
     -------
@@ -209,7 +164,7 @@ def _get_memory_address_range(connection: Serial) -> tuple[int, int]:
 
 
 def erase_flash(
-    connection: Serial,
+    connection: Connection,
     erase_range: tuple[int, int],
     erase_size: int,
 ) -> None:
@@ -222,8 +177,8 @@ def erase_flash(
 
     Parameters
     ----------
-    connection:  serial.Serial
-        Open serial connection to device in bootloader mode.
+    connection:  Connection
+        Connection to device in bootloader mode.
     erase_range : tuple[int, int]
         Tuple of addresses forming a range to erase. The range is half-open,
         [start, end), i.e. the second address in the tuple is not erased.
@@ -255,15 +210,15 @@ def erase_flash(
     )
 
 
-def write_flash(connection: Serial, chunk: bincopy.Segment) -> None:
+def write_flash(connection: Connection, chunk: Chunk) -> None:
     """Write data to bootloader.
 
     Parameters
     ----------
-    connection : serial.Serial
-        Open serial connection to device in bootloader mode.
-    chunk : bincopy.Segment
-        A bincopy.Segment instance as generated by `chunked`.
+    connection : Connection
+        Connection to device in bootloader mode.
+    chunk : Chunk
+        Firmware chunk to write to bootloader.
     """
     _logger.debug(f"Writing {len(chunk.data)} bytes to {chunk.address:#08x}")
     _send_and_receive(
@@ -278,46 +233,41 @@ def write_flash(connection: Serial, chunk: bincopy.Segment) -> None:
     )
 
 
-def self_verify(connection: Serial) -> bool:
+def self_verify(connection: Connection) -> None:
     """Check if an application is installed.
 
     Parameters
     ----------
-    connection : serial.Serial
-        Open serial connection to device in bootloader mode.
+    connection : Connection
+        Connection to device in bootloader mode.
 
-    Returns
-    -------
-    bool
-        `True` if an application is detected, `False` if no application is detected.
+    Raises
+    ------
+    mcbootflash.VerifyFail
+        If no application is detected.
     """
-    try:
-        _send_and_receive(connection, Command(command=CommandCode.SELF_VERIFY))
-    except VerifyFail:
-        return False
-
-    return True
+    _send_and_receive(connection, Command(command=CommandCode.SELF_VERIFY))
 
 
 def checksum(
-    connection: Serial,
-    chunk: bincopy.Segment,
+    connection: Connection,
+    chunk: Chunk,
 ) -> None:
     """Compare checksums calculated locally and onboard device.
 
     Parameters
     ----------
-    connection : serial.Serial
-        Open serial connection to device in bootloader mode.
-    chunk : bincopy.Segment
-        HEX chunk to checksum.
+    connection : Connection
+        Connection to device in bootloader mode.
+    chunk : Chunk
+        Firmware chunk to checksum.
 
     Raises
     ------
     BootloaderError
         If checksums do not match.
     """
-    checksum1 = _get_local_checksum(chunk)
+    checksum1 = _get_local_checksum(chunk.data)
     checksum2 = _get_remote_checksum(connection, chunk.address, len(chunk.data))
 
     if checksum1 != checksum2:
@@ -330,7 +280,7 @@ def checksum(
     _logger.debug(f"Checksum OK: {checksum1}")
 
 
-def _get_remote_checksum(connection: Serial, address: int, length: int) -> int:
+def _get_remote_checksum(connection: Connection, address: int, length: int) -> int:
     checksum_response = _send_and_receive(
         connection,
         Command(
@@ -345,24 +295,23 @@ def _get_remote_checksum(connection: Serial, address: int, length: int) -> int:
     return checksum_response.checksum
 
 
-def _get_local_checksum(chunk: bincopy.Segment) -> int:
+def _get_local_checksum(data: bytes) -> int:
     chksum = 0
+    extended_address_width = 4
 
-    for piece in chunk.chunks(
-        size=4 // chunk.word_size_bytes,
-    ):
-        chksum += piece.data[0] + (piece.data[1] << 8) + piece.data[2]
+    for batch in batched(data, extended_address_width):
+        chksum += batch[0] + (batch[1] << 8) + batch[2]
 
     return chksum & 0xFFFF
 
 
-def reset(connection: Serial) -> None:
+def reset(connection: Connection) -> None:
     """Reset device.
 
     Parameters
     ----------
-    connection : serial.Serial
-        Open serial connection to device in bootloader mode.
+    connection : Connection
+        Connection to device in bootloader mode.
     """
     _send_and_receive(connection, Command(command=CommandCode.RESET_DEVICE))
     _logger.debug("Device reset")
@@ -372,13 +321,13 @@ def _read_flash() -> None:
     raise NotImplementedError
 
 
-def _get_response(connection: Serial, in_response_to: Command) -> ResponseBase:
+def _get_response(connection: Connection, in_response_to: Command) -> ResponseBase:
     """Get a Response packet.
 
     Parameters
     ----------
-    connection : serial.Serial
-        Open serial connection to device in bootloader mode.
+    connection : Connection
+        Connection to device in bootloader mode.
     in_response_to: Command
         The `Command` to which a response is expected.
 
@@ -428,7 +377,7 @@ def _get_response(connection: Serial, in_response_to: Command) -> ResponseBase:
             ResponseCode.VERIFY_FAIL: VerifyFail,
         }
 
-        raise bootloader_exceptions[success[0]]
+        raise bootloader_exceptions[ResponseCode(success[0])]
 
     response = Response.from_bytes(bytes(response) + success)
     remainder = connection.read(response_type.get_size() - response.get_size())
@@ -440,7 +389,7 @@ def _get_response(connection: Serial, in_response_to: Command) -> ResponseBase:
 
 
 def _send_and_receive(
-    connection: Serial,
+    connection: Connection,
     command: Command,
     data: bytes = b"",
 ) -> ResponseBase:

@@ -4,9 +4,9 @@ from __future__ import annotations
 import enum
 import struct
 from dataclasses import asdict, dataclass
-from typing import TYPE_CHECKING, ClassVar
+from typing import TYPE_CHECKING, ClassVar, Protocol
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # pragma: no cover
     from typing_extensions import Self
 
 
@@ -206,3 +206,98 @@ class Checksum(Response):
 
     checksum: int = 0
     FORMAT: ClassVar[str] = Response.FORMAT + "H"
+
+
+@dataclass
+class BootAttrs:
+    """Bootloader attributes.
+
+    Parameters
+    ----------
+    version : int
+        Bootloader version number.
+    max_packet_length : int
+        Maximum number of bytes which can be sent to the bootloader per packet. Includes
+        the size of the packet itself plus associated data.
+    device_id : int
+        A device-specific identifier.
+    erase_size : int
+        Size of a flash erase page in bytes. When erasing flash, the size of the memory
+        area which should be erased is given in number of erase pages.
+    write_size : int
+        Size of a write block in bytes. When writing to flash, the data must align with
+        a write block.
+    memory_range : tuple[int, int]
+        Tuple of addresses specifying the program memory range. The range is half-open,
+        i.e. the upper address is not part of the program memory range.
+    has_checksum : bool
+        Indicates whether or not the bootloader supports the `CALC_CHECKSUM` command.
+    """
+
+    version: int
+    max_packet_length: int
+    device_id: int
+    erase_size: int
+    write_size: int
+    memory_range: tuple[int, int]
+    has_checksum: bool
+
+
+class Chunk(Protocol):
+    """A piece of a firmware image.
+
+    `mcbootflash.chunked` can be used to generate correctly aligned and sized chunks
+    from a HEX file.
+
+    Attributes
+    ----------
+    address : int
+        The address associated with the start of the data. Must be aligned with (i.e. be
+        a multiple of) the bootloader's `write_size` attribute.
+    data : bytes
+        Data to be written to the bootloader. The data length be a multiple of the
+        bootloader's `write_size` attribute, and must be no longer than the bootloader's
+        `max_packet_length` attribute minus the size of the command packet header (which
+        can be gotten with `Command.get_size`).
+    """
+
+    address: int
+    data: bytes
+
+
+class Connection(Protocol):
+    """Anything that can read and write bytes from/to the bootloader.
+
+    Typically, this is an open [`serial.Serial`](https://pyserial.readthedocs.io/en/latest/pyserial_api.html#serial.Serial)
+    instance.
+    """
+
+    def read(self, size: int = 1) -> bytes:
+        """Read bytes from the bootloader.
+
+        Parameters
+        ----------
+        size : int, default=1
+            Number of bytes to read.
+
+        Returns
+        -------
+        data : bytes
+            Bytes read from the bootloader.
+        """
+        ...  # pragma: no cover
+
+    def write(self, data: bytes) -> int:
+        """Write bytes to the bootloader.
+
+        Parameters
+        ----------
+        data : bytes
+            Bytes to write to the bootloader.
+
+        Returns
+        -------
+        size : int
+            Number of bytes written to the bootloader.
+        """
+        ...  # pragma: no cover

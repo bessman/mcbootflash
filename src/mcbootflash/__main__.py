@@ -5,14 +5,11 @@ import argparse
 import logging
 import shutil
 import time
-from typing import TYPE_CHECKING, Iterator
+from typing import Iterator
 
 from serial import Serial  # type: ignore[import-untyped]
 
 import mcbootflash as mcbf
-
-if TYPE_CHECKING:  # pragma: no cover
-    import bincopy  # type: ignore[import-untyped]
 
 _logger = logging.getLogger(__name__)
 
@@ -121,7 +118,8 @@ def main(args: None | argparse.Namespace = None) -> None:
             total_bytes=total_bytes,
             bootattrs=bootattrs,
         )
-        verify(connection)
+        mcbf.self_verify(connection)
+        _logger.info("Self verify OK")
     except Exception as exc:  # noqa: BLE001
         _logger.error(exc)  # noqa: TRY400
         _logger.debug("", exc_info=True)
@@ -129,22 +127,25 @@ def main(args: None | argparse.Namespace = None) -> None:
 
 def erase(connection: Serial, erase_range: tuple[int, int], erase_size: int) -> None:
     """Erase flash if an application is detected, and verify erasure."""
-    if mcbf.self_verify(connection):
+    try:
+        mcbf.self_verify(connection)
+        _logger.info("Existing application detected, erasing...")
         mcbf.erase_flash(connection, erase_range, erase_size)
-    else:
+    except mcbf.VerifyFail:
         _logger.info("No application detected, skipping erase")
         return
 
-    if mcbf.self_verify(connection):
+    try:
+        mcbf.self_verify(connection)
         msg = "Erase failed"
         raise mcbf.BootloaderError(msg)
-
-    _logger.info("Application erased")
+    except mcbf.VerifyFail:
+        _logger.info("Application erased")
 
 
 def flash(
     connection: Serial,
-    chunks: Iterator[bincopy.Segment],
+    chunks: Iterator[mcbf.Chunk],
     total_bytes: int,
     bootattrs: mcbf.BootAttrs,
 ) -> None:
@@ -181,14 +182,6 @@ def flash(
 
         if loglevel == 1:
             print_progress(written_bytes, total_bytes, time.time() - start)
-
-
-def verify(connection: Serial) -> None:
-    """Raise `VerifyFail` if no application is detected."""
-    if mcbf.self_verify(connection):
-        _logger.info("Self verify OK")
-    else:
-        raise mcbf.VerifyFail
 
 
 def print_progress(written_bytes: int, total_bytes: int, elapsed: float) -> None:
