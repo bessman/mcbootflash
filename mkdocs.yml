@@ -3,9 +3,9 @@ site_url: https://mcbootflash.readthedocs.io/
 theme: material
 nav:
   - Home: index.md
-  - API Reference: flash.md
-  - Protocol Specification: protocol.md
-  - Developer Guide: develop.md
+  - API Reference: api.md
+  - Developer's Guide: develop.md
+  - Changelog: changelog.md
 plugins:
   - include-markdown
   - mkdocstrings:
