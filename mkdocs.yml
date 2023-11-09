@@ -1,5 +1,6 @@
 site_name: mcbootflash
 site_url: https://bessman.github.io/mcbootflash/
+repo_url: https://github.com/bessman/mcbootflash/
 theme: material
 nav:
   - Home: index.md
