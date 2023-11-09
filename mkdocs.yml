@@ -1,5 +1,5 @@
 site_name: mcbootflash
-site_url: https://mcbootflash.readthedocs.io/
+site_url: https://bessman.github.io/mcbootflash/
 theme: material
 nav:
   - Home: index.md
