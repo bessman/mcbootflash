@@ -6,7 +6,7 @@
 
 ### Changed
 
-- Reformat changelog per Common Changelog style ([`6447957`](https://github.com/bessman/mcbootflash/commit/6447957005efc681646df59536c68dac3d24619d))
+- Reformat changelog per [Common Changelog](https://common-changelog.org/) style ([`6447957`](https://github.com/bessman/mcbootflash/commit/6447957005efc681646df59536c68dac3d24619d))
 
 ### Fixed
 
