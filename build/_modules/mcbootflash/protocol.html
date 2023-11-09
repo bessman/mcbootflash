@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>mcbootflash.protocol &mdash; mcbootflash 8.0.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=f663eb4a"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            mcbootflash
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../cli.html">Command-line interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../protocol.html">Protocol specification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">Library API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../develop.html">Developer’s overview</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">mcbootflash</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">mcbootflash.protocol</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for mcbootflash.protocol</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Definitions and representations for data sent to and from the bootloader.&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">enum</span>
+<span class="kn">import</span> <span class="nn">struct</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">asdict</span><span class="p">,</span> <span class="n">dataclass</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">ClassVar</span><span class="p">,</span> <span class="n">Type</span><span class="p">,</span> <span class="n">TypeVar</span>
+
+
+<div class="viewcode-block" id="CommandCode">
+<a class="viewcode-back" href="../../protocol.html#mcbootflash.protocol.CommandCode">[docs]</a>
+<span class="k">class</span> <span class="nc">CommandCode</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">IntEnum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The MCC 16-bit bootloader supports these commands.&quot;&quot;&quot;</span>
+
+    <span class="n">READ_VERSION</span> <span class="o">=</span> <span class="mh">0x00</span>
+    <span class="n">READ_FLASH</span> <span class="o">=</span> <span class="mh">0x01</span>
+    <span class="n">WRITE_FLASH</span> <span class="o">=</span> <span class="mh">0x02</span>
+    <span class="n">ERASE_FLASH</span> <span class="o">=</span> <span class="mh">0x03</span>
+    <span class="n">CALC_CHECKSUM</span> <span class="o">=</span> <span class="mh">0x08</span>
+    <span class="n">RESET_DEVICE</span> <span class="o">=</span> <span class="mh">0x09</span>
+    <span class="n">SELF_VERIFY</span> <span class="o">=</span> <span class="mh">0x0A</span>
+    <span class="n">GET_MEMORY_ADDRESS_RANGE</span> <span class="o">=</span> <span class="mh">0x0B</span></div>
+
+
+
+<div class="viewcode-block" id="ResponseCode">
+<a class="viewcode-back" href="../../protocol.html#mcbootflash.protocol.ResponseCode">[docs]</a>
+<span class="k">class</span> <span class="nc">ResponseCode</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">IntEnum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Sent by the bootloader in response to a command.&quot;&quot;&quot;</span>
+
+    <span class="n">SUCCESS</span> <span class="o">=</span> <span class="mh">0x01</span>
+    <span class="n">UNSUPPORTED_COMMAND</span> <span class="o">=</span> <span class="mh">0xFF</span>
+    <span class="n">BAD_ADDRESS</span> <span class="o">=</span> <span class="mh">0xFE</span>
+    <span class="n">BAD_LENGTH</span> <span class="o">=</span> <span class="mh">0xFD</span>
+    <span class="n">VERIFY_FAIL</span> <span class="o">=</span> <span class="mh">0xFC</span></div>
+
+
+
+<span class="n">_P</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;_P&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="s2">&quot;Packet&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Packet">
+<a class="viewcode-back" href="../../protocol.html#mcbootflash.protocol.Packet">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Packet</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for communication packets to and from the bootloader.</span>
+
+<span class="sd">    Layout::</span>
+
+<span class="sd">        | uint8   | uint16      | uint32          | uint32   |</span>
+<span class="sd">        | command | data_length | unlock_sequence | address  |</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    command : CommandCode</span>
+<span class="sd">        Command code which specifies which command should be executed by the bootloader.</span>
+<span class="sd">    data_length : uint16</span>
+<span class="sd">        Meaning depends on value of &#39;command&#39;-field::</span>
+
+<span class="sd">            WRITE_FLASH: Number of bytes following the command packet.</span>
+<span class="sd">            ERASE_FLASH: Number of flash pages to be erased.</span>
+<span class="sd">            CALC_CHECKSUM: Number of bytes to checksum.</span>
+
+<span class="sd">        For other commands this field is ignored.</span>
+<span class="sd">    unlock_sequence : uint32</span>
+<span class="sd">        Key to unlock flash memory for writing. Write operations (WRITE_FLASH,</span>
+<span class="sd">        ERASE_FLASH) will fail SILENTLY if this key is incorrect.</span>
+<span class="sd">    address : uint32</span>
+<span class="sd">        Address at which to perform command.</span>
+<span class="sd">    FORMAT : ClassVar[str]</span>
+<span class="sd">        Format string for `struct` which specifies types and layout of the data fields.</span>
+
+<span class="sd">    Note</span>
+<span class="sd">    ----</span>
+<span class="sd">    No error is raised if the key is incorrect. A failed WRITE_FLASH operation</span>
+<span class="sd">    can be detected by comparing checksums of the written bytes and the flash area</span>
+<span class="sd">    they were written to. A failed ERASE_FLASH operation can be detected by issuing</span>
+<span class="sd">    a SELF_VERIFY command. If the erase succeeded, SELF_VERIFY should return</span>
+<span class="sd">    VERIFY_FAIL.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">command</span><span class="p">:</span> <span class="n">CommandCode</span>
+    <span class="n">data_length</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">unlock_sequence</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">address</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">FORMAT</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;=BH2I&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__bytes__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>  <span class="c1"># noqa: D105</span>
+        <span class="k">return</span> <span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">FORMAT</span><span class="p">,</span> <span class="o">*</span><span class="nb">list</span><span class="p">(</span><span class="n">asdict</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
+
+<div class="viewcode-block" id="Packet.from_bytes">
+<a class="viewcode-back" href="../../api.html#mcbootflash.protocol.Packet.from_bytes">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_bytes</span><span class="p">(</span><span class="bp">cls</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">_P</span><span class="p">],</span> <span class="n">data</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">_P</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a Packet instance from a bytes-like object.&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="o">*</span><span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">FORMAT</span><span class="p">,</span> <span class="n">data</span><span class="p">))</span>
+        <span class="k">except</span> <span class="n">struct</span><span class="o">.</span><span class="n">error</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">struct</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">cls</span><span class="si">}</span><span class="s2"> expected </span><span class="si">{</span><span class="n">struct</span><span class="o">.</span><span class="n">calcsize</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">FORMAT</span><span class="p">)</span><span class="si">}</span><span class="s2"> bytes, got </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span> <span class="kn">from</span> <span class="nn">exc</span></div>
+
+
+<div class="viewcode-block" id="Packet.get_size">
+<a class="viewcode-back" href="../../api.html#mcbootflash.protocol.Packet.get_size">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">get_size</span><span class="p">(</span><span class="bp">cls</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">_P</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the size of Packet in bytes.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">struct</span><span class="o">.</span><span class="n">calcsize</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">FORMAT</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="Command">
+<a class="viewcode-back" href="../../api.html#mcbootflash.protocol.Command">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Command</span><span class="p">(</span><span class="n">Packet</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for packets sent to the bootloader.</span>
+
+<span class="sd">    Layout is identical to Packet.</span>
+<span class="sd">    &quot;&quot;&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="ResponseBase">
+<a class="viewcode-back" href="../../api.html#mcbootflash.protocol.ResponseBase">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">ResponseBase</span><span class="p">(</span><span class="n">Packet</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Base class for packets received from the bootloader.</span>
+
+<span class="sd">    Layout is identical to Packet.</span>
+<span class="sd">    &quot;&quot;&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="Version">
+<a class="viewcode-back" href="../../protocol.html#mcbootflash.protocol.Version">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Version</span><span class="p">(</span><span class="n">ResponseBase</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Response to a READ_VERSION command.</span>
+
+<span class="sd">    Layout::</span>
+
+<span class="sd">        | [Packet] | uint16  | uint16            | uint16    | uint16    | ...</span>
+<span class="sd">        | [Packet] | version | max_packet_length | (ignored) | device_id | ...</span>
+
+<span class="sd">        ... | uint16    | uint16     | uint16     | uint32    | uint32    | uint32    |</span>
+<span class="sd">        ... | (ignored) | erase_size | write_size | (ignored) | (ignored) | (ignored) |</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    version : uint16</span>
+<span class="sd">        Bootloader version number.</span>
+<span class="sd">    max_packet_length : int16</span>
+<span class="sd">        Maximum number of bytes which can be sent to the bootloader per packet. Includes</span>
+<span class="sd">        the size of the packet itself plus associated data.</span>
+<span class="sd">    device_id : uint16</span>
+<span class="sd">        A device-specific identifier.</span>
+<span class="sd">    erase_size : uint16</span>
+<span class="sd">        Size of a flash erase page in bytes. When erasing flash, the size of the memory</span>
+<span class="sd">        area which should be erased is given in number of erase pages.</span>
+<span class="sd">    write_size : uint16</span>
+<span class="sd">        Size of a write block in bytes. When writing to flash, the data must align with</span>
+<span class="sd">        a write block.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">version</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">max_packet_length</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">device_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">erase_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">write_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">FORMAT</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Packet</span><span class="o">.</span><span class="n">FORMAT</span> <span class="o">+</span> <span class="s2">&quot;2H2xH2x2H12x&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="Response">
+<a class="viewcode-back" href="../../protocol.html#mcbootflash.protocol.Response">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Response</span><span class="p">(</span><span class="n">ResponseBase</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Response to any command except READ_VERSION.</span>
+
+<span class="sd">    Layout::</span>
+
+<span class="sd">        | [Packet] | uint8   |</span>
+<span class="sd">        | [Packet] | success |</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    success : ResponseCode</span>
+<span class="sd">        Success or failure status of the command this packet is sent in response to.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">success</span><span class="p">:</span> <span class="n">ResponseCode</span> <span class="o">=</span> <span class="n">ResponseCode</span><span class="o">.</span><span class="n">UNSUPPORTED_COMMAND</span>
+    <span class="n">FORMAT</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Packet</span><span class="o">.</span><span class="n">FORMAT</span> <span class="o">+</span> <span class="s2">&quot;B&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="MemoryRange">
+<a class="viewcode-back" href="../../protocol.html#mcbootflash.protocol.MemoryRange">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">MemoryRange</span><span class="p">(</span><span class="n">Response</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Response to GET_MEMORY_RANGE command.</span>
+
+<span class="sd">    Layout::</span>
+
+<span class="sd">        | [Response] | uint32        | uint32      |</span>
+<span class="sd">        | [Response] | program_start | program_end |</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    program_start : uint32</span>
+<span class="sd">        Low end of address space to which application firmware can be flashed.</span>
+<span class="sd">    program_end : uint32</span>
+<span class="sd">        High end of address space to which application firmware can be flashed.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">program_start</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">program_end</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">FORMAT</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Response</span><span class="o">.</span><span class="n">FORMAT</span> <span class="o">+</span> <span class="s2">&quot;2I&quot;</span></div>
+
+
+
+<div class="viewcode-block" id="Checksum">
+<a class="viewcode-back" href="../../protocol.html#mcbootflash.protocol.Checksum">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Checksum</span><span class="p">(</span><span class="n">Response</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Response to CALCULATE_CHECKSUM command.</span>
+
+<span class="sd">    Layout::</span>
+
+<span class="sd">        | [Response] | uint16   |</span>
+<span class="sd">        | [Response] | checksum |</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    checksum : uint16</span>
+<span class="sd">        Checksum of `data_length` bytes starting from `address`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">checksum</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">FORMAT</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Response</span><span class="o">.</span><span class="n">FORMAT</span> <span class="o">+</span> <span class="s2">&quot;H&quot;</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Alexander Bessman.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>mcbootflash.flashing &mdash; mcbootflash 7.0.5 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=b7ec20d1"></script>
+        <script src="../../_static/doctools.js?v=888ff710"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            mcbootflash
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../cli.html">Command-line interface</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../protocol.html">Protocol specification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">Library API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../develop.html">Developer’s overview</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">mcbootflash</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">mcbootflash.flashing</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for mcbootflash.flashing</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Command line tool for flashing firmware.&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">progressbar</span>  <span class="c1"># type: ignore[import-not-found]</span>
+
+    <span class="n">_PROGRESSBAR_AVAILABLE</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="n">_PROGRESSBAR_AVAILABLE</span> <span class="o">=</span> <span class="kc">False</span>
+
+<span class="kn">from</span> <span class="nn">mcbootflash.connection</span> <span class="kn">import</span> <span class="n">Bootloader</span><span class="p">,</span> <span class="n">ProgressCallback</span>
+<span class="kn">from</span> <span class="nn">mcbootflash.error</span> <span class="kn">import</span> <span class="n">BootloaderError</span>
+
+<span class="n">_logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="get_parser">
+<a class="viewcode-back" href="../../api.html#mcbootflash.flashing.get_parser">[docs]</a>
+<span class="k">def</span> <span class="nf">get_parser</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a populated ArgumentParser instance.</span>
+
+<span class="sd">    This function is meant to be used by applications which want to create their own CLI</span>
+<span class="sd">    while using mcbootflash in the background.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    argparse.ArgumentParser</span>
+<span class="sd">        The returned ArgumentParser has the following arguments already added::</span>
+
+<span class="sd">            file           (str,   required)</span>
+<span class="sd">            -p, --port     (str,   required)</span>
+<span class="sd">            -b, --baudrate (int,   required)</span>
+<span class="sd">            -t, --timeout  (float, default=5)</span>
+<span class="sd">            -v, --verbose  (bool,  default=False)</span>
+<span class="sd">            -q, --quiet    (bool,  default=False)</span>
+
+<span class="sd">        These arguments can be overridden by adding a new argument with the same option</span>
+<span class="sd">        string. For example, an application which only needs to communicate with a</span>
+<span class="sd">        specific device with a known serial baudrate could override the &#39;baudrate&#39;</span>
+<span class="sd">        option to make it optional::</span>
+
+<span class="sd">            import mcbootflash</span>
+<span class="sd">            parser = mcbootflash.get_parser()</span>
+<span class="sd">            parser.add_argument(&quot;-b&quot;, &quot;--baudrate&quot;, default=460800)</span>
+<span class="sd">            mcbootflash.flash(parser.parse_args())</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span>
+        <span class="n">description</span><span class="o">=</span><span class="p">(</span>
+            <span class="s2">&quot;Flash firmware over serial connection to a device running Microchip&#39;s &quot;</span>
+            <span class="s2">&quot;16-bit bootloader.&quot;</span>
+        <span class="p">),</span>
+        <span class="n">conflict_handler</span><span class="o">=</span><span class="s2">&quot;resolve&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;file&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;An Intel HEX file containing application firmware.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-p&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--port&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Serial port connected to the device you want to flash.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-b&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--baudrate&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
+        <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Symbol rate of device&#39;s serial bus.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-t&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--timeout&quot;</span><span class="p">,</span>
+        <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Try to read data from the bus for this many seconds before giving up.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-v&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--verbose&quot;</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Print debug messages.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s2">&quot;-q&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;--quiet&quot;</span><span class="p">,</span>
+        <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_true&quot;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Suppress output.&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">parser</span></div>
+
+
+
+<span class="k">class</span> <span class="nc">_Bar</span><span class="p">:</span>
+    <span class="n">pbar</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">callback</span><span class="p">(</span><span class="n">written_bytes</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">total_bytes</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">_Bar</span><span class="o">.</span><span class="n">pbar</span><span class="p">:</span>
+            <span class="n">widgets</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">progressbar</span><span class="o">.</span><span class="n">Percentage</span><span class="p">(),</span>
+                <span class="s2">&quot; &quot;</span><span class="p">,</span>
+                <span class="n">progressbar</span><span class="o">.</span><span class="n">DataSize</span><span class="p">(),</span>
+                <span class="s2">&quot; &quot;</span><span class="p">,</span>
+                <span class="n">progressbar</span><span class="o">.</span><span class="n">Bar</span><span class="p">(),</span>
+                <span class="s2">&quot; &quot;</span><span class="p">,</span>
+                <span class="n">progressbar</span><span class="o">.</span><span class="n">Timer</span><span class="p">(),</span>
+            <span class="p">]</span>
+            <span class="n">progress</span> <span class="o">=</span> <span class="n">progressbar</span><span class="o">.</span><span class="n">ProgressBar</span><span class="p">(</span><span class="n">widgets</span><span class="o">=</span><span class="n">widgets</span><span class="p">)</span>
+            <span class="n">_Bar</span><span class="o">.</span><span class="n">pbar</span> <span class="o">=</span> <span class="n">progress</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="n">max_value</span><span class="o">=</span><span class="n">total_bytes</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">written_bytes</span> <span class="o">==</span> <span class="n">total_bytes</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">_Bar</span><span class="o">.</span><span class="n">pbar</span><span class="p">,</span> <span class="n">progressbar</span><span class="o">.</span><span class="n">ProgressBar</span><span class="p">)</span>
+            <span class="n">_Bar</span><span class="o">.</span><span class="n">pbar</span><span class="o">.</span><span class="n">finish</span><span class="p">()</span>
+            <span class="n">_Bar</span><span class="o">.</span><span class="n">pbar</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">_Bar</span><span class="o">.</span><span class="n">pbar</span><span class="p">,</span> <span class="n">progressbar</span><span class="o">.</span><span class="n">ProgressBar</span><span class="p">)</span>
+            <span class="n">_Bar</span><span class="o">.</span><span class="n">pbar</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">written_bytes</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">fallback</span><span class="p">(</span><span class="n">written_bytes</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">total_bytes</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="mi">100</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">written_bytes</span><span class="o">/</span><span class="n">total_bytes</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2">%&quot;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Wrote </span><span class="si">{</span><span class="n">written_bytes</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">total_bytes</span><span class="si">}</span><span class="s2"> bytes.&quot;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">end</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">written_bytes</span> <span class="o">==</span> <span class="n">total_bytes</span> <span class="k">else</span> <span class="s2">&quot;</span><span class="se">\r</span><span class="s2">&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="flash">
+<a class="viewcode-back" href="../../api.html#mcbootflash.flashing.flash">[docs]</a>
+<span class="k">def</span> <span class="nf">flash</span><span class="p">(</span><span class="n">parsed_args</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="n">argparse</span><span class="o">.</span><span class="n">Namespace</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Command line script for firmware flashing.</span>
+
+<span class="sd">    Use this directly or indirectly as entry point for project.scripts.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    parsed_args : argparse.Namespace, optional</span>
+<span class="sd">        Pre-parsed arguments. If not specified, arguments will be parsed from the</span>
+<span class="sd">        command line.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">parsed_args</span> <span class="o">=</span> <span class="n">parsed_args</span> <span class="ow">or</span> <span class="n">get_parser</span><span class="p">()</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+    <span class="n">callback</span> <span class="o">=</span> <span class="n">_logconf</span><span class="p">(</span><span class="n">parsed_args</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">boot</span> <span class="o">=</span> <span class="n">Bootloader</span><span class="p">(</span>
+            <span class="n">port</span><span class="o">=</span><span class="n">parsed_args</span><span class="o">.</span><span class="n">port</span><span class="p">,</span>
+            <span class="n">baudrate</span><span class="o">=</span><span class="n">parsed_args</span><span class="o">.</span><span class="n">baudrate</span><span class="p">,</span>
+            <span class="n">timeout</span><span class="o">=</span><span class="n">parsed_args</span><span class="o">.</span><span class="n">timeout</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">boot</span><span class="o">.</span><span class="n">flash</span><span class="p">(</span>
+            <span class="n">hexfile</span><span class="o">=</span><span class="n">parsed_args</span><span class="o">.</span><span class="n">file</span><span class="p">,</span>
+            <span class="n">progress_callback</span><span class="o">=</span><span class="n">callback</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="k">except</span> <span class="n">BootloaderError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Flashing failed:&quot;</span><span class="p">,</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">exc</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">exc</span><span class="p">)</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">exc</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">exc</span><span class="p">,</span> <span class="n">exc_info</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+
+<span class="k">def</span> <span class="nf">_logconf</span><span class="p">(</span><span class="n">parsed_args</span><span class="p">:</span> <span class="n">argparse</span><span class="o">.</span><span class="n">Namespace</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">ProgressCallback</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+    <span class="n">callback</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">parsed_args</span><span class="o">.</span><span class="n">quiet</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">_PROGRESSBAR_AVAILABLE</span><span class="p">:</span>
+            <span class="n">callback</span> <span class="o">=</span> <span class="n">_Bar</span><span class="o">.</span><span class="n">callback</span>
+            <span class="n">progressbar</span><span class="o">.</span><span class="n">streams</span><span class="o">.</span><span class="n">wrap_stderr</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;&#39;progressbar&#39; package not available. Using fallback.&quot;</span><span class="p">)</span>
+            <span class="n">callback</span> <span class="o">=</span> <span class="n">_Bar</span><span class="o">.</span><span class="n">fallback</span>
+
+        <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span>
+            <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span> <span class="k">if</span> <span class="n">parsed_args</span><span class="o">.</span><span class="n">verbose</span> <span class="k">else</span> <span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">,</span>
+            <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;</span><span class="si">%(message)s</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">parsed_args</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">callback</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Alexander Bessman.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
