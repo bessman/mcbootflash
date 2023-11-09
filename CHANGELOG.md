@@ -1,6 +1,8 @@
 # Changelog
 
-## [8.0.0] - Development
+## [8.0.1] - Development
+
+## [8.0.0] - 2023-11-09
 
 ### Changed
 
