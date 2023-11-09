@@ -24,7 +24,7 @@ def get_parser() -> argparse.ArgumentParser:
     argparse.Namespace
         The returned ArgumentParser contains the following arguments::
 
-            file: str
+            hexfile: str
             port: str
             baudrate: int
             timeout: float, default=5
@@ -38,42 +38,42 @@ def get_parser() -> argparse.ArgumentParser:
         ),
     )
     parser.add_argument(
-        "file",
+        "hexfile",
         type=str,
-        help="An Intel HEX file containing application firmware.",
+        help="An Intel HEX file containing application firmware",
     )
     parser.add_argument(
         "-p",
         "--port",
         type=str,
         required=True,
-        help="Serial port connected to the device you want to flash.",
+        help="Serial port connected to the device you want to flash",
     )
     parser.add_argument(
         "-b",
         "--baudrate",
         type=int,
         required=True,
-        help="Symbol rate of device's serial bus.",
+        help="Symbol rate of device's serial bus",
     )
     parser.add_argument(
         "-t",
         "--timeout",
         type=float,
         default=5,
-        help="Try to read data from the bus for this many seconds before giving up.",
+        help="Try to read data from the bus for this many seconds before giving up",
     )
     parser.add_argument(
         "-v",
         "--verbose",
         action="store_true",
-        help="Print debug messages.",
+        help="Print debug messages",
     )
     parser.add_argument(
         "-q",
         "--quiet",
         action="store_true",
-        help="Suppress output.",
+        help="Suppress output",
     )
     parser.add_argument(
         "--version",
@@ -107,11 +107,11 @@ def main(args: None | argparse.Namespace = None) -> None:
         )
         bootattrs = mcbf.get_boot_attrs(connection)
         _logger.info("Connected")
-        total_bytes, chunks = mcbf.chunked(args.file, bootattrs)
+        total_bytes, chunks = mcbf.chunked(args.hexfile, bootattrs)
         connection.timeout *= 10
         erase(connection, bootattrs.memory_range, bootattrs.erase_size)
         connection.timeout /= 10
-        _logger.info(f"Flashing {args.file}")
+        _logger.info(f"Flashing {args.hexfile}")
         flash(
             connection=connection,
             chunks=chunks,
