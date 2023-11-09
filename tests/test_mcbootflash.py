@@ -9,7 +9,7 @@ from serial import Serial
 import mcbootflash as bf
 import mcbootflash.__main__ as main
 import mcbootflash.flash
-import mcbootflash.protocol
+import mcbootflash.types
 
 PORTNAME = "/dev/ttyUSB0"
 BAUDRATE = 460800
@@ -21,9 +21,9 @@ def connection():
 
 
 def test_wrong_packet():
-    resp = mcbootflash.protocol.Checksum(mcbootflash.protocol.CommandCode.CALC_CHECKSUM)
+    resp = mcbootflash.types.Checksum(mcbootflash.types.CommandCode.CALC_CHECKSUM)
     with pytest.raises(struct.error) as excinfo:
-        mcbootflash.protocol.Version.from_bytes(bytes(resp))
+        mcbootflash.types.Version.from_bytes(bytes(resp))
     assert "expected 37 bytes, got 14" in str(excinfo)
 
 
