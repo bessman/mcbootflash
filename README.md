@@ -112,4 +112,4 @@ for chunk in chunks:
 bf.self_verify(connection)
 ```
 
-See also the [API Reference][flash-operations].
+See also the [API Reference](https://bessman.github.io/mcbootflash/api/).
