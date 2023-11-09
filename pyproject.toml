@@ -49,7 +49,17 @@ skips = ["B101"]
 
 [tool.ruff.lint]
 select = ["ALL"]
-ignore = ["D203", "D213", "G004", "N818", "S101", "ANN101"]
+ignore = [
+    "D203",  # one-blank-line-before-class
+    "D213",  # multi-line-summary-second-line
+    "G004",  # logging-f-string
+    "N818",  # error-suffix-on-exception-name
+    "S101",  # assert
+    "ANN101",  # missing-type-self
+]
 
 [tool.ruff.lint.per-file-ignores]
 "**/{tests,docs}/*" = ["ALL"]
+
+[tool.ruff.pydocstyle]
+convention = "numpy"
