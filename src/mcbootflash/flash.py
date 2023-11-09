@@ -5,12 +5,13 @@ import logging
 
 try:
     # New in python 3.12.
-    from itertools import batched  # type: ignore[attr-defined]
+    from itertools import batched
 except ImportError:
     from itertools import islice
     from typing import no_type_check
 
-    @no_type_check
+    # fmt: off
+    @no_type_check  # type: ignore[no-redef]
     def batched(iterable, n):  # pragma: no cover  # noqa: ANN001,ANN201,D103
         # batched('ABCDEFG', 3) --> ABC DEF G
         if n < 1:
@@ -18,6 +19,7 @@ except ImportError:
         it = iter(iterable)
         while batch := tuple(islice(it, n)):
             yield batch
+    # fmt: on
 
 
 from mcbootflash.error import (
