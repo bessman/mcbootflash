@@ -2,6 +2,10 @@
 
 ## [8.0.1] - Development
 
+### Changed
+
+- Begin argument descriptions with lowercase letter ([`771babb`](https://github.com/bessman/mcbootflash/commit/771babb8307ae1b65b32379526ac05fca2ecd306))
+
 ## [8.0.0] - 2023-11-09
 
 ### Changed
