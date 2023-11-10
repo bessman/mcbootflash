@@ -40,40 +40,40 @@ def get_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "hexfile",
         type=str,
-        help="An Intel HEX file containing application firmware",
+        help="an Intel HEX file containing application firmware",
     )
     parser.add_argument(
         "-p",
         "--port",
         type=str,
         required=True,
-        help="Serial port connected to the device you want to flash",
+        help="serial port connected to the device you want to flash",
     )
     parser.add_argument(
         "-b",
         "--baudrate",
         type=int,
         required=True,
-        help="Symbol rate of device's serial bus",
+        help="symbol rate of device's serial bus",
     )
     parser.add_argument(
         "-t",
         "--timeout",
         type=float,
         default=5,
-        help="Try to read data from the bus for this many seconds before giving up",
+        help="try to read data from the bus for this many seconds before giving up",
     )
     parser.add_argument(
         "-v",
         "--verbose",
         action="store_true",
-        help="Print debug messages",
+        help="print debug messages",
     )
     parser.add_argument(
         "-q",
         "--quiet",
         action="store_true",
-        help="Suppress output",
+        help="suppress output",
     )
     parser.add_argument(
         "--version",
