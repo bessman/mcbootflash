@@ -21,7 +21,7 @@ Mcbootflash is:
 
 ### Scriptable
 
-Mcbootflash is a command-line application. As such, it is easily scriptable.
+As a command-line application, mcbootflash easily scriptable.
 
 ### Extensible
 
@@ -98,9 +98,11 @@ bf.erase_flash(connection, bootattrs.memory_range, bootattrs.erase_size)
 # Write the firmware chunks to the bootloader in a loop.
 for chunk in chunks:
     bf.write_flash(connection, chunk)
+
     # Optionally, check that the write is OK by checksumming.
     if bootattrs.has_checksum:
         bf.checksum(connection, chunk)
+
     # At this point, you may want to give an indication of the flashing progress,
     # like updating a progress bar.
 
