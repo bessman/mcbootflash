@@ -21,7 +21,7 @@ Mcbootflash is:
 
 ### Scriptable
 
-As a command-line application, mcbootflash easily scriptable.
+As a command-line application, mcbootflash is easily scriptable.
 
 ### Extensible
 
