@@ -4,7 +4,7 @@
 
 ### Changed
 
-- Begin argument descriptions with lowercase letter ([`771babb`](https://github.com/bessman/mcbootflash/commit/771babb8307ae1b65b32379526ac05fca2ecd306))
+- Begin argument descriptions with lowercase letter ([`103a331`](https://github.com/bessman/mcbootflash/commit/103a3313aec6fb6eb4c08ee35ecadd97055b0335))
 
 ## [8.0.0] - 2023-11-09
 
