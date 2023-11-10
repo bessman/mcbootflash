@@ -10,38 +10,38 @@
 
 ### Changed
 
-- __Breaking__: Renamed `connection.py` to `flash.py` ([3319508](https://github.com/bessman/mcbootflash/commit/3319508ddd9b0935b8823f551587e224a2d38dcb))
-- __Breaking__: Renamed `protocol.py` to `types.py` ([4d73ca0](https://github.com/bessman/mcbootflash/commit/4d73ca04d764765fedac17b68f04cea89a82e1b1))
-- Renamed `file` argument to CLI to `hexfile` ([5a0d612](https://github.com/bessman/mcbootflash/commit/5a0d6129e53843b2d01d1f69b4cb3723500f3b2b))
-- Replace sphinx with mkdocs ([4a9e854](https://github.com/bessman/mcbootflash/commit/4a9e85476b5986c6c25af079845b9859f80db019))
-- Split tox.ini from pyproject.toml to separate file ([08ef0ed](https://github.com/bessman/mcbootflash/commit/08ef0ed2dd8d81a03246f4ca832c426573e514fe))
-- Use `from __future__ import annotations` ([04ed4f9](https://github.com/bessman/mcbootflash/commit/04ed4f973ef0f928c05131f0894725ad8730657d))
-- Improve CI time by not installing in environments that don't need it ([6d381ee](https://github.com/bessman/mcbootflash/commit/6d381eefa77fc731bf5238c345dc18bc21bf6962))
+- __Breaking__: Renamed `connection.py` to `flash.py` ([`3319508`](https://github.com/bessman/mcbootflash/commit/3319508ddd9b0935b8823f551587e224a2d38dcb))
+- __Breaking__: Renamed `protocol.py` to `types.py` ([`4d73ca0`](https://github.com/bessman/mcbootflash/commit/4d73ca04d764765fedac17b68f04cea89a82e1b1))
+- Renamed `file` argument to CLI to `hexfile` ([`5a0d612`](https://github.com/bessman/mcbootflash/commit/5a0d6129e53843b2d01d1f69b4cb3723500f3b2b))
+- Replace sphinx with mkdocs ([`4a9e854`](https://github.com/bessman/mcbootflash/commit/4a9e85476b5986c6c25af079845b9859f80db019))
+- Split tox.ini from pyproject.toml to separate file ([`08ef0ed`](https://github.com/bessman/mcbootflash/commit/08ef0ed2dd8d81a03246f4ca832c426573e514fe))
+- Use `from __future__ import annotations` ([`04ed4f9`](https://github.com/bessman/mcbootflash/commit/04ed4f973ef0f928c05131f0894725ad8730657d))
+- Improve CI time by not installing in environments that don't need it ([`6d381ee`](https://github.com/bessman/mcbootflash/commit/6d381eefa77fc731bf5238c345dc18bc21bf6962))
 
 ### Added
 
-- Add `BootAttrs` dataclass for holding bootloader attributes ([afcfa08](https://github.com/bessman/mcbootflash/commit/afcfa08853b304aaf92fa344195696760db95f29))
-- Add `Chunk` protocol for data which is to be written to flash ([afcfa08](https://github.com/bessman/mcbootflash/commit/afcfa08853b304aaf92fa344195696760db95f29))
-- Add `Connection` protocol for objects which provide a connection to a device in bootloader mode ([afcfa08](https://github.com/bessman/mcbootflash/commit/afcfa08853b304aaf92fa344195696760db95f29))
-- Add `get_boot_attrs` function to read bootloader attributes ([3319508](https://github.com/bessman/mcbootflash/commit/3319508ddd9b0935b8823f551587e224a2d38dcb))
-- Add `chunked` to load and split HEX file into aligend chunks ([afcfa08](https://github.com/bessman/mcbootflash/commit/afcfa08853b304aaf92fa344195696760db95f29))
-- Add `erase_flash` to erase program memory range ([3319508](https://github.com/bessman/mcbootflash/commit/3319508ddd9b0935b8823f551587e224a2d38dcb))
-- Add `write_flash` to write firmware chunks to flash ([3319508](https://github.com/bessman/mcbootflash/commit/3319508ddd9b0935b8823f551587e224a2d38dcb))
-- Add `checksum` to compare local and remote data ([3319508](https://github.com/bessman/mcbootflash/commit/3319508ddd9b0935b8823f551587e224a2d38dcb))
-- Add `self_verify` to detect installed application on device ([3319508](https://github.com/bessman/mcbootflash/commit/3319508ddd9b0935b8823f551587e224a2d38dcb))
-- Add `reset` to reset device ([3319508](https://github.com/bessman/mcbootflash/commit/3319508ddd9b0935b8823f551587e224a2d38dcb))
-- Add github pages ([f02b7c6](https://github.com/bessman/mcbootflash/commit/f02b7c613e4dd8f2410a69e2b785e81b883ee92c))
-- Start using ruff for linting ([82e1a95](https://github.com/bessman/mcbootflash/commit/82e1a9539780edfb5eb9ef0cef28a202a74ddd4b))
+- Add `BootAttrs` dataclass for holding bootloader attributes ([`afcfa08`](https://github.com/bessman/mcbootflash/commit/afcfa08853b304aaf92fa344195696760db95f29))
+- Add `Chunk` protocol for data which is to be written to flash ([`afcfa08`](https://github.com/bessman/mcbootflash/commit/afcfa08853b304aaf92fa344195696760db95f29))
+- Add `Connection` protocol for objects which provide a connection to a device in bootloader mode ([`afcfa08`](https://github.com/bessman/mcbootflash/commit/afcfa08853b304aaf92fa344195696760db95f29))
+- Add `get_boot_attrs` function to read bootloader attributes ([`3319508`](https://github.com/bessman/mcbootflash/commit/3319508ddd9b0935b8823f551587e224a2d38dcb))
+- Add `chunked` to load and split HEX file into aligend chunks ([`afcfa08`](https://github.com/bessman/mcbootflash/commit/afcfa08853b304aaf92fa344195696760db95f29))
+- Add `erase_flash` to erase program memory range ([`3319508`](https://github.com/bessman/mcbootflash/commit/3319508ddd9b0935b8823f551587e224a2d38dcb))
+- Add `write_flash` to write firmware chunks to flash ([`3319508`](https://github.com/bessman/mcbootflash/commit/3319508ddd9b0935b8823f551587e224a2d38dcb))
+- Add `checksum` to compare local and remote data ([`3319508`](https://github.com/bessman/mcbootflash/commit/3319508ddd9b0935b8823f551587e224a2d38dcb))
+- Add `self_verify` to detect installed application on device ([`3319508`](https://github.com/bessman/mcbootflash/commit/3319508ddd9b0935b8823f551587e224a2d38dcb))
+- Add `reset` to reset device ([`3319508`](https://github.com/bessman/mcbootflash/commit/3319508ddd9b0935b8823f551587e224a2d38dcb))
+- Add github pages ([`f02b7c6`](https://github.com/bessman/mcbootflash/commit/f02b7c613e4dd8f2410a69e2b785e81b883ee92c))
+- Start using ruff for linting ([`82e1a95`](https://github.com/bessman/mcbootflash/commit/82e1a9539780edfb5eb9ef0cef28a202a74ddd4b))
 
 ### Removed
 
-- __Breaking__: Remove `flashing.py` ([969d110](https://github.com/bessman/mcbootflash/commit/969d11063db184fe0b84fbf10ecd7575df393b72))
-- __Breaking__: Remove `mcbootflash.get_parser` ([969d110](https://github.com/bessman/mcbootflash/commit/969d11063db184fe0b84fbf10ecd7575df393b72))
-- __Breaking__: Remove `mcbootflash.flash` ([969d110](https://github.com/bessman/mcbootflash/commit/969d11063db184fe0b84fbf10ecd7575df393b72))
-- __Breaking__: Remove `mcbootflash.Bootloader` ([3319508](https://github.com/bessman/mcbootflash/commit/3319508ddd9b0935b8823f551587e224a2d38dcb))
-- __Breaking__: Remove `mcbootflash.protocol.Packet.from_serial` ([f5cb75c](https://github.com/bessman/mcbootflash/commit/f5cb75c114fc6a25823d909440683d12d8133505))
-- Stop using prospector for linting ([eed8b6a](https://github.com/bessman/mcbootflash/commit/eed8b6a4c155bab38a1eccd132d8d87bbb04c8a4))
-- Stop using readthedocs ([f4a128d](https://github.com/bessman/mcbootflash/commit/f4a128ded9c156cbd6817ee77965f7bf64cbf803))
+- __Breaking__: Remove `flashing.py` ([`969d110`](https://github.com/bessman/mcbootflash/commit/969d11063db184fe0b84fbf10ecd7575df393b72))
+- __Breaking__: Remove `mcbootflash.get_parser` ([`969d110`](https://github.com/bessman/mcbootflash/commit/969d11063db184fe0b84fbf10ecd7575df393b72))
+- __Breaking__: Remove `mcbootflash.flash` ([`969d110`](https://github.com/bessman/mcbootflash/commit/969d11063db184fe0b84fbf10ecd7575df393b72))
+- __Breaking__: Remove `mcbootflash.Bootloader` ([`3319508`](https://github.com/bessman/mcbootflash/commit/3319508ddd9b0935b8823f551587e224a2d38dcb))
+- __Breaking__: Remove `mcbootflash.protocol.Packet.from_serial` ([`f5cb75c`](https://github.com/bessman/mcbootflash/commit/f5cb75c114fc6a25823d909440683d12d8133505))
+- Stop using prospector for linting ([`eed8b6a`](https://github.com/bessman/mcbootflash/commit/eed8b6a4c155bab38a1eccd132d8d87bbb04c8a4))
+- Stop using readthedocs ([`f4a128d`](https://github.com/bessman/mcbootflash/commit/f4a128ded9c156cbd6817ee77965f7bf64cbf803))
 
 ## [7.0.6] - 2023-11-01
 
