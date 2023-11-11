@@ -42,7 +42,7 @@ def chunked(
     chunk_size //= hexdata.word_size_bytes
     total_bytes = len(hexdata) * hexdata.word_size_bytes
 
-    if not total_bytes:
+    if total_bytes == 0:
         msg = "HEX file contains no data within program memory range"
         raise ValueError(msg)
 
