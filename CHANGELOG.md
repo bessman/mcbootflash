@@ -6,6 +6,10 @@
 
 - Begin argument descriptions with lowercase letter ([`103a331`](https://github.com/bessman/mcbootflash/commit/103a3313aec6fb6eb4c08ee35ecadd97055b0335))
 
+### Fixed
+
+- Fix `chunked` missing from API reference ([`a276764`](https://github.com/bessman/mcbootflash/commit/a276764074187cbe344fe553916f4472f410d54a))
+
 ## [8.0.0] - 2023-11-09
 
 ### Changed
