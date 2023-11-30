@@ -316,6 +316,26 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#utility-functions" class="md-nav__link">
+    Utility Functions
+  </a>
+  
+    <nav class="md-nav" aria-label="Utility Functions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#mcbootflash.util.chunked" class="md-nav__link">
+    chunked()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#custom-types" class="md-nav__link">
     Custom Types
   </a>
@@ -638,6 +658,26 @@
           <li class="md-nav__item">
   <a href="#mcbootflash.flash.reset" class="md-nav__link">
     reset()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#utility-functions" class="md-nav__link">
+    Utility Functions
+  </a>
+  
+    <nav class="md-nav" aria-label="Utility Functions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#mcbootflash.util.chunked" class="md-nav__link">
+    chunked()
   </a>
   
 </li>
@@ -1330,6 +1370,159 @@ erased.</p>
           </td>
           <td>
               <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+  </div>
+
+</div>
+
+
+
+  </div>
+
+  </div>
+
+</div><h2 id="utility-functions">Utility Functions</h2>
+
+
+<div class="doc doc-object doc-module">
+
+
+
+
+  <div class="doc doc-contents first">
+  
+      <p>Utility functions.</p>
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+
+
+<h3 id="mcbootflash.util.chunked" class="doc doc-heading">
+          <code class="highlight language-python"><span class="n">chunked</span><span class="p">(</span><span class="n">hexfile</span><span class="p">,</span> <span class="n">bootattrs</span><span class="p">)</span></code>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Split a HEX file into chunks.</p>
+
+
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>hexfile</code></td>
+          <td>
+                <code>str</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Path of a HEX file containing application firmare.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>bootattrs</code></td>
+          <td>
+                <code><a class="autorefs autorefs-internal" title="mcbootflash.types.BootAttrs" href="#mcbootflash.types.BootAttrs">BootAttrs</a></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>The bootloader's attributes, as read by <code>get_boot_attrs</code>.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+  <p><strong>Returns:</strong></p>
+  <table>
+    <thead>
+      <tr>
+<th>Name</th>        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+<td><code>total_bytes</code></td>          <td>
+                <code>int</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>The total number of bytes in all chunks.</p>
+            </div>
+          </td>
+        </tr>
+        <tr>
+<td><code>chunks</code></td>          <td>
+                <code><span title="typing.Iterator">Iterator</span>[<a class="autorefs autorefs-internal" title="mcbootflash.types.Chunk" href="#mcbootflash.types.Chunk">Chunk</a>]</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Appropriatelly sized chunks of data, suitable for writing in a loop with
+<code>write_flash</code>.</p>
+            </div>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+
+
+
+  <p><strong>Raises:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td>
+                <code>ValueError</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>If HEX file contains no data in program memory range.</p>
+            </div>
           </td>
         </tr>
     </tbody>
