@@ -3,18 +3,22 @@
 from __future__ import annotations
 
 import logging
+import sys
 
-try:
-    # New in python 3.12.
+if sys.version_info >= (3, 12):
     from itertools import batched
-except ImportError:  # pragma: no cover
+else:  # pragma: no cover
     from itertools import islice
-    from typing import no_type_check
+    from typing import Iterable, Iterator, TypeVar
+
+    T = TypeVar("T")
 
     # fmt: off
-    @no_type_check  # type: ignore[no-redef]
-    def batched(iterable, n):  # noqa: ANN001,ANN201,D103
-        # batched('ABCDEFG', 3) --> ABC DEF G
+    def batched(iterable: Iterable[T], n: int) -> Iterator[tuple[T, ...]]:
+        """Backport of `batched` to python<3.12.
+
+        batched('ABCDEFG', 3) --> ABC DEF G
+        """
         if n < 1:
             raise ValueError("n must be at least one")  # noqa: TRY003,EM101
         it = iter(iterable)
