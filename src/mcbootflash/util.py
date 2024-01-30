@@ -18,7 +18,7 @@ def chunked(
     Parameters
     ----------
     hexfile : str
-        Path of a HEX file containing application firmare.
+        Path of a HEX file containing application firmware.
     bootattrs : BootAttrs
         The bootloader's attributes, as read by `get_boot_attrs`.
 
