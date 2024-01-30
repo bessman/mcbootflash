@@ -1,4 +1,5 @@
 """These functions are used to communicate with the bootloader."""
+
 from __future__ import annotations
 
 import logging

@@ -1,4 +1,5 @@
 """Command line tool for flashing firmware."""
+
 from __future__ import annotations
 
 import argparse

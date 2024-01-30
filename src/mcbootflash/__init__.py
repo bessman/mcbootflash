@@ -1,4 +1,5 @@
 """Flash firmware to devices running Microchip's 16-bit bootloader."""
+
 from .error import (
     BadAddress,
     BadLength,

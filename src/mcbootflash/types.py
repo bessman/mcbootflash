@@ -1,4 +1,5 @@
 """Custom types used by mcbootflash."""
+
 from __future__ import annotations
 
 import enum
