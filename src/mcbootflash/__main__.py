@@ -8,7 +8,7 @@ import shutil
 import time
 from typing import Iterator
 
-from serial import Serial  # type: ignore[import-not-found]
+from serial import Serial  # type: ignore[import-untyped]
 
 import mcbootflash as mcbf
 
