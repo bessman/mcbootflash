@@ -41,6 +41,26 @@ Home = "https://bessman.github.io/mcbootflash/"
 [project.scripts]
 mcbootflash = "mcbootflash.__main__:main"
 
+[project.optional-dependencies]
+test = [
+    "pytest",
+    "coverage",
+    "pytest-reserial",
+]
+doc = [
+    "mkdocs",
+    "mkdocs-include-markdown-plugin",
+    "mkdocstrings[python]",
+    "mkdocs-material",
+]
+dev = [
+    "black",
+    "isort",
+    "mypy",
+    "ruff",
+    "tox",
+]
+
 [tool.isort]
 profile = "black"
 
