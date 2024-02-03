@@ -4,6 +4,7 @@
 
 ### Changed
 
+- Bump development status trove classifier: Beta -> Stable ([`418142e`](https://github.com/bessman/mcbootflash/commit/418142e1df232219b472027a52020ffe074fab28))
 - Begin argument descriptions with lowercase letter ([`103a331`](https://github.com/bessman/mcbootflash/commit/103a3313aec6fb6eb4c08ee35ecadd97055b0335))
 
 ### Fixed
