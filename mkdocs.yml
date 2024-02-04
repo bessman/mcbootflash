@@ -1,6 +1,6 @@
 site_name: mcbootflash
 site_author: Alexander Bessman
-copyright: "Copyright © 2023 Alexander Bessman"
+copyright: "Copyright 2022 Alexander Bessman"
 site_url: https://bessman.github.io/mcbootflash/
 repo_url: https://github.com/bessman/mcbootflash/
 theme: material
