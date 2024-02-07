@@ -1,6 +1,7 @@
 import argparse
 import logging
 import struct
+from pathlib import Path
 
 import bincopy
 import pytest
@@ -46,7 +47,11 @@ def test_cli(reserial, caplog, verbose, quiet):
     assert "Self verify OK" in caplog.messages[-1]
 
 
-def test_cli_error(reserial, caplog):
+def test_cli_error(caplog):
+    if Path(PORTNAME).exists():
+        msg = f"{PORTNAME} exists: skipping device not connected test"
+        pytest.skip(msg)
+
     caplog.set_level(logging.INFO)
     main.main(
         argparse.Namespace(
