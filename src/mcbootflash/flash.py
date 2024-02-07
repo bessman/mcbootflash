@@ -14,11 +14,8 @@ else:  # pragma: no cover
     T = TypeVar("T")
 
     # fmt: off
-    def batched(iterable: Iterable[T], n: int) -> Iterator[tuple[T, ...]]:
-        """Backport of `batched` to python<3.12.
-
-        batched('ABCDEFG', 3) --> ABC DEF G
-        """
+    def batched(iterable: Iterable[T], n: int) -> Iterator[tuple[T, ...]]:  # noqa: D103
+        # Backport of `batched` to python<3.12.
         if n < 1:
             raise ValueError("n must be at least one")  # noqa: TRY003,EM101
         it = iter(iterable)
