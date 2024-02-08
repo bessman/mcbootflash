@@ -78,5 +78,5 @@ ignore = [
 [tool.ruff.lint.per-file-ignores]
 "**/{tests,docs}/*" = ["ALL"]
 
-[tool.ruff.pydocstyle]
+[tool.ruff.lint.pydocstyle]
 convention = "numpy"
