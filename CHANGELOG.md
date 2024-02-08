@@ -1,6 +1,8 @@
 # Changelog
 
-## [8.0.1] - Development
+## [8.0.2] - Development
+
+## [8.0.1] - 2024-02-08
 
 ### Changed
 
@@ -236,6 +238,7 @@ _Maintanence release._
 
 _Initial release._
 
+[8.0.1]: https://github.com/bessman/mcbootflash/releases/tag/8.0.1
 [8.0.0]: https://github.com/bessman/mcbootflash/releases/tag/v8.0.0
 [7.0.6]: https://github.com/bessman/mcbootflash/releases/tag/v7.0.6
 [7.0.5]: https://github.com/bessman/mcbootflash/releases/tag/v7.0.5
