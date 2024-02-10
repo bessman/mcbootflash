@@ -256,7 +256,7 @@ class Chunk(Protocol):
         The address associated with the start of the data. Must be aligned with (i.e. be
         a multiple of) the bootloader's `write_size` attribute.
     data : bytes
-        Data to be written to the bootloader. The data length be a multiple of the
+        Data to be written to the bootloader. The data length must be a multiple of the
         bootloader's `write_size` attribute, and must be no longer than the bootloader's
         `max_packet_length` attribute minus the size of the command packet header (which
         can be gotten with `Command.get_size`).
