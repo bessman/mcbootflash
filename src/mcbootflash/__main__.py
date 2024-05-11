@@ -65,6 +65,11 @@ def get_parser() -> argparse.ArgumentParser:
         help="try to read data from the bus for this many seconds before giving up",
     )
     parser.add_argument(
+        "--reset",
+        action="store_true",
+        help="reset device after flashing is complete",
+    )
+    parser.add_argument(
         "-v",
         "--verbose",
         action="store_true",
@@ -120,6 +125,9 @@ def main(args: None | argparse.Namespace = None) -> None:
         )
         mcbf.self_verify(connection)
         _logger.info("Self verify OK")
+
+        if args.reset:
+            mcbf.reset(connection)
     except Exception as exc:  # noqa: BLE001
         _logger.error(exc)  # noqa: TRY400
         _logger.debug("", exc_info=True)
