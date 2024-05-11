@@ -1,6 +1,12 @@
 # Changelog
 
-## [8.0.2] - Development
+## [8.0.3] - Development
+
+## [8.0.2] - 2024-05-11
+
+### Fixed
+
+- Continue with warning on `BadAddress` during checksum ([`b8734ea`](https://github.com/bessman/mcbootflash/commit/b8734ea2d4b63a3ae005031629a1b6c73c83dd49))
 
 ## [8.0.1] - 2024-02-08
 
@@ -238,6 +244,7 @@ _Maintanence release._
 
 _Initial release._
 
+[8.0.2]: https://github.com/bessman/mcbootflash/releases/tag/8.0.2
 [8.0.1]: https://github.com/bessman/mcbootflash/releases/tag/8.0.1
 [8.0.0]: https://github.com/bessman/mcbootflash/releases/tag/v8.0.0
 [7.0.6]: https://github.com/bessman/mcbootflash/releases/tag/v7.0.6
