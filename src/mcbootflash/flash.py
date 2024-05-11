@@ -271,7 +271,16 @@ def checksum(
         If checksums do not match.
     """
     checksum1 = _get_local_checksum(chunk.data)
-    checksum2 = _get_remote_checksum(connection, chunk.address, len(chunk.data))
+
+    try:
+        checksum2 = _get_remote_checksum(connection, chunk.address, len(chunk.data))
+    except BadAddress:
+        _logger.warning(
+            "Got BadAddress while checksumming, continuing anyway. "
+            "This is probably a bug in the bootloader, not in mcbootflash. "
+            "See https://github.com/bessman/mcbootflash/issues/54",
+        )
+        return
 
     if checksum1 != checksum2:
         _logger.debug(f"Checksum mismatch: {checksum1} != {checksum2}")

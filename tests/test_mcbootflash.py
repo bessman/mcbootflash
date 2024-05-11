@@ -197,3 +197,16 @@ def test_format_debug_bytes():
     formatted_rx = mcbootflash.flash._format_debug_bytes(testbytes_rx, testbytes_tx)
     expected = "30 31 32 33\n            34 35 36 37 38 39"
     assert formatted_tx + "\n" + formatted_rx == expected
+
+
+def test_checksum_bad_address_warning(reserial, caplog, connection):
+    boot_attrs = bf.get_boot_attrs(connection)
+    payload_size = 240
+    chunk = bincopy.Segment(
+        minimum_address=boot_attrs.memory_range[1] - payload_size // 2,
+        maximum_address=boot_attrs.memory_range[1],
+        data=b"\xff" * payload_size,
+        word_size_bytes=1,
+    )
+    bf.checksum(connection, chunk)
+    assert "BadAddress" in caplog.messages[-1]
