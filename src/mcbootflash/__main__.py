@@ -61,7 +61,7 @@ def get_parser() -> argparse.ArgumentParser:
         "-t",
         "--timeout",
         type=float,
-        default=5,
+        default=10,
         help="try to read data from the bus for this many seconds before giving up",
     )
     parser.add_argument(
@@ -113,9 +113,8 @@ def main(args: None | argparse.Namespace = None) -> None:
         bootattrs = mcbf.get_boot_attrs(connection)
         _logger.info("Connected")
         total_bytes, chunks = mcbf.chunked(args.hexfile, bootattrs)
-        connection.timeout *= 10
-        erase(connection, bootattrs.memory_range, bootattrs.erase_size)
-        connection.timeout /= 10
+        _logger.debug("Erasing program area...")
+        mcbf.erase_flash(connection, bootattrs.memory_range, bootattrs.erase_size)
         _logger.info(f"Flashing {args.hexfile}")
         flash(
             connection=connection,
@@ -132,23 +131,6 @@ def main(args: None | argparse.Namespace = None) -> None:
         _logger.error(exc)  # noqa: TRY400
         _logger.debug("", exc_info=True)
 
-
-def erase(connection: Serial, erase_range: tuple[int, int], erase_size: int) -> None:
-    """Erase flash if an application is detected, and verify erasure."""
-    try:
-        mcbf.self_verify(connection)
-        _logger.info("Existing application detected, erasing...")
-        mcbf.erase_flash(connection, erase_range, erase_size)
-    except mcbf.VerifyFail:
-        _logger.info("No application detected, skipping erase")
-        return
-
-    try:
-        mcbf.self_verify(connection)
-        msg = "Erase failed"
-        raise mcbf.BootloaderError(msg)
-    except mcbf.VerifyFail:
-        _logger.info("Application erased")
 
 
 def flash(
