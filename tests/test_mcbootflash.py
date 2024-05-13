@@ -116,6 +116,11 @@ def test_erase_misaligned():
     assert "not a multiple" in str(excinfo.value)
 
 
+def test_verify_fail(reserial, connection):
+    with pytest.raises(bf.VerifyFail):
+        bf.self_verify(connection)
+
+
 def test_checksum_error(reserial, connection):
     bootattrs = bf.get_boot_attrs(connection)
     chunk = bincopy.Segment(
@@ -143,21 +148,15 @@ def test_no_data():
     assert "no data" in str(excinfo.value)
 
 
-def test_reset(reserial, caplog, connection):
-    caplog.set_level(logging.DEBUG)
-    bf.reset(connection)
-    assert "Device reset" in caplog.messages[-1]
-
-
 def test_unexpected_response(reserial, connection):
+    if Path(PORTNAME).exists():
+        # Unexpected response uses synthetic data.
+        msg = f"{PORTNAME} exists: skipping unexpected response test"
+        pytest.skip(msg)
+
     with pytest.raises(bf.BootloaderError) as excinfo:
         bf.reset(connection)
     assert "Command code mismatch" in str(excinfo.value)
-
-
-def test_verify_fail(reserial, connection):
-    with pytest.raises(bf.VerifyFail):
-        bf.self_verify(connection)
 
 
 def test_read_flash():
@@ -185,3 +184,9 @@ def test_checksum_bad_address_warning(reserial, caplog, connection):
     )
     bf.checksum(connection, chunk)
     assert "BadAddress" in caplog.messages[-1]
+
+
+def test_reset(reserial, caplog, connection):
+    caplog.set_level(logging.DEBUG)
+    bf.reset(connection)
+    assert "Device reset" in caplog.messages[-1]
