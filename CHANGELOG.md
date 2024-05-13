@@ -1,6 +1,26 @@
 # Changelog
 
-## [8.0.3] - Development
+## [9.0.1] - Development
+
+## [9.0.0] - 2024-05-13
+
+### Changed
+
+- Disable checksumming by default in CLI, enable with `--checksum` flag ([`b685bb5`](https://github.com/bessman/mcbootflash/commit/b685bb56165805706fdc87adcba76c1285cc3416))
+- Unconditionally erase before flashing with CLI ([`9a4ddc6`](https://github.com/bessman/mcbootflash/commit/9a4ddc629b1df47fe06149ceafdc3f4131a5e6e6))
+
+### Added
+
+- Add CLI flag `--reset` to reset device after flashing ([`e38cefb`](https://github.com/bessman/mcbootflash/commit/e38cefbfee740b46c994d678f1fd884d8caeec9c))
+
+### Removed
+
+- __Breaking__: Remove `.has_checksum` attribute of `BootAttrs` ([`b685bb5`](https://github.com/bessman/mcbootflash/commit/b685bb56165805706fdc87adcba76c1285cc3416))
+
+### Fixed
+
+- Fix error messages not being shown in CLI ([`c499eb9`](https://github.com/bessman/mcbootflash/commit/c499eb94f193b2910aed6c6fb62f108854ce8026))
+- Fix wrong pad value in `chunked` ([`58ad227`](https://github.com/bessman/mcbootflash/commit/58ad227b9304ddea3f9c0e4acad1494901a47031))
 
 ## [8.0.2] - 2024-05-11
 
@@ -244,6 +264,7 @@ _Maintanence release._
 
 _Initial release._
 
+[9.0.0]: https://github.com/bessman/mcbootflash/releases/tag/9.0.0
 [8.0.2]: https://github.com/bessman/mcbootflash/releases/tag/8.0.2
 [8.0.1]: https://github.com/bessman/mcbootflash/releases/tag/8.0.1
 [8.0.0]: https://github.com/bessman/mcbootflash/releases/tag/v8.0.0
