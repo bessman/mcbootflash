@@ -134,10 +134,8 @@ def main(args: None | argparse.Namespace = None) -> None:
 
         if args.reset:
             mcbf.reset(connection)
-    except Exception as exc:  # noqa: BLE001
-        _logger.error(exc)  # noqa: TRY400
-        _logger.debug("", exc_info=True)
-
+    except Exception:
+        _logger.exception("An error occurred:")
 
 
 def flash(
