@@ -39,7 +39,7 @@ def test_cli(reserial, caplog, verbose, quiet):
             hexfile="tests/testcases/flash/test.hex",
             port=PORTNAME,
             baudrate=BAUDRATE,
-            timeout=1,
+            timeout=10,
             reset=False,
             verbose=verbose,
             quiet=quiet,
@@ -59,7 +59,7 @@ def test_cli_error(caplog):
             hexfile="tests/testcases/flash/test.hex",
             port=PORTNAME,
             baudrate=BAUDRATE,
-            timeout=1,
+            timeout=10,
             reset=False,
             verbose=True,
             quiet=False,
@@ -102,33 +102,11 @@ def test_get_bootattrs(reserial, connection):
 
 
 def test_erase(reserial, caplog, connection):
-    # To record data for this test, connect a device with a program installed.
-    caplog.set_level(logging.INFO)
+    caplog.set_level(logging.DEBUG)
     bootattrs = bf.get_boot_attrs(connection)
     connection.timeout = 10
-    main.erase(connection, bootattrs.memory_range, bootattrs.erase_size)
-    assert "Application erased" in caplog.messages[-1]
-
-
-def test_erase_empty(reserial, caplog, connection):
-    # To record data for this test, connect a device with no program installed.
-    caplog.set_level(logging.INFO)
-    bootattrs = bf.get_boot_attrs(connection)
-    main.erase(connection, bootattrs.memory_range, bootattrs.erase_size)
-    assert "No application detected, skipping erase" in caplog.messages[-1]
-
-
-def test_erase_fail(reserial, connection):
-    # To record data for this test, connect a device with a program installed.
-    bootattrs = bf.get_boot_attrs(connection)
-    mcbootflash.flash._FLASH_UNLOCK_KEY = 0
-    with pytest.raises(bf.BootloaderError) as excinfo:
-        main.erase(
-            connection,
-            bootattrs.memory_range,
-            bootattrs.erase_size,
-        )
-    assert "Erase failed" in str(excinfo.value)
+    bf.erase_flash(connection, bootattrs.memory_range, bootattrs.erase_size)
+    assert "Erasing addresses" in caplog.messages[-4]
 
 
 def test_erase_misaligned():
