@@ -231,8 +231,6 @@ class BootAttrs:
     memory_range : tuple[int, int]
         Tuple of addresses specifying the program memory range. The range is half-open,
         i.e. the upper address is not part of the program memory range.
-    has_checksum : bool
-        Indicates whether or not the bootloader supports the `CALC_CHECKSUM` command.
     """
 
     version: int
@@ -241,7 +239,6 @@ class BootAttrs:
     erase_size: int
     write_size: int
     memory_range: tuple[int, int]
-    has_checksum: bool
 
 
 class Chunk(Protocol):

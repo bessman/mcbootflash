@@ -70,13 +70,6 @@ def get_boot_attrs(connection: Connection) -> BootAttrs:
     ) = _read_version(connection)
     memory_range = _get_memory_address_range(connection)
 
-    try:
-        _get_remote_checksum(connection, memory_range[0], write_size)
-        has_checksum = True
-    except UnsupportedCommand:
-        _logger.warning("Bootloader does not support checksumming")
-        has_checksum = False
-
     return BootAttrs(
         version,
         max_packet_length,
@@ -84,7 +77,6 @@ def get_boot_attrs(connection: Connection) -> BootAttrs:
         erase_size,
         write_size,
         memory_range,
-        has_checksum,
     )
 
 
