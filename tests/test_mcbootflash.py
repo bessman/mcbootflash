@@ -40,6 +40,7 @@ def test_cli(reserial, caplog, verbose, quiet):
             port=PORTNAME,
             baudrate=BAUDRATE,
             timeout=10,
+            checksum=True,
             reset=False,
             verbose=verbose,
             quiet=quiet,
@@ -60,6 +61,7 @@ def test_cli_error(caplog):
             port=PORTNAME,
             baudrate=BAUDRATE,
             timeout=10,
+            checksum=True,
             reset=False,
             verbose=True,
             quiet=False,
@@ -97,7 +99,6 @@ def test_get_bootattrs(reserial, connection):
         erase_size=2048,
         write_size=8,
         memory_range=(6144, 174080),
-        has_checksum=True,
     )
 
 
@@ -128,11 +129,6 @@ def test_checksum_error(reserial, connection):
     assert "Checksum mismatch" in str(excinfo.value)
 
 
-def test_checksum_not_supported(reserial, caplog, connection):
-    bf.get_boot_attrs(connection)
-    assert "Bootloader does not support checksumming" in caplog.messages
-
-
 def test_no_data():
     bootattrs = bf.BootAttrs(
         version=258,
@@ -141,7 +137,6 @@ def test_no_data():
         erase_size=2048,
         write_size=8,
         memory_range=(6144, 174080),
-        has_checksum=True,
     )
     with pytest.raises(ValueError) as excinfo:
         bf.chunked("tests/testcases/no_data/test.hex", bootattrs)

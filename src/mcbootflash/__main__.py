@@ -65,6 +65,13 @@ def get_parser() -> argparse.ArgumentParser:
         help="try to read data from the bus for this many seconds before giving up",
     )
     parser.add_argument(
+        "-c",
+        "--checksum",
+        action="store_true",
+        help="verify flashed data by checksumming after write",
+    )
+    parser.add_argument(
+        "-r",
         "--reset",
         action="store_true",
         help="reset device after flashing is complete",
@@ -120,7 +127,7 @@ def main(args: None | argparse.Namespace = None) -> None:
             connection=connection,
             chunks=chunks,
             total_bytes=total_bytes,
-            bootattrs=bootattrs,
+            checksum=args.checksum,
         )
         mcbf.self_verify(connection)
         _logger.info("Self verify OK")
@@ -136,8 +143,9 @@ def main(args: None | argparse.Namespace = None) -> None:
 def flash(
     connection: Serial,
     chunks: Iterator[mcbf.Chunk],
+    *,
     total_bytes: int,
-    bootattrs: mcbf.BootAttrs,
+    checksum: bool,
 ) -> None:
     """Flash application firmware.
 
@@ -158,7 +166,7 @@ def flash(
     for chunk in chunks:
         mcbf.write_flash(connection, chunk)
 
-        if bootattrs.has_checksum:
+        if checksum:
             mcbf.checksum(connection, chunk)
 
         written_bytes += len(chunk.data)
