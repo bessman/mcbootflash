@@ -1,6 +1,16 @@
 # Changelog
 
-## [9.0.1] - Development
+## [9.0.2] - Development
+
+## [9.0.1] - 2024-05-14
+
+### Changed
+
+- Make minor improvements to CLI output ([`fb17948`](https://github.com/bessman/mcbootflash/commit/fb17948310d85f30b3f7b451e02dfded53b7faa7))
+
+### Fixed
+
+- Update README to reflect changes made in v9.0.0 ([`e6dc42c`](https://github.com/bessman/mcbootflash/commit/e6dc42c2747dc42efb2ce03f15dc535907796f11))
 
 ## [9.0.0] - 2024-05-13
 
@@ -264,6 +274,7 @@ _Maintanence release._
 
 _Initial release._
 
+[9.0.1]: https://github.com/bessman/mcbootflash/releases/tag/9.0.1
 [9.0.0]: https://github.com/bessman/mcbootflash/releases/tag/9.0.0
 [8.0.2]: https://github.com/bessman/mcbootflash/releases/tag/8.0.2
 [8.0.1]: https://github.com/bessman/mcbootflash/releases/tag/8.0.1
