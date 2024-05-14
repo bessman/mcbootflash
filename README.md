@@ -45,20 +45,22 @@ Mcbootflash can be used as both a command-line application and a library.
 
 ```shellsession
 $ mcbootflash --help
-usage: mcbootflash [-h] -p PORT -b BAUDRATE [-t TIMEOUT] [-v] [-q] [--version] hexfile
+usage: mcbootflash [-h] -p PORT -b BAUDRATE [-t TIMEOUT] [-c] [-r] [-v] [-q] [--version] hexfile
 
 Flash firmware over serial connection to a device running Microchip's 16-bit bootloader.
 
 positional arguments:
-  hexfile               an Intel HEX file containing application firmware
+  hexfile               a HEX file containing application firmware
 
-optional arguments:
+options:
   -h, --help            show this help message and exit
   -p PORT, --port PORT  serial port connected to the device you want to flash
   -b BAUDRATE, --baudrate BAUDRATE
                         symbol rate of device's serial bus
   -t TIMEOUT, --timeout TIMEOUT
                         try to read data from the bus for this many seconds before giving up
+  -c, --checksum        verify flashed data by checksumming after write
+  -r, --reset           reset device after flashing is complete
   -v, --verbose         print debug messages
   -q, --quiet           suppress output
   --version             show program's version number and exit
@@ -69,10 +71,8 @@ optional arguments:
 ```shellsession
 $ mcbootflash --port /dev/ttyUSB0 --baudrate 460800 firmware.hex
 Connecting to bootloader...
-Connected
-Existing application detected, erasing...
-Application erased
-Flashing firmware.hex
+Erasing program area...
+Flashing firmware.hex...
 100%  88.7 KiB |########################################| Elapsed Time: 0:00:05
 Self verify OK
 ```
@@ -100,8 +100,7 @@ for chunk in chunks:
     bf.write_flash(connection, chunk)
 
     # Optionally, check that the write is OK by checksumming.
-    if bootattrs.has_checksum:
-        bf.checksum(connection, chunk)
+    bf.checksum(connection, chunk)
 
     # At this point, you may want to give an indication of the flashing progress,
     # like updating a progress bar.
