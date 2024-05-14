@@ -118,11 +118,10 @@ def main(args: None | argparse.Namespace = None) -> None:
             timeout=args.timeout,
         )
         bootattrs = mcbf.get_boot_attrs(connection)
-        _logger.info("Connected")
         total_bytes, chunks = mcbf.chunked(args.hexfile, bootattrs)
-        _logger.debug("Erasing program area...")
+        _logger.info("Erasing program area...")
         mcbf.erase_flash(connection, bootattrs.memory_range, bootattrs.erase_size)
-        _logger.info(f"Flashing {args.hexfile}")
+        _logger.info(f"Flashing {args.hexfile}...")
         flash(
             connection=connection,
             chunks=chunks,
@@ -134,6 +133,7 @@ def main(args: None | argparse.Namespace = None) -> None:
 
         if args.reset:
             mcbf.reset(connection)
+            _logger.info("Device reset")
     except Exception:
         _logger.exception("An error occurred:")
 
