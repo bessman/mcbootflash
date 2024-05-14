@@ -36,4 +36,4 @@ __all__ = [
     "write_flash",
 ]
 
-__version__ = "9.0.1"
+__version__ = "9.0.2"
