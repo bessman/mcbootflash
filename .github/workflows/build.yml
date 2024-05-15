@@ -46,14 +46,11 @@ jobs:
         python -m pip install tox
     - name: Build
       run: tox -e build
-    - name: Zip
-      run: |
-        zip linux.zip dist/mcbootflash
     - name: Upload
       uses: actions/upload-artifact@v4
       with:
         name: uploads-linux
-        path: linux.zip       
+        path: dist/mcbootflash
 
   build-windows:
 
