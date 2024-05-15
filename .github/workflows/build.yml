@@ -27,7 +27,7 @@ jobs:
     - name: Upload
       uses: actions/upload-artifact@v4
       with:
-        name: uploads
+        name: uploads-macos
         path: macos.zip  
 
   build-linux:
@@ -52,7 +52,7 @@ jobs:
     - name: Upload
       uses: actions/upload-artifact@v4
       with:
-        name: uploads
+        name: uploads-linux
         path: linux.zip       
 
   build-windows:
@@ -77,5 +77,5 @@ jobs:
     - name: Upload
       uses: actions/upload-artifact@v4
       with:
-        name: uploads
+        name: uploads-windows
         path: windows.zip     
