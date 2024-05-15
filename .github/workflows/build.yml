@@ -21,14 +21,11 @@ jobs:
         python -m pip install tox
     - name: Build
       run: tox -e build
-    - name: Zip
-      run: |
-        zip macos.zip dist/mcbootflash
     - name: Upload
       uses: actions/upload-artifact@v4
       with:
-        name: uploads-macos
-        path: macos.zip  
+        name: macos
+        path: dist/mcbootflash
 
   build-linux:
 
@@ -49,7 +46,7 @@ jobs:
     - name: Upload
       uses: actions/upload-artifact@v4
       with:
-        name: uploads-linux
+        name: linux
         path: dist/mcbootflash
 
   build-windows:
@@ -68,11 +65,8 @@ jobs:
         python -m pip install tox
     - name: Build
       run: tox -e build
-    - name: Zip
-      run: |
-        powershell Compress-Archive dist/mcbootflash.exe windows.zip
     - name: Upload
       uses: actions/upload-artifact@v4
       with:
-        name: uploads-windows
-        path: windows.zip     
+        name: windows
+        path: dist/mcbootflash.exe
