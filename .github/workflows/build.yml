@@ -23,7 +23,7 @@ jobs:
       run: tox -e build
     - name: Zip
       run: |
-        zip dist/mcbootflash macos.zip 
+        zip macos.zip dist/mcbootflash
     - name: Upload
       uses: actions/upload-artifact@v4
       with:
@@ -48,7 +48,7 @@ jobs:
       run: tox -e build
     - name: Zip
       run: |
-        zip dist/mcbootflash linux.zip 
+        zip linux.zip dist/mcbootflash
     - name: Upload
       uses: actions/upload-artifact@v4
       with:
@@ -73,7 +73,7 @@ jobs:
       run: tox -e build
     - name: Zip
       run: |
-        zip dist/mcbootflash windows.zip 
+        zip windows.zip dist/mcbootflash
     - name: Upload
       uses: actions/upload-artifact@v4
       with:
