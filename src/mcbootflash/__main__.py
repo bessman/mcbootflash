@@ -276,3 +276,13 @@ def get_bar(done_ratio: float, used_width: int) -> str:
     done = int(bar_width * done_ratio)
     left = bar_width - done
     return "|" + done * "#" + left * " " + "|"
+
+
+if __name__ == "__main__":
+    # Entry point for pyinstaller. This script is not meant to be run directly.
+    import re
+    import sys
+
+    sys.argv[0] = re.sub(r"(-script\.pyw|\.exe)?$", "", sys.argv[0])
+    main()
+    sys.exit()
