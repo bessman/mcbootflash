@@ -11,6 +11,12 @@ jobs:
         os: [ubuntu-22.04, macos-13, windows-2022]
         include:
           - python-version: '3.12'
+          - os: ubuntu-22.04
+            name: linux
+          - os: macos-13
+            name: macos
+          - os: windows-2022
+            name: windows
 
     runs-on: ${{ matrix.os }}
 
