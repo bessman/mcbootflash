@@ -1,6 +1,6 @@
 # mcbootflash
 
-![build](https://github.com/bessman/mcbootflash/actions/workflows/main.yml/badge.svg)
+![build](https://github.com/bessman/mcbootflash/actions/workflows/build.yml/badge.svg)
 [![Documentation](https://img.shields.io/badge/doc-latest-blue.svg)](https://bessman.github.io/mcbootflash/)
 [![PyPI](https://img.shields.io/pypi/v/mcbootflash.svg)](https://pypi.org/project/mcbootflash/)
 [![License](https://img.shields.io/pypi/l/mcbootflash)](https://mit-license.org/)
