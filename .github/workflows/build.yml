@@ -1,0 +1,39 @@
+name: Build
+
+on:
+  - push
+  - pull_request
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [ubuntu-22.04, macos-13, windows-2022]
+        include:
+          - python-version: '3.12'
+          - os: ubuntu-22.04
+            name: linux
+          - os: macos-13
+            name: macos
+          - os: windows-2022
+            name: windows
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install tox
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install tox
+    - name: Build
+      run: tox -e build
+    - name: Upload
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ matrix.name }}
+        path: dist/mcbootflash*
