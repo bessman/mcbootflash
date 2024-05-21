@@ -11,7 +11,7 @@ from mcbootflash.types import BootAttrs, Chunk, Command
 
 def chunked(
     hexfile: str,
-    bootattrs: BootAttrs,
+    boot_attrs: BootAttrs,
 ) -> tuple[int, Iterator[Chunk]]:
     """Split a HEX file into chunks.
 
@@ -19,7 +19,7 @@ def chunked(
     ----------
     hexfile : str
         Path of a HEX file containing application firmware.
-    bootattrs : BootAttrs
+    boot_attrs : BootAttrs
         The bootloader's attributes, as read by `get_boot_attrs`.
 
     Returns
@@ -37,9 +37,9 @@ def chunked(
     """
     hexdata = bincopy.BinFile()
     hexdata.add_microchip_hex_file(hexfile)
-    hexdata.crop(*bootattrs.memory_range)
-    chunk_size = bootattrs.max_packet_length - Command.get_size()
-    chunk_size -= chunk_size % bootattrs.write_size
+    hexdata.crop(*boot_attrs.memory_range)
+    chunk_size = boot_attrs.max_packet_length - Command.get_size()
+    chunk_size -= chunk_size % boot_attrs.write_size
     chunk_size //= hexdata.word_size_bytes
     total_bytes = len(hexdata) * hexdata.word_size_bytes
 
@@ -47,6 +47,6 @@ def chunked(
         msg = "HEX file contains no data within program memory range"
         raise ValueError(msg)
 
-    total_bytes += (bootattrs.write_size - total_bytes) % bootattrs.write_size
-    align = bootattrs.write_size // hexdata.word_size_bytes
+    total_bytes += (boot_attrs.write_size - total_bytes) % boot_attrs.write_size
+    align = boot_attrs.write_size // hexdata.word_size_bytes
     return total_bytes, hexdata.segments.chunks(chunk_size, align, b"\xff\xff")
