@@ -102,7 +102,7 @@ def _read_version(connection: Connection) -> tuple[int, int, int, int, int]:
         Write block size. When writing to flash, the number of bytes to be
         written must align with a write block.
     """
-    read_version_response = _send_and_receive(
+    read_version_response = _exchange(
         connection,
         Command(CommandCode.READ_VERSION),
     )
@@ -139,7 +139,7 @@ def _get_memory_address_range(connection: Connection) -> tuple[int, int]:
     The returned tuple is suitable for use in `range`, i.e. the upper bound is not
     part of the writable range.
     """
-    mem_range_response = _send_and_receive(
+    mem_range_response = _exchange(
         connection,
         Command(CommandCode.GET_MEMORY_ADDRESS_RANGE),
     )
@@ -194,7 +194,7 @@ def erase_flash(
         raise ValueError(msg)
 
     _logger.debug(f"Erasing addresses {start:#08x}:{end:#08x}")
-    _send_and_receive(
+    _exchange(
         connection,
         command=Command(
             command=CommandCode.ERASE_FLASH,
@@ -216,7 +216,7 @@ def write_flash(connection: Connection, chunk: Chunk) -> None:
         Firmware chunk to write to bootloader.
     """
     _logger.debug(f"Writing {len(chunk.data)} bytes to {chunk.address:#08x}")
-    _send_and_receive(
+    _exchange(
         connection,
         Command(
             command=CommandCode.WRITE_FLASH,
@@ -242,7 +242,7 @@ def self_verify(connection: Connection) -> None:
         If the bootloader cannot detect a bootable application in program
         memory.
     """
-    _send_and_receive(connection, Command(command=CommandCode.SELF_VERIFY))
+    _exchange(connection, Command(command=CommandCode.SELF_VERIFY))
 
 
 def checksum(
@@ -285,7 +285,7 @@ def checksum(
 
 
 def _get_remote_checksum(connection: Connection, address: int, length: int) -> int:
-    checksum_response = _send_and_receive(
+    checksum_response = _exchange(
         connection,
         Command(
             command=CommandCode.CALC_CHECKSUM,
@@ -315,7 +315,7 @@ def reset(connection: Connection) -> None:
     connection : Connection
         Connection to device in bootloader mode.
     """
-    _send_and_receive(connection, Command(command=CommandCode.RESET_DEVICE))
+    _exchange(connection, Command(command=CommandCode.RESET_DEVICE))
     _logger.debug("Device reset")
 
 
@@ -387,7 +387,7 @@ def _get_response(connection: Connection, in_response_to: Command) -> ResponseBa
     return response_type.from_bytes(bytes(response) + remainder)
 
 
-def _send_and_receive(
+def _exchange(
     connection: Connection,
     command: Command,
     data: bytes = b"",
