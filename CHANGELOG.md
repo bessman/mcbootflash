@@ -2,6 +2,10 @@
 
 ## [9.0.2] - Development
 
+### Changed
+
+- Clarify `self_verify` docstring ([`fc8d16b`](https://github.com/bessman/mcbootflash/commit/fc8d16b2d9b6ee528edbeec7bd47a4a157c3b78b))
+
 ## [9.0.1] - 2024-05-14
 
 ### Changed
