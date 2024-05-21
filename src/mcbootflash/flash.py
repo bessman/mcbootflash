@@ -229,7 +229,7 @@ def write_flash(connection: Connection, chunk: Chunk) -> None:
 
 
 def self_verify(connection: Connection) -> None:
-    """Check if an application is installed.
+    """Run bootloader self-verification.
 
     Parameters
     ----------
@@ -239,7 +239,8 @@ def self_verify(connection: Connection) -> None:
     Raises
     ------
     mcbootflash.VerifyFail
-        If no application is detected.
+        If the bootloader cannot detect a bootable application in program
+        memory.
     """
     _send_and_receive(connection, Command(command=CommandCode.SELF_VERIFY))
 
