@@ -33,5 +33,5 @@ class BadLength(BootloaderError):
 class VerifyFail(BootloaderError):
     """Raised if Response.success is `ResponseCode.VERIFY_FAIL`.
 
-    This means that no program was detected in the program memory range.
+    This means that no bootable program was detected in the program memory range.
     """
