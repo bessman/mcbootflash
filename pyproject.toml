@@ -45,7 +45,7 @@ mcbootflash = "mcbootflash.__main__:main"
 test = [
     "pytest",
     "coverage",
-    "pytest-reserial",
+    "pytest-reserial>=0.4.0",
 ]
 doc = [
     "mkdocs",
