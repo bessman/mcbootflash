@@ -7,7 +7,7 @@ name = "mcbootflash"
 authors = [{name = "Alexander Bessman", email = "alexander.bessman@gmail.com"}]
 dynamic = ["version", "description"]
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 license = {file = "LICENSE"}
 dependencies = [
     "pyserial",
@@ -15,11 +15,11 @@ dependencies = [
 ]
 classifiers = [
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Development Status :: 5 - Production/Stable",
     "License :: OSI Approved :: MIT License",
 ]

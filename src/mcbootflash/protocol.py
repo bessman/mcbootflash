@@ -1,7 +1,5 @@
 """Custom types used by mcbootflash."""
 
-from __future__ import annotations
-
 import enum
 import struct
 from dataclasses import asdict, dataclass
