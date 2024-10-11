@@ -6,7 +6,7 @@ from typing import Iterator
 
 import bincopy  # type: ignore[import-untyped]
 
-from mcbootflash.types import BootAttrs, Chunk, Command
+from mcbootflash.protocol import BootAttrs, Chunk, Command
 
 
 def chunked(

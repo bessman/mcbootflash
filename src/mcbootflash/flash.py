@@ -31,7 +31,7 @@ from mcbootflash.error import (
     UnsupportedCommand,
     VerifyFail,
 )
-from mcbootflash.types import (
+from mcbootflash.protocol import (
     BootAttrs,
     Checksum,
     Chunk,
