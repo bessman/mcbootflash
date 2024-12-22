@@ -17,25 +17,26 @@ from .flash import (
     write_flash,
 )
 from .protocol import BootAttrs, Chunk, Command
-from .util import chunked
+from .util import chunked, readback
 
 __all__ = [
     "BadAddress",
     "BadLength",
+    "BootAttrs",
     "BootloaderError",
     "Chunk",
     "Command",
     "UnsupportedCommand",
     "VerifyFail",
-    "BootAttrs",
     "checksum",
     "chunked",
     "erase_flash",
     "get_boot_attrs",
     "read_flash",
+    "readback",
     "reset",
     "self_verify",
     "write_flash",
 ]
 
-__version__ = "9.0.2"
+__version__ = "10.0.0"
