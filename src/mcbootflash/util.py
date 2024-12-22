@@ -30,7 +30,7 @@ def chunked(
 
     Raises
     ------
-    ValueError
+    bincopy.Error
         If HEX file contains no data in program memory range.
     """
     hexdata = bincopy.BinFile()
@@ -43,7 +43,7 @@ def chunked(
 
     if total_bytes == 0:
         msg = "HEX file contains no data within program memory range"
-        raise ValueError(msg)
+        raise bincopy.Error(msg)
 
     total_bytes += (boot_attrs.write_size - total_bytes) % boot_attrs.write_size
     align = boot_attrs.write_size // hexdata.word_size_bytes
