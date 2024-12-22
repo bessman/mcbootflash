@@ -73,11 +73,12 @@ ignore = [
     "G004",  # logging-f-string
     "N818",  # error-suffix-on-exception-name
     "S101",  # assert
-    "ANN101",  # missing-type-self
 ]
 
 [tool.ruff.lint.per-file-ignores]
 "**/{tests,docs}/*" = ["ALL"]
+# Do not show user a traceback unless they explicitly ask for it with --debug.
+"__main__.py" = ["TRY400"]
 
 [tool.ruff.lint.pydocstyle]
 convention = "numpy"
