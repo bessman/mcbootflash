@@ -318,8 +318,31 @@ def reset(connection: Connection) -> None:
     _logger.debug("Device reset")
 
 
-def _read_flash() -> None:
-    raise NotImplementedError
+def read_flash(connection: Connection, address: int, size: int) -> bytes:
+    """Read bytes from flash.
+
+    Parameters
+    ----------
+    connection : Connection
+        Connection to device in bootloader mode.
+    address : int
+        Start address to read from.
+    size : int
+        Number of bytes to read.
+
+    Returns
+    -------
+    bytes
+    """
+    read_flash_response = _exchange(
+        connection,
+        Command(
+            command=CommandCode.READ_FLASH,
+            data_length=size,
+            address=address,
+        ),
+    )
+    return connection.read(read_flash_response.data_length)
 
 
 def _get_response(connection: Connection, in_response_to: Command) -> ResponseBase:
