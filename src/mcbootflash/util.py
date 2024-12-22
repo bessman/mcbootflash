@@ -1,6 +1,6 @@
 """Utility functions."""
 
-from typing import Iterator
+from collections.abc import Iterator
 
 import bincopy  # type: ignore[import-untyped]
 
