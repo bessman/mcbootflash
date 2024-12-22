@@ -9,7 +9,6 @@ import struct
 import sys
 import time
 from io import StringIO
-from itertools import pairwise
 from pathlib import Path
 from typing import TYPE_CHECKING, Final, TextIO
 
@@ -33,6 +32,20 @@ from mcbootflash import (
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
+
+if sys.version_info >= (3, 10):
+    from itertools import pairwise
+else:
+
+    def pairwise(iterable):  # noqa: ANN001, ANN201, D103
+        # pairwise('ABCDEFG') → AB BC CD DE EF FG
+        iterator = iter(iterable)
+        a = next(iterator, None)
+
+        for b in iterator:
+            yield a, b
+            a = b
+
 
 logger = logging.getLogger(__name__)
 APPNAME: Final[str] = "mcbootflash"
