@@ -72,8 +72,9 @@ options:
 $ mcbootflash --port /dev/ttyUSB0 --baudrate 460800 firmware.hex
 Connecting to bootloader...
 Erasing program area...
+100%  162.0 KiB  |######################################|  Elapsed Time: 0:00:01
 Flashing firmware.hex...
-100%  88.7 KiB |########################################| Elapsed Time: 0:00:05
+100%  98.8 KiB  |#######################################|  Elapsed Time: 0:00:06
 Self verify OK
 ```
 
