@@ -1,10 +1,29 @@
 # Changelog
 
-## [9.0.2] - Development
+## [10.0.1] - Development
+
+## [10.0.0] - 2024-12-22
 
 ### Changed
 
+- __Breaking__: Rename --verbose CLI flag to --debug ([`5116ffe`](https://github.com/bessman/mcbootflash/commit/5116ffeec3369fe024d9f1cc730ce57f6dd91232))
+- __Breaking__: Raise `bincopy.Error` instead of `ValueError` in `chunked` ([`452afb5`](https://github.com/bessman/mcbootflash/commit/452afb59b8205406b70a3604214070f1c6b625e4))
+- Improve CLI error handling ([`5116ffe`](https://github.com/bessman/mcbootflash/commit/5116ffeec3369fe024d9f1cc730ce57f6dd91232))
 - Clarify `self_verify` docstring ([`fc8d16b`](https://github.com/bessman/mcbootflash/commit/fc8d16b2d9b6ee528edbeec7bd47a4a157c3b78b))
+
+### Added
+
+- Implement `read_flash` ([`908aeac`](https://github.com/bessman/mcbootflash/commit/908aeac1ff28985ac0697a44362cf8753354013b))
+- Add `readback` utility function to read firmware image from flash ([`53481c2`](https://github.com/bessman/mcbootflash/commit/53481c2980d8feb0fc4459a9c025d0aa8ecf8241))
+- Add support for Python 3.13 ([`a74ed75`](https://github.com/bessman/mcbootflash/commit/a74ed753406161a56fd758e0fa45193350a88120))
+
+### Removed
+
+- Drop support for EOL Python 3.8 ([`a74ed75`](https://github.com/bessman/mcbootflash/commit/a74ed753406161a56fd758e0fa45193350a88120))
+
+### Fixed
+
+- __Breaking__: Re-rename types.py to protocol.py to avoid shadowing built-in types.py ([`2a66b7b`](https://github.com/bessman/mcbootflash/commit/2a66b7b6df783b9d3b81a1592d6732c8440e767e))
 
 ## [9.0.1] - 2024-05-14
 
@@ -29,7 +48,7 @@
 
 ### Removed
 
-- __Breaking__: Remove `.has_checksum` attribute of `BootAttrs` ([`b685bb5`](https://github.com/bessman/mcbootflash/commit/b685bb56165805706fdc87adcba76c1285cc3416))
+- __Breaking__: Remove `.has_checksum` attribute versionof `BootAttrs` ([`b685bb5`](https://github.com/bessman/mcbootflash/commit/b685bb56165805706fdc87adcba76c1285cc3416))
 
 ### Fixed
 
@@ -278,6 +297,7 @@ _Maintanence release._
 
 _Initial release._
 
+[10.0.0]: https://github.com/bessman/mcbootflash/releases/tag/10.0.0
 [9.0.1]: https://github.com/bessman/mcbootflash/releases/tag/9.0.1
 [9.0.0]: https://github.com/bessman/mcbootflash/releases/tag/9.0.0
 [8.0.2]: https://github.com/bessman/mcbootflash/releases/tag/8.0.2
