@@ -12,6 +12,7 @@ license = {file = "LICENSE"}
 dependencies = [
     "pyserial",
     "bincopy >= 20.0.0",
+    "datastructclass",
 ]
 classifiers = [
     "Programming Language :: Python :: 3",

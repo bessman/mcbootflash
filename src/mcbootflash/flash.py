@@ -363,7 +363,7 @@ def _get_response(connection: Connection, in_response_to: Command) -> ResponseBa
     # Can't read the whole response in one go. Its length depends on whether it's an
     # error or not. Start by reading the command echo to determine the response
     # type.
-    response = ResponseBase.from_bytes(connection.read(ResponseBase.get_size()))
+    response = ResponseBase.unpack(connection.read(ResponseBase.size))
     _logger.debug(f"RX: {_format_debug_bytes(bytes(response))}")
 
     if response.command != in_response_to.command:
@@ -384,9 +384,9 @@ def _get_response(connection: Connection, in_response_to: Command) -> ResponseBa
 
     # READ_VERSION has no 'success' flag.
     if response_type is Version:
-        remainder = connection.read(response_type.get_size() - response.get_size())
+        remainder = connection.read(response_type.size - response.size)
         _logger.debug(f"RX: {_format_debug_bytes(remainder, bytes(response))}")
-        return response_type.from_bytes(bytes(response) + remainder)
+        return response_type.unpack(response.pack() + remainder)
 
     success = connection.read(1)
     _logger.debug(f"RX: {_format_debug_bytes(success, bytes(response))}")
@@ -400,13 +400,13 @@ def _get_response(connection: Connection, in_response_to: Command) -> ResponseBa
         }
         raise bootloader_exceptions[ResponseCode(success[0])]
 
-    response = Response.from_bytes(bytes(response) + success)
-    remainder = connection.read(response_type.get_size() - response.get_size())
+    response = Response.unpack(response.pack() + success)
+    remainder = connection.read(response_type.size - response.size)
 
     if remainder:
         _logger.debug(f"RX: {_format_debug_bytes(remainder, bytes(response))}")
 
-    return response_type.from_bytes(bytes(response) + remainder)
+    return response_type.unpack(response.pack() + remainder)
 
 
 def _exchange(
@@ -414,10 +414,10 @@ def _exchange(
     command: Command,
     data: bytes = b"",
 ) -> ResponseBase:
-    msg = f"TX: {_format_debug_bytes(bytes(command))}"
+    msg = f"TX: {_format_debug_bytes(command.pack())}"
     msg += f" plus {len(data)} data bytes" if data else ""
     _logger.debug(msg)
-    connection.write(bytes(command) + data)
+    connection.write(command.pack() + data)
     return _get_response(connection, command)
 
 

@@ -36,7 +36,7 @@ def chunked(
     hexdata = bincopy.BinFile()
     hexdata.add_microchip_hex_file(hexfile)
     hexdata.crop(*boot_attrs.memory_range)
-    chunk_size = boot_attrs.max_packet_length - Command.get_size()
+    chunk_size = boot_attrs.max_packet_length - Command.size
     chunk_size -= chunk_size % boot_attrs.write_size
     chunk_size //= hexdata.word_size_bytes
     total_bytes = len(hexdata) * hexdata.word_size_bytes

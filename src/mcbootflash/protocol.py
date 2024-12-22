@@ -1,12 +1,11 @@
 """Custom types used by mcbootflash."""
 
 import enum
-import struct
-from dataclasses import asdict, dataclass
-from typing import TYPE_CHECKING, ClassVar, Protocol
+from dataclasses import dataclass
+from struct import Struct
+from typing import Annotated, Protocol
 
-if TYPE_CHECKING:  # pragma: no cover
-    from typing_extensions import Self
+from datastructclass import DataStructClass
 
 
 class CommandCode(enum.IntEnum):
@@ -32,8 +31,13 @@ class ResponseCode(enum.IntEnum):
     VERIFY_FAIL = 0xFC
 
 
+UINT8 = Annotated[int, Struct("=B")]
+UINT16 = Annotated[int, Struct("=H")]
+UINT32 = Annotated[int, Struct("=I")]
+
+
 @dataclass
-class Packet:
+class Packet(DataStructClass):
     """Base class for communication packets to and from the bootloader.
 
     Layout:
@@ -58,8 +62,6 @@ class Packet:
         `ERASE_FLASH`) will fail SILENTLY if this key is incorrect.
     address : uint32
         Address at which to perform command.
-    FORMAT : ClassVar[str]
-        Format string for `struct` which specifies types and layout of the data fields.
 
     Note
     ----
@@ -70,28 +72,10 @@ class Packet:
     `VERIFY_FAIL`.
     """
 
-    command: CommandCode
-    data_length: int = 0
-    unlock_sequence: int = 0
-    address: int = 0
-    FORMAT: ClassVar[str] = "=BH2I"
-
-    def __bytes__(self) -> bytes:  # noqa: D105
-        return struct.pack(self.FORMAT, *list(asdict(self).values()))
-
-    @classmethod
-    def from_bytes(cls: type[Self], data: bytes) -> Self:
-        """Create a Packet instance from a bytes-like object."""
-        try:
-            return cls(*struct.unpack(cls.FORMAT, data))
-        except struct.error as exc:
-            msg = f"{cls} expected {struct.calcsize(cls.FORMAT)} bytes, got {len(data)}"
-            raise struct.error(msg) from exc
-
-    @classmethod
-    def get_size(cls: type[Self]) -> int:
-        """Get the size of Packet in bytes."""
-        return struct.calcsize(cls.FORMAT)
+    command: UINT8
+    data_length: UINT16 = 0
+    unlock_sequence: UINT32 = 0
+    address: UINT32 = 0
 
 
 @dataclass
@@ -139,12 +123,14 @@ class Version(ResponseBase):
         a write block.
     """
 
-    version: int = 0
-    max_packet_length: int = 0
-    device_id: int = 0
-    erase_size: int = 0
-    write_size: int = 0
-    FORMAT: ClassVar[str] = Packet.FORMAT + "2H2xH2x2H12x"
+    version: UINT16 = 0
+    max_packet_length: UINT16 = 0
+    _1: UINT16 = 0
+    device_id: UINT16 = 0
+    _2: UINT16 = 0
+    erase_size: UINT16 = 0
+    write_size: UINT16 = 0
+    _3: Annotated[int, Struct("12x")] = 0
 
 
 @dataclass
@@ -162,8 +148,7 @@ class Response(ResponseBase):
         Success or failure status of the command this packet is sent in response to.
     """
 
-    success: ResponseCode = ResponseCode.UNSUPPORTED_COMMAND
-    FORMAT: ClassVar[str] = Packet.FORMAT + "B"
+    success: UINT8 = ResponseCode.UNSUPPORTED_COMMAND
 
 
 @dataclass
@@ -183,9 +168,8 @@ class MemoryRange(Response):
         High end of address space to which application firmware can be flashed.
     """
 
-    program_start: int = 0
-    program_end: int = 0
-    FORMAT: ClassVar[str] = Response.FORMAT + "2I"
+    program_start: UINT32 = 0
+    program_end: UINT32 = 0
 
 
 @dataclass
@@ -203,8 +187,7 @@ class Checksum(Response):
         Checksum of `data_length` bytes starting from `address`.
     """
 
-    checksum: int = 0
-    FORMAT: ClassVar[str] = Response.FORMAT + "H"
+    checksum: UINT16 = 0
 
 
 @dataclass
