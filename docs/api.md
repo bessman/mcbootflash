@@ -16,7 +16,7 @@
 
 ## Custom Types
 
-::: mcbootflash.types
+::: mcbootflash.protocol
     options:
       show_root_toc_entry: false
       heading_level: 3
