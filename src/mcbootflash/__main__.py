@@ -352,6 +352,7 @@ def erase(connection: Serial, erase_range: tuple[int, int], erase_size: int) -> 
         # 0xFFFF are misaligned.
         logger.debug("Got BAD_ADDRESS during erase")
         logger.debug("This is probably a bug in the bootloader, not mcbootflash")
+        logger.debug("See https://github.com/bessman/mcbootflash/issues/86")
         logger.debug("Attempting workaround by erasing all remaining pages at once")
         # Erasing many pages at once may take a while.
         tmp_timeout = connection.timeout
