@@ -197,7 +197,7 @@ def test_checksum_bad_address_warning(reserial, caplog, connection):
         word_size_bytes=1,
     )
     bf.checksum(connection, chunk)
-    assert "BadAddress" in caplog.messages[-1]
+    assert "BAD_ADDRESS" in caplog.messages[-3]
 
 
 def test_reset(reserial, caplog, connection):
