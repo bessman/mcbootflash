@@ -267,11 +267,9 @@ def checksum(
     try:
         checksum2 = _get_remote_checksum(connection, chunk.address, len(chunk.data))
     except BadAddress:
-        _logger.warning(
-            "Got BadAddress while checksumming, continuing anyway. "
-            "This is probably a bug in the bootloader, not in mcbootflash. "
-            "See https://github.com/bessman/mcbootflash/issues/54",
-        )
+        _logger.warning("Got BAD_ADDRESS while checksumming, continuing anyway")
+        _logger.warning("This is probably a bug in the bootloader, not in mcbootflash")
+        _logger.warning("See https://github.com/bessman/mcbootflash/issues/54")
         return
 
     if checksum1 != checksum2:
