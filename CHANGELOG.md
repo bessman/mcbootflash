@@ -2,6 +2,10 @@
 
 ## [10.0.1] - Development
 
+### Changed
+
+- Workaround bootloader bug during erase ([`4203827`](https://github.com/bessman/mcbootflash/commit/420382732970a26dc6ed66bf9787c4c88f48f2f1))
+
 ## [10.0.0] - 2024-12-22
 
 ### Changed
