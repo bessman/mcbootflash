@@ -16,6 +16,7 @@ import bincopy  # type: ignore[import-untyped]
 from serial import Serial, SerialException  # type: ignore[import-untyped]
 
 from mcbootflash import (
+    BadAddress,
     BootAttrs,
     BootloaderError,
     Chunk,
@@ -338,44 +339,34 @@ def erase(connection: Serial, erase_range: tuple[int, int], erase_size: int) -> 
     total_pages = len(page_boundaries) - 1
     time_start = time.time()
 
-    for erased_pages, page in enumerate(pairwise(page_boundaries), start=1):
-        uint_max = 2**16 - 1
-
-        if page[1] >= uint_max:
-            # Bootloader incorrectly identifies addresses greater than 0xFFFF as
-            # misaligned.
-            logger.debug("Erase address exceeds UINT_MAX")
-            logger.debug(
-                "BOOTLOADER BUG: Remaining pages will be misidentified as misaligned",
+    try:
+        for erased_pages, page in enumerate(pairwise(page_boundaries), start=1):
+            erase_flash(connection, page, erase_size)
+            print_progress(
+                erased_pages * erase_size,
+                total_pages * erase_size,
+                time.time() - time_start,
             )
-            logger.debug("WORKAROUND: Erasing all remaining pages at once")
-            break
+    except BadAddress:
+        # Some bootloader versions incorrectly think addresses greater than
+        # 0xFFFF are misaligned.
+        logger.debug("Got BAD_ADDRESS during erase")
+        logger.debug("This is probably a bug in the bootloader, not mcbootflash")
+        logger.debug("Attempting workaround by erasing all remaining pages at once")
+        # Erasing many pages at once may take a while.
+        tmp_timeout = connection.timeout
 
-        erase_flash(connection, page, erase_size)
+        if connection.timeout:
+            connection.timeout *= 10
+
+        erase_flash(connection, (page[0] - erase_size, erase_range[1]), erase_size)
+        connection.timeout = tmp_timeout
+        erased_pages = total_pages
         print_progress(
             erased_pages * erase_size,
             total_pages * erase_size,
             time.time() - time_start,
         )
-    else:
-        # All addresses were < 0xFFFF, no need for workaround.
-        return
-
-    # Workaround bootloader bug by erasing all addresses > 0xFFFF at once.
-    # Erasing many pages at once may take a while.
-    tmp_timeout = connection.timeout
-
-    if connection.timeout:
-        connection.timeout *= 10
-
-    erase_flash(connection, (page[0], erase_range[1]), erase_size)
-    connection.timeout = tmp_timeout
-    erased_pages = total_pages
-    print_progress(
-        erased_pages * erase_size,
-        total_pages * erase_size,
-        time.time() - time_start,
-    )
 
 
 def flash(
