@@ -6,6 +6,10 @@
 
 - Workaround bootloader bug during erase ([`4203827`](https://github.com/bessman/mcbootflash/commit/420382732970a26dc6ed66bf9787c4c88f48f2f1))
 
+### Fixed
+
+- Handle HEX-file not found error ([`94c76a6`](https://github.com/bessman/mcbootflash/commit/94c76a67e6fd883ff83f64771646c270d100feec))
+
 ## [10.0.0] - 2024-12-22
 
 ### Changed
