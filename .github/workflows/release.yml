@@ -1,0 +1,66 @@
+name: Release
+
+on:
+  release:
+    types:
+      - created
+
+jobs:
+  set-body:
+    runs-on: ubuntu-latest
+
+    steps:
+    - run: sudo apt install pcregrep
+
+    - uses: actions/checkout@v4
+
+    - name: Parse changelog
+      id: parse-changelog
+      run: |
+          tag='${{ github.event.release.tag_name }}'
+          re_current_tag="## \[$tag\].*\n\n" # Match, but do not capture, current version tag, then...
+          re_changes_body='((.|\n)+?)' # capture everything including newlines...
+          re_previous_tag='## \[[0-9]+.[0-9]+.[0-9]+\]' # until previous version tag.
+          re_full="${re_current_tag}${re_changes_body}${re_previous_tag}"
+          echo 'match<<EOF' >> $GITHUB_OUTPUT
+          # Match multiple lines, output capture group 1.
+          pcregrep -M -o1 "$re_full" ./CHANGELOG.md >> $GITHUB_OUTPUT
+          echo 'EOF' >> $GITHUB_OUTPUT
+
+    - name: Set release body
+      uses: softprops/action-gh-release@v2
+      with:
+        body: ${{ steps.parse-changelog.outputs.match }}
+
+  build:
+    uses: bessman/mcbootflash/.github/workflows/build.yml@actions/release
+
+  attach-artifacts:
+    needs: build
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: download
+      uses: actions/download-artifact@v4
+
+    # Artifacts are tar'd to preserve permissions.
+    - name: untar
+      run: |
+        tar -xf linux/mcbootflash.tar -C linux
+        tar -xf macos/mcbootflash.tar -C macos
+        tar -xf windows/mcbootflash.tar -C windows
+
+    - name: zip
+      run: |
+        zip -rj linux.zip linux/dist/*
+        zip -rj macos.zip macos/dist/*
+        zip -rj windows.zip windows/dist/*
+
+    - name: attach
+      uses: softprops/action-gh-release@v2
+      with:
+        files: |
+          linux.zip
+          macos.zip
+          windows.zip

@@ -2,6 +2,7 @@ name: Build
 
 on:
   - pull_request
+  - workflow_call
 
 jobs:
   build:
@@ -21,18 +22,25 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
+
     - name: Install tox
       run: |
         python -m pip install --upgrade pip
         python -m pip install tox
+
     - name: Build
       run: tox -e build
+
+    - name: tar
+      run: tar -cf mcbootflash.tar dist/mcbootflash*
+
     - name: Upload
       uses: actions/upload-artifact@v4
       with:
         name: ${{ matrix.name }}
-        path: dist/mcbootflash*
+        path: mcbootflash.tar
