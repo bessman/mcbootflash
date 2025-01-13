@@ -319,7 +319,7 @@ def parse_hex(hex_file: str, boot_attr: BootAttrs) -> tuple[int, Iterator[Chunk]
     """
     try:
         return chunked(hex_file, boot_attr)
-    except bincopy.Error as exc:
+    except (bincopy.Error, FileNotFoundError) as exc:
         raise HandledException("Error: " + str(exc)) from exc
 
 
