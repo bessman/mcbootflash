@@ -1,10 +1,14 @@
 # Changelog
 
-## [release-automation] - Development
+## [10.1.0] - 2025-01-16
 
 ### Changed
 
 - Workaround bootloader bug during erase ([`4203827`](https://github.com/bessman/mcbootflash/commit/420382732970a26dc6ed66bf9787c4c88f48f2f1))
+
+### Added
+
+- Add stand-alone executables in releases ([`26e4202`](https://github.com/bessman/mcbootflash/commit/26e420243d54a4b0c82ad802a1c9d68639633e60))
 
 ### Fixed
 
