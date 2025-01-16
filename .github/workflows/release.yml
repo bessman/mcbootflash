@@ -33,7 +33,7 @@ jobs:
         body: ${{ steps.parse-changelog.outputs.match }}
 
   build:
-    uses: bessman/mcbootflash/.github/workflows/build.yml@actions/release
+    uses: bessman/mcbootflash/.github/workflows/build.yml@main
 
   attach-artifacts:
     needs: build
