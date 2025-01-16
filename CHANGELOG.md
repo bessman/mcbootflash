@@ -1,5 +1,7 @@
 # Changelog
 
+## [10.1.1] - Development
+
 ## [10.1.0] - 2025-01-16
 
 ### Changed
@@ -309,6 +311,7 @@ _Maintanence release._
 
 _Initial release._
 
+[10.1.0]: https://github.com/bessman/mcbootflash/releases/tag/10.1.0
 [10.0.0]: https://github.com/bessman/mcbootflash/releases/tag/10.0.0
 [9.0.1]: https://github.com/bessman/mcbootflash/releases/tag/9.0.1
 [9.0.0]: https://github.com/bessman/mcbootflash/releases/tag/9.0.0
