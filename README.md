@@ -35,6 +35,11 @@ Mcbootflash is distributed under the MIT license.
 
 ## Installation
 
+Stand-alone executables for Linux, Mac, and Windows are available from the Github
+[release page](https://github.com/bessman/mcbootflash/releases/latest).
+
+Mcbootflash can also be installed from PyPI:
+
 `pip install mcbootflash`
 
 ## Usage
