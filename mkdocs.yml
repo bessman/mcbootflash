@@ -7,7 +7,7 @@ theme: material
 nav:
   - Home: index.md
   - API Reference: api.md
-  - Developer's Guide: develop.md
+  - Contributing: contributing.md
   - Changelog: changelog.md
 plugins:
   - include-markdown
