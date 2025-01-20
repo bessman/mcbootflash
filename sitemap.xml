@@ -2,18 +2,18 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://bessman.github.io/mcbootflash/</loc>
-         <lastmod>2025-01-16</lastmod>
+         <lastmod>2025-01-20</lastmod>
     </url>
     <url>
          <loc>https://bessman.github.io/mcbootflash/api/</loc>
-         <lastmod>2025-01-16</lastmod>
+         <lastmod>2025-01-20</lastmod>
     </url>
     <url>
          <loc>https://bessman.github.io/mcbootflash/changelog/</loc>
-         <lastmod>2025-01-16</lastmod>
+         <lastmod>2025-01-20</lastmod>
     </url>
     <url>
-         <loc>https://bessman.github.io/mcbootflash/develop/</loc>
-         <lastmod>2025-01-16</lastmod>
+         <loc>https://bessman.github.io/mcbootflash/contributing/</loc>
+         <lastmod>2025-01-20</lastmod>
     </url>
 </urlset>
