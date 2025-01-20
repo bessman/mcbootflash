@@ -63,6 +63,7 @@ In addition to these automatically enforced rules, the following style rules app
 
 <details>
 <summary>Code style example</summary>
+
 ```python
 """Spam-related things go here."""
 from __future__ import annotations
