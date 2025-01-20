@@ -64,3 +64,25 @@ jobs:
           linux.zip
           macos.zip
           windows.zip
+
+  pypi-publish:
+    runs-on: ubuntu-latest
+
+    environment: pypi
+
+    permissions:
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: install flit
+        run: pip install flit
+
+      - name: build wheel and sdist
+        run: flit build
+
+      - name: publish
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+            repository-url: https://test.pypi.org/legacy/
