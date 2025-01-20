@@ -2,6 +2,10 @@
 
 ## [10.1.1] - Development
 
+### Changed
+
+- Turn developer's guide into CONTRIBUTING.md ([`b77fda0`](https://github.com/bessman/mcbootflash/commit/b77fda0c2857d29b6f3f5f430d62ffb51d242d5c))
+
 ## [10.1.0] - 2025-01-16
 
 ### Changed
@@ -311,6 +315,7 @@ _Maintanence release._
 
 _Initial release._
 
+[10.1.1]: https://github.com/bessman/mcbootflash/releases/tag/10.1.1
 [10.1.0]: https://github.com/bessman/mcbootflash/releases/tag/10.1.0
 [10.0.0]: https://github.com/bessman/mcbootflash/releases/tag/10.0.0
 [9.0.1]: https://github.com/bessman/mcbootflash/releases/tag/9.0.1
