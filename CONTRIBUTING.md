@@ -4,12 +4,12 @@ First of all, thank you for wanting to contribute to mcbootflash's development!
 
 ## Did you find a bug?
 
-Does mcbootflash fail to flash your firmware? Please open an issue at
-https://github.com/bessman/mcbootflash/issues! When doing so, please
+Does mcbootflash fail to flash your firmware? Please open an issue on the
+[issue tracker](https://github.com/bessman/mcbootflash/issues)! When doing so, please
 
 - Ensure that you are using the latest version of mcbootflash.
 - Include the debug log in the issue report. If mcbootflash detects that something went
-  wrong, the debug log is automatically created as mcbootflash.log in the directory
+  wrong, the debug log is automatically created as 'mcbootflash.log' in the directory
   where you ran the program. If no such file exists, please re-run the program with the
   `--debug` flag and manually copy the output.
 - Include the HEX file containing your firmware.
@@ -63,7 +63,7 @@ In addition to these automatically enforced rules, the following style rules app
 
 <details>
 <summary>Code style example</summary>
-``` py
+```python
 """Spam-related things go here."""
 from __future__ import annotations
 
