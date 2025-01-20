@@ -1,6 +1,6 @@
 # Changelog
 
-## [10.1.1] - Development
+## [10.1.1] - 2025-01-20
 
 ### Changed
 
