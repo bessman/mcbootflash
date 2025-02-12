@@ -1,9 +1,9 @@
 name: Release
 
 on:
-  release:
-    types:
-      - created
+  push:
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+'
 
 jobs:
   set-body:
@@ -13,11 +13,37 @@ jobs:
     - run: sudo apt install pcregrep
 
     - uses: actions/checkout@v4
+    
+    - name: Assert tag matches version string in changelog
+      id: assert-version
+      run: |
+          tag='${{ github.ref_name }}'
+          re_date='(\d{4}-(?:0[1-9]|1[012])-(?:0[1-9]|[12][0-9]|3[01]))'
+          re_tag_date='## \[($tag)\] - '"$re_date"'\n\n'
+          tag_ok=$(pcregrep -M -o1 "$re_tag_date" ./CHANGELOG.md)
+          
+          if [[ -z "$tag_ok" ]]; then
+              ####
+          
+          date_found=$(pcregrep -M -o2 "$re_tag_date" ./CHANGELOG.md)
+          
+          if [[ "$date_found" == $(date '+%Y-%m-%d') ]]; then
+              date_ok=1;
+          fi
+          
+          release_url='https:\/\/github\.com\/bessman\/mcbootflash\/releases\/tag\/'
+          re_url='\[$tag\]: '"$release_url"'$tag\n'
+          url_ok=$(pcregrep -M "$re_url" ./CHANGELOG.md)
+          if [[ -z "$tag_ok" || -z "$date_ok" || -z "$url_ok" ]]; then
+              echo "" >> $GITHUB_OUTPUT
+              # Match multiple lines, output capture group 1.
+              pcregrep -M -o1 "$re_full" ./CHANGELOG.md >> $GITHUB_OUTPUT
+              echo 'EOF' >> $GITHUB_OUTPUT
 
     - name: Parse changelog
       id: parse-changelog
       run: |
-          tag='${{ github.event.release.tag_name }}'
+          tag='${{ github.ref_name }}'
           re_current_tag="## \[$tag\].*\n\n" # Match, but do not capture, current version tag, then...
           re_changes_body='((.|\n)+?)' # capture everything including newlines...
           re_previous_tag='## \[[0-9]+.[0-9]+.[0-9]+\]' # until previous version tag.
@@ -30,6 +56,7 @@ jobs:
     - name: Set release body
       uses: softprops/action-gh-release@v2
       with:
+        draft: true
         body: ${{ steps.parse-changelog.outputs.match }}
 
   build:
