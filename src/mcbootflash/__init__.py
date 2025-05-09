@@ -17,7 +17,7 @@ from .flash import (
     write_flash,
 )
 from .protocol import BootAttrs, Chunk, Command
-from .util import chunked, readback
+from .util import chunked, readback, readback_bytes
 
 __all__ = [
     "BadAddress",
@@ -34,6 +34,7 @@ __all__ = [
     "get_boot_attrs",
     "read_flash",
     "readback",
+    "readback_bytes",
     "reset",
     "self_verify",
     "write_flash",

@@ -20,6 +20,7 @@ from mcbootflash import (
     BootAttrs,
     BootloaderError,
     Chunk,
+    UnsupportedCommand,
     VerifyFail,
     __version__,
     checksum,
@@ -56,9 +57,7 @@ class HandledException(Exception):
     """Raised to signal that an exception has been caught and handled."""
 
 
-# %%#############
-# Input parsing #
-#################
+# %% Input parsing
 
 
 def get_parser() -> argparse.ArgumentParser:
@@ -75,6 +74,7 @@ def get_parser() -> argparse.ArgumentParser:
             port: str
             baudrate: int
             timeout: float, default=1
+            delta: bool, default=False
             checksum: bool, default=False
             debug: bool, default=False
             quiet: bool,  default=False
@@ -111,6 +111,11 @@ def get_parser() -> argparse.ArgumentParser:
         type=float,
         default=1,
         help="try to read data from the bus for this many seconds before giving up",
+    )
+    parser.add_argument(
+        "--delta",
+        action="store_true",
+        help="compare old and new firmware and only write changed pages",
     )
     parser.add_argument(
         "--checksum",
@@ -162,9 +167,7 @@ def baudrate(baudrate: str) -> int:
     return int(baudrate)
 
 
-# %%#######
-# Logging #
-###########
+# %% Logging
 
 
 def setup_logging(*, quiet: bool, debug: bool) -> TextIO:
@@ -244,9 +247,7 @@ def write_error_log(debug_stream: StringIO | TextIO) -> None:
         logger.error("Include the error log in the report")
 
 
-# %%########
-# Flashing #
-############
+# %% Flashing
 
 
 def connect(port: str, baudrate: int, timeout: float) -> Serial:
@@ -389,6 +390,10 @@ def flash(
         Total number of bytes to be written.
     verify_checksum : bool
         Verify integrity of written data.
+
+    Raises
+    ------
+    HandledException
     """
     written_bytes = 0
     start = time.time()
@@ -397,7 +402,11 @@ def flash(
         write_flash(connection, chunk)
 
         if verify_checksum:
-            checksum(connection, chunk)
+            try:
+                checksum(connection, chunk)
+            except UnsupportedCommand as exc:
+                msg = "Bootloader does not support checksum verification"
+                raise HandledException(msg) from exc
 
         written_bytes += len(chunk.data)
         logger.debug(
@@ -407,9 +416,12 @@ def flash(
         print_progress(written_bytes, total_bytes, time.time() - start)
 
 
-# %%############
-# Progress bar #
-################
+def delta_flash(
+    connection: Serial,
+): ...
+
+
+# %% Progress bar
 
 
 def print_progress(written_bytes: int, total_bytes: int, elapsed: float) -> None:
@@ -516,9 +528,7 @@ def get_bar(done_ratio: float, used_width: int) -> str:
     return "|" + done * "#" + left * " " + "|"
 
 
-# %%####
-# Main #
-########
+# %% Main
 
 
 def main(args: None | argparse.Namespace = None) -> int:

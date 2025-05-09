@@ -3,9 +3,12 @@
 import enum
 from dataclasses import dataclass
 from struct import Struct
-from typing import Annotated, Protocol
+from typing import Annotated, Final, Protocol
 
 from datastructclass import DataStructClass
+
+
+WORD_SIZE_BYTES: Final[int] = 2
 
 
 class CommandCode(enum.IntEnum):
@@ -200,7 +203,7 @@ class BootAttrs:
         Bootloader version number.
     max_packet_length : int
         Maximum number of bytes which can be sent to the bootloader per packet. Includes
-        the size of the packet itself plus associated data.
+        the size of the packet header plus associated data.
     device_id : int
         A device-specific identifier.
     erase_size : int
@@ -221,8 +224,15 @@ class BootAttrs:
     write_size: int
     memory_range: tuple[int, int]
 
+    @property
+    def max_data_length(self) -> int:
+        """Maximum length of packet's data field in bytes."""
+        chunk_size = self.max_packet_length - Command.size
+        chunk_size -= chunk_size % self.write_size
+        return chunk_size
 
-class Chunk(Protocol):
+
+class ChunkProtocol(Protocol):
     """A piece of a firmware image.
 
     `mcbootflash.chunked` can be used to generate correctly aligned and sized chunks
@@ -244,7 +254,41 @@ class Chunk(Protocol):
     data: bytes
 
 
-class Connection(Protocol):
+@dataclass
+class Chunk(ChunkProtocol):
+    """Concrete implementation of `ChunkProtocol`."""
+
+    address: int
+    data: bytes
+
+
+@dataclass
+class Program(ChunkProtocol):
+    """A 'piece' of a firmware image containing the entire program."""
+
+    address: int
+    data: bytes
+
+
+@dataclass
+class Page:
+    address: int
+    size: int
+
+    def __contains__(self, value: ChunkProtocol) -> bool:
+        if not isinstance(value, ChunkProtocol):
+            raise TypeError
+
+        if value.address < self.address:
+            return False
+
+        if value.address + len(value.data) > self.address + self.size:
+            return False
+
+        return True
+
+
+class ConnectionProtocol(Protocol):
     """Anything that can read and write bytes from/to the bootloader.
 
     Typically, this is an open [`serial.Serial`](https://pyserial.readthedocs.io/en/latest/pyserial_api.html#serial.Serial)
