@@ -34,20 +34,6 @@ from mcbootflash import (
 if TYPE_CHECKING:
     from collections.abc import Iterator
 
-if sys.version_info >= (3, 10):
-    from itertools import pairwise
-else:
-
-    def pairwise(iterable):  # noqa: ANN001, ANN201, D103
-        # pairwise('ABCDEFG') → AB BC CD DE EF FG
-        iterator = iter(iterable)
-        a = next(iterator, None)
-
-        for b in iterator:
-            yield a, b
-            a = b
-
-
 logger = logging.getLogger(__name__)
 APPNAME: Final[str] = "mcbootflash"
 
@@ -331,17 +317,28 @@ def erase(connection: Serial, erase_range: tuple[int, int], erase_size: int) -> 
     connection : serial.Serial
         Open serial connection to device in bootloader mode.
     erase_range: tuple[int, int]
-        Memory range to erase.
+        Memory range to erase. The range is half-open, [start, end).
     erase_size: int
         Size of a flash page in bytes.
+
+    Raises
+    ------
+    ValueError
+        If `erase_range[1] - erase_range[0]` is not a multiple of `erase_size`.
     """
-    page_boundaries = range(*erase_range, erase_size)
-    total_pages = len(page_boundaries) - 1
+    start, end = erase_range
+
+    if (end - start) % erase_size:
+        msg = "Address range is not a multiple of erase size"
+        raise ValueError(msg)
+
+    page_starts = range(start, end, erase_size)
+    total_pages = len(page_starts)
     time_start = time.time()
 
     try:
-        for erased_pages, page in enumerate(pairwise(page_boundaries), start=1):
-            erase_flash(connection, page, erase_size)
+        for erased_pages, page_start in enumerate(page_starts, start=1):
+            erase_flash(connection, (page_start, page_start + erase_size), erase_size)
             print_progress(
                 erased_pages * erase_size,
                 total_pages * erase_size,
@@ -360,7 +357,7 @@ def erase(connection: Serial, erase_range: tuple[int, int], erase_size: int) -> 
         if connection.timeout:
             connection.timeout *= 10
 
-        erase_flash(connection, (page[0] - erase_size, erase_range[1]), erase_size)
+        erase_flash(connection, (page_start - erase_size, end), erase_size)
         connection.timeout = tmp_timeout
         erased_pages = total_pages
         print_progress(
