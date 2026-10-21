@@ -204,3 +204,65 @@ def test_reset(reserial, caplog, connection):
     caplog.set_level(logging.DEBUG)
     bf.reset(connection)
     assert "Device reset" in caplog.messages[-1]
+
+
+@pytest.fixture()
+def erase_calls(monkeypatch):
+    calls = {"erase": [], "progress": []}
+
+    def fake_erase_flash(connection, erase_range, erase_size):
+        calls["erase"].append(erase_range)
+
+    def fake_print_progress(written_bytes, total_bytes, elapsed):
+        calls["progress"].append((written_bytes, total_bytes))
+
+    monkeypatch.setattr(main, "erase_flash", fake_erase_flash)
+    monkeypatch.setattr(main, "print_progress", fake_print_progress)
+    return calls
+
+
+def test_erase_all_pages(erase_calls):
+    erase_size = 0x800
+    erase_range = (0x1800, 0x2A800)
+    total_pages = (erase_range[1] - erase_range[0]) // erase_size
+    main.erase(Serial(), erase_range, erase_size)
+    assert len(erase_calls["erase"]) == total_pages
+    assert erase_calls["erase"][0] == (0x1800, 0x2000)
+    assert erase_calls["erase"][-1] == (0x2A000, 0x2A800)
+    assert erase_calls["progress"][-1] == (
+        total_pages * erase_size,
+        total_pages * erase_size,
+    )
+
+
+def test_erase_single_page(erase_calls):
+    main.erase(Serial(), (0x1800, 0x2000), 0x800)
+    assert erase_calls["erase"] == [(0x1800, 0x2000)]
+    assert erase_calls["progress"] == [(0x800, 0x800)]
+
+
+def test_erase_range_misaligned(erase_calls):
+    with pytest.raises(ValueError) as excinfo:
+        main.erase(Serial(), (0x1800, 0x2A000 + 2), 0x800)
+    assert "not a multiple" in str(excinfo.value)
+    assert erase_calls["erase"] == []
+
+
+def test_erase_bad_address_workaround(monkeypatch, erase_calls):
+    def fake_erase_flash(connection, erase_range, erase_size):
+        erase_calls["erase"].append(erase_range)
+
+        if erase_range[0] >= 0x10000 and erase_range[1] - erase_range[0] == erase_size:
+            raise bf.BadAddress
+
+    monkeypatch.setattr(main, "erase_flash", fake_erase_flash)
+    erase_size = 0x800
+    erase_range = (0x1800, 0x2A800)
+    total_pages = (erase_range[1] - erase_range[0]) // erase_size
+    main.erase(Serial(), erase_range, erase_size)
+    assert erase_calls["erase"][-2] == (0x10000, 0x10800)
+    assert erase_calls["erase"][-1] == (0x10000 - erase_size, erase_range[1])
+    assert erase_calls["progress"][-1] == (
+        total_pages * erase_size,
+        total_pages * erase_size,
+    )
