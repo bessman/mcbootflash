@@ -2,6 +2,10 @@
 
 ## [10.1.2] - Development
 
+### Fixed
+
+- Erase last page of program memory range ([`356ce87`](https://github.com/bessman/mcbootflash/commit/356ce87))
+
 ## [10.1.1] - 2025-01-20
 
 ### Changed
